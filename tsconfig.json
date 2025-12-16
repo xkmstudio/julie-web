@@ -43,6 +43,7 @@
     "studio/sanity.config.jsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "studio/dist"
   ]
 }
