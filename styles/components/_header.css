@@ -1,0 +1,50 @@
+a[href="#content"].skip-link {
+  @apply block fixed top-0 left-1/2 -translate-x-1/2 -translate-y-full z-90 px-2 py-1 uppercase;
+
+  &:focus {
+    @apply translate-y-0 outline-none;
+  }
+}
+
+#mobile-nav{
+  padding-top: var(--headerHeight);
+}
+
+.nav-close{
+  &:not(.is-open){
+    @apply translate-y-[-5rem];
+  }
+}
+
+header{
+  
+  &.shrink{
+
+    .btn-nav{
+      @apply text-black hover:text-black;
+    }
+  }
+}
+
+.menu_svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.menu_line {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: 50% 50%;
+}
+
+.menu_svg.is-open .menu_line_one {
+  transform: rotate(45deg) translateY(4px);
+}
+
+.menu_svg.is-open .menu_line_two {
+  opacity: 0;
+}
+
+.menu_svg.is-open .menu_line_three {
+  transform: rotate(-45deg) translateY(-4px);
+}

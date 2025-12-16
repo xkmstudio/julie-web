@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+
+# Configure Next.js for Netlify
+# The plugin handles the publish directory automatically
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Function configuration for preview generation
+# Using external screenshot service (no Puppeteer/Chromium needed)
+[functions]
+  node_bundler = "esbuild"
+
+# Configure the standalone function timeout
+# The function is at netlify/functions/generate-page-preview.js
+# It will be accessible at /.netlify/functions/generate-page-preview
+[functions.generate-page-preview]
+  timeout = 26  # Max for Pro/Team plans (26 seconds)
+
+# Note: Netlify Functions timeout limits:
+# - Free/Starter: 10 seconds
+# - Pro/Team: 26 seconds (maximum)
+# - Enterprise: Custom
+# 
+# If you're on Free tier, you may need to use an external service
+# like Browserless.io or generate previews manually
+

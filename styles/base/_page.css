@@ -1,0 +1,119 @@
+:root {
+  --html-background: transparent;
+}
+
+html {
+  &.is-loading,
+  &.is-loading * {
+    @apply cursor-wait !important;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body {
+  @apply text-16;  
+}
+
+main{
+  @apply min-h-screen;
+
+  &.padding{
+    &-top{
+      @apply pt-100;
+    }
+
+    &-bottom{
+      @apply pb-100;
+    }
+
+    &-both{
+      @apply py-100;
+    }
+  }
+}
+
+.no-bar{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+section{
+  @apply py-[4.5rem] md:py-[6rem] bg-white relative z-2;
+  
+    &:not(.no-border){
+      @apply relative;
+
+      &:after{
+        content: '';
+        @apply absolute h-[calc(100%+18rem)] md:h-[calc(100%+24rem)] top-[-9rem] md:top-[-12rem] left-10 md:left-15 border-l border-black pointer-events-none;
+      }
+
+      &:first-of-type{
+        @apply pb-[4.5rem] md:pb-[6rem] pt-0;
+
+        &:after{
+          @apply absolute h-[calc(100%+9rem)] md:h-[calc(100%+12rem)] top-[0] left-10 md:left-15 border-l border-black pointer-events-none;
+        }
+        
+      }  
+      
+      &:last-of-type{
+        &:after{
+          @apply absolute h-[calc(100%+9rem)] md:h-[calc(100%+12rem)] bottom-[0] left-10 md:left-15 border-l border-black pointer-events-none;
+        }
+        
+      }
+  }
+
+
+  &.drawer-container{
+    &.is-standard{
+      @apply mt-0;
+
+      &:first-of-type{
+        @apply mt-0 pt-0;
+      }
+    }
+
+    &.is-condensed{
+      @apply mt-0 pt-30 pb-30;
+
+      &:first-of-type{
+        @apply mt-0 pt-0;
+      }
+
+      &:last-of-type{
+        @apply mt-0 pb-0 mb-45 md:mb-60;
+      }
+
+      &:after{
+        content: '';
+        @apply absolute h-[calc(100%+9rem)] md:h-[calc(100%+12rem)] top-[-6rem] md:top-[-9rem] left-10 md:left-15 border-l border-black pointer-events-none;
+      }
+
+      &:first-of-type{
+        &:after{
+          @apply absolute h-[calc(100%+4.5rem)] md:h-[calc(100%+6rem)] top-[0] left-10 md:left-15 border-l border-black pointer-events-none;
+        }
+        
+      }  
+      
+      &:last-of-type{
+        &:after{
+          @apply absolute h-[calc(100%+4.5rem)] md:h-[calc(100%+6rem)] top-[unset] bottom-[0] left-10 md:left-15 border-l border-black pointer-events-none;
+        }
+        
+      }
+    }
+  }
+}

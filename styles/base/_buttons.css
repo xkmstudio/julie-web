@@ -1,0 +1,152 @@
+button{
+  @apply px-0;
+}
+
+.btn{
+
+  @apply flex items-center justify-between gap-10 uppercase font-medium font-vm h-30;
+  
+  &-text{
+    @apply uppercase text-16 font-lb
+  }
+
+  &-gradient{
+    @apply text-white;
+    background: linear-gradient(to bottom, #FFACCB 0%, #FF669F 22%, #ED0E61 82%, #ED0E61 100%);
+    box-shadow: inset 0 0 6px 0 #EDD4E4;
+  }
+
+  &.is-dark{
+    @apply text-white bg-black px-10 md:px-15;
+
+    &:hover{
+      @apply text-white bg-black;
+    }
+  }
+
+  &.is-add,
+  &.is-checkout{
+    @apply w-full bg-white font-medium font-vm text-black h-[14rem] pt-20 px-10 md:px-15 mix-blend-difference flex items-start justify-center text-13;
+
+    &:hover{
+      .blink{
+       opacity: 1!important;
+       animation: none!important;
+      }
+    }
+  }
+
+  &-nav,
+  &-filter--inner,
+  &-service{
+    @apply bg-white h-45 py-5 border border-black flex flex-col justify-between leading-100 duration-300 hover:text-black flex-shrink-0 text-[1.1rem] 2xl:text-[1rem];
+  }
+
+  &-service{
+    @apply text-black;
+  }
+
+  &-nav{
+    @apply text-black;
+
+    &:not(.is-contact){
+      @apply transition-colors;
+    }
+
+    &.is-contact{
+      @apply transition-[width,color] duration-300 w-[7.2rem] whitespace-nowrap overflow-hidden;
+
+      &.is-copying{
+        @apply w-[6.2rem] md:w-[17.1rem];
+      }
+    }
+
+    &.is-work{
+      .nav-count{
+        @apply text-[1.2rem]
+      }
+    }
+
+    &.is-info{
+      @apply flex-shrink items-start overflow-hidden;
+
+      .marquee-section{
+        @apply text-[1.2rem]
+      }
+    }
+  }
+
+  &-filter--inner{
+    @apply text-black transition-colors;
+  }
+
+  &-toggle{
+    @apply bg-transparent py-5 uppercase leading-100 border border-black text-black px-10;
+
+    &.is-active{
+      @apply bg-white text-black;
+    }
+  }
+
+  &-filter--inner{
+    @apply px-10 flex-row gap-10;
+  }
+
+  &-drop{
+    @apply uppercase text-12 font-normal font-vr px-25 h-35 flex items-center justify-center shadow-primary bg-white text-center flex-shrink-0;
+
+    transition-property: box-shadow, transform;
+    transition-duration: .3s;
+    transition-timing-function: ease;
+   
+    &:hover{
+    @apply shadow-light
+   }
+   
+    &.is-wide{
+      @apply w-[calc(100%-2rem)] md:w-[30rem];
+    }
+
+    &.is-close{
+      @apply bg-black text-white w-35 flex items-center justify-center px-0;
+    }
+   
+  }  
+
+  &-filter{
+    @apply font-normal font-vr uppercase text-10 px-5 py-5 bg-white shadow-primary text-black;
+
+
+    &:not(:last-child){
+      @apply mr-5
+    }
+
+    &:hover,
+    &.is-active{
+      
+    }
+  }
+  
+}
+
+.tag{
+  @apply text-12 text-white bg-[rgba(255,255,255,.2)] backdrop-blur-[4px] py-10 px-10 rounded-[.5rem];
+
+  &.is-dark{
+    @apply text-black bg-black;
+  }
+
+  &.is-mid{
+    @apply text-black bg-white;
+  }
+}
+
+.link{
+  &-text{
+    @apply transition-colors duration-300 hover:text-black;
+
+    &.is-grey{
+      @apply text-black hover:text-black;
+    }
+  }
+}

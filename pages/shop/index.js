@@ -1,0 +1,96 @@
+import React, { useRef, useEffect, useState } from 'react'
+import Error from 'next/error'
+import { getStaticPage, queries } from '@data'
+import NextLink from 'next/link'
+
+import Layout from '@components/layout'
+import Hero from '@components/modules/hero'
+import { Module } from '@components/modules'
+
+import FocusTrap from 'focus-trap-react'
+import { AnimatePresence, m } from 'framer-motion'
+import CollectionContent from '@components/shop-collectionContent'
+
+const Shop = ({ data }) => {
+  const { site, page } = data
+  if (!page) {
+    return (
+      <Error
+        title={`"Home Page" is not set in Sanity, or the page data is missing`}
+        statusCode="Data Error"
+      />
+    )
+  }
+  return (
+    <Layout site={site} page={page}>
+      <CollectionContent page={page.content} />
+      <div className="fixed top-0 left-0 h-full w-full z-[99991] bg-[rgba(0,0,0,.75)] backdrop-blur-frame flex items-center justify-center p-15 md:p-30">
+        <m.div
+          initial="hide"
+          animate="show"
+          exit="hide"
+          variants={{
+            show: {
+              y: '0rem',
+              opacity: 1,
+            },
+            hide: {
+              y: '2rem',
+              opacity: 0,
+            },
+          }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-2 w-full max-w-[65rem] bg-glass backdrop-blur-frame px-15 py-30 md:p-50 rounded-[.5rem]"
+        >
+          <div className="text-20 flex flex-col md:flex-row justify-between items-center gap-25 flex-wrap">
+            <h1 className="title-small">Our beta is now closed.</h1>
+            <NextLink href="/products/sol-reader">
+              <a className="inline-block btn">Shop Sol Reader</a>
+            </NextLink>
+          </div>
+        </m.div>
+      </div>
+    </Layout>
+  )
+}
+
+export async function getStaticProps({ preview, previewData }) {
+  const pageData = await getStaticPage(
+    `
+    *[_type == "shopHome"][0]{
+        title,
+        seo,
+        "content": collection->{
+            sections[]{
+                "products": products[]->{
+                    title,
+                    subtitle,
+                    'slug': slug.current,
+                    'thumbnailFeature': thumbnailFeature{${queries.assetMeta}},
+                    'thumbnailSecondary': thumbnailSecondary{${queries.assetMeta}},
+                    useDescriptionThumbnail,
+                    description[]{${queries.ptContent}},
+                    descriptionThumbnail[]{${queries.ptContent}}
+                },
+            },
+        }
+    }
+  `,
+    {
+      active: preview,
+      token: previewData?.token,
+    }
+  )
+
+  return {
+    props: {
+      data: pageData,
+    },
+  }
+}
+
+export default Shop
+
+{
+  /* product redirect */
+}

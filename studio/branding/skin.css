@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+  --brand-primary: #000;
+  --brand-primary--inverted: #fff;
+  --brand-secondary: #000;
+  --brand-secondary--inverted: #fff;
+  --theme-pageText: #000;
+
+  --main-navigation-color: var(--brand-secondary);
+  --main-navigation-color--inverted: var(--brand-secondary--inverted);
+}
+
+/* override blue styling over cards */
+[data-ui="PaneLayout"] [data-ui="Card"],
+[data-ui="PaneLayout"] a:not([data-selected]):not([data-pressed]){
+  background: var(--brand-primary--inverted)!important;
+  color: var(--brand-primary)!important;
+}
+
+/* override blue styling over cards */
+[data-ui="PaneLayout"] a[data-pressed]{
+  background: #f5f5f5!important;
+  color: var(--brand-primary)!important;
+}
+
+/* override style for active tabs */
+[data-ui="PaneLayout"] [aria-selected="true"][data-ui="Tab"] div,
+[data-ui="PaneLayout"] [aria-selected="true"][data-ui="Tab"] span{
+  background: var(--brand-primary)!important;
+  color: var(--brand-primary--inverted)!important;
+}
+
+/* override style for inactive tabs */
+[data-ui="PaneLayout"] [data-ui="Tab"] div,
+[data-ui="PaneLayout"] [data-ui="Tab"] span{
+  background: #f5f5f5!important;
+  color: var(--brand-primary)!important;
+}
+
+/* override style for header buttons */
+[data-testid="pane-header"] [data-ui="MenuButton"] div,
+[data-testid="pane-header"] [data-ui="MenuButton"] span,
+[data-testid="pane-header"] [data-ui="MenuButton"] svg,
+[data-testid="pane-header"] [data-ui="Button"] div,
+[data-testid="pane-header"] [data-ui="Button"] span,
+[data-testid="pane-header"] [data-ui="Button"] svg{
+  background:#f5f5f5!important;
+  color: var(--brand-primary)!important;
+}
+
+/* override style for header buttons */
+[data-testid="pane-header"] [data-ui="Box"]:after{
+  opacity: 0!important;
+}
+
+/* override style for footer buttons */
+[data-testid="pane-footer"] [data-ui="MenuButton"],
+[data-testid="pane-footer"] [data-ui="MenuButton"] div,
+[data-testid="pane-footer"] [data-ui="MenuButton"] span,
+[data-testid="pane-footer"] [data-ui="Button"],
+[data-testid="pane-footer"] [data-ui="Button"] div,
+[data-testid="pane-footer"] [data-ui="Button"] span{
+  background:#f5f5f5!important;
+  color: var(--brand-primary)!important;
+}
+
+[data-testid="action-Publish"][data-disabled="false"],
+[data-testid="action-Publish"][data-disabled="false"] div,
+[data-testid="action-Publish"][data-disabled="false"] span{
+  background: var(--brand-primary)!important;
+  color: var(--brand-primary--inverted)!important;
+}
+
+
+/* override chevron colors */
+[data-ui="PaneLayout"] a:not([data-selected]) [data-sanity-icon]{
+  color: #4b4e54!important;
+}
+
+/* override style for navbar buttons */
+[data-ui="CollapseMenu"] a[data-selected],
+[data-ui="CollapseMenu"] a[data-selected] div,
+[data-ui="CollapseMenu"] a[data-selected] span{
+  background: #4b4e54!important;
+  color: var(--brand-primary--inverted)!important;
+}
+
+/* correctly style active state on dark navbars */
+
+[data-tone="navbar"][class*="selected"] > span {
+  background: var(--brand-secondary--inverted) !important;
+  color: var(--brand-secondary) !important;
+}
+
+
+/* more obvious cursors for studio elements */
+
+.item:not([disabled]),
+.title,
+button:not([disabled]) {
+  cursor: pointer !important;
+}
+
+.isCollapsed .title {
+  cursor: e-resize !important;
+}
+
+[class*="drag"] button {
+  cursor: grab !important;
+}
+
+li[class*="moving"],
+li[class*="moving"] * {
+  pointer-events: all !important;
+  cursor: grabbing !important;
+}
+
+/* high-fidelity renders */
+.pt-editable * {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif !important;
+}
+
+.btn {
+  display: inline-block;
+  position: relative;
+  padding: .5rem 1.25rem;
+  color: var(--theme-pageText) !important;
+  border: 1px solid;
+  border-radius: 9999px;
+  font-size: .75rem;
+  line-height: 1rem;
+  font-weight: 600;
+}
+
+.btn * {
+  font-weight: 600;
+}
+
+.btn.is-primary {
+  background: var(--theme-pageText) !important;
+  border-color: var(--theme-pageText);
+}
+
+.btn.is-var(--brand-primary--inverted) {
+  background: var(--brand-primary--inverted) !important;
+  color: var(--theme-pageText) !important;
+  border-color: var(--brand-primary--inverted);
+}
+
+.btn.is-large {
+  padding: .5rem 1.75rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 400;
+}
+
+.btn.is-large * {
+  font-weight: 400;
+}
+
+.btn.is-block {
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+}

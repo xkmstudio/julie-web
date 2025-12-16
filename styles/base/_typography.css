@@ -1,0 +1,251 @@
+@tailwind base;
+
+@layer base {
+  /* Load Ladna Medium as default font */
+  @font-face {
+    font-family: 'Ladna Medium';
+    src: url('/fonts/Ladna-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Fonts are loaded via Next.js font optimization in _app.js */
+  /* Inter and JetBrains Mono are available via CSS variables */
+
+  /* Map legacy font classes to Inter with correct weights */
+  .font-vr {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 400; /* Regular */
+  }
+  
+  .font-vm {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 500; /* Medium */
+  }
+  
+  .font-vs {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 600; /* SemiBold */
+  }
+  
+  .font-vb {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 700; /* Bold */
+  }
+
+  html {
+    @apply text-[10px] 2xl:text-[12px] font-vm tracking-[-.02rem];
+  }
+
+  @media screen and (min-width: 650px) and (max-width: 950px){
+    html{
+      font-size: 1.8vw;
+    }
+  }
+
+  @media screen and (min-width: 1899px){
+    html{
+      font-size: .5vw;
+    }
+  }
+
+  html,
+  body {
+    font-family: 'Ladna Medium', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body{
+    @apply leading-[1.25]
+  }
+  
+  /* Use JetBrains Mono for code/monospace elements */
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-jetbrains-mono), monospace;
+  }
+
+  strong {
+    @apply font-semibold;
+  }
+
+  ul {
+    @apply list-none m-0 p-0;
+  }
+
+  /* Headlines */
+  h1,
+  .h1 {
+    @apply font-normal my-[unset] leading-100 uppercase text-12;
+
+  }
+
+  h2,
+  .h2 {
+    @apply font-medium my-[unset] leading-100 uppercase text-12 font-vm;
+  }
+
+  h3,
+  .h3 {
+    @apply font-medium my-[unset] uppercase leading-100 text-12 font-vm;
+  }
+
+  h4,
+  .h4{
+    @apply my-[unset]
+  }
+
+  .title-normal{
+    @apply font-medium font-vm text-12 leading-100 uppercase;
+  }
+
+  /* Body */
+
+  .text-columns{
+    @media screen and (min-width: 850px){
+      columns: 2;
+    }
+  }
+
+  .rc{
+    h1,
+    h2,
+    h3,
+    h4{
+      font-weight: normal;
+    }
+
+    p:not(:last-child){
+      margin-bottom: 1.5rem;
+      margin-top: 0;
+    }
+
+    p:last-child{
+      margin: 0;
+    }
+
+    h2{
+      @apply text-16 mb-15;
+    }
+
+    strong{
+      @apply font-bold font-vb;
+      font-weight: 700;
+
+      em{
+        @apply font-semibold font-vs;
+        font-weight: 600;
+      }
+    }
+
+    ul{
+      @apply flex flex-col gap-15 my-20;
+      counter-reset: list-counter;
+      
+      &:last-child{
+        @apply mb-0
+      }
+      
+      li{
+        @apply relative pl-25;
+  
+        &:before{
+          content: counter(list-counter) ""; /* Add the counter content */
+          counter-increment: list-counter; /* Increment the counter */
+          @apply absolute left-0 top-[.2rem] w-[1.6rem] h-[1.6rem] bg-[#D9D9D9] rounded-full flex items-center justify-center font-normal font-vr uppercase text-8;
+        }
+      }
+    }
+
+    a{
+      @apply underline transition-colors duration-300 hover:text-black;
+    }
+    
+  }
+
+  .deliverables{
+    .rc{
+      ul{
+        @apply flex flex-col gap-10 mt-5 leading-120;
+        counter-reset: list-counter;
+        
+        li{
+          @apply relative pl-25 md:pl-35 text-14 md:text-24;
+    
+          &:before {
+            content: "[" counter(list-counter, decimal-leading-zero) "]"; /* Add square brackets around the counter */
+            counter-increment: list-counter; /* Increment the counter */
+            @apply absolute -left-5 top-[.3rem] md:top-[.6rem] w-[unset] h-[unset] bg-transparent rounded-full flex items-center justify-center font-normal font-vr uppercase min-w-[3rem] text-10 text-black pr-10;
+          }
+        }
+      }
+    }
+  }
+
+  .title{
+    &-2xl{
+      @apply my-0 leading-105 tracking-[-.02em] text-24 md:text-[6rem] font-lxb;
+    }
+    &-lg{
+      @apply my-0 leading-110 tracking-[-.03em] text-24 md:text-[2.4vw] 2xl:text-[2vw];
+    }
+    &-index{
+      @apply my-0 leading-110 text-16 md:text-[1.4vw] 2xl:text-[1.2vw];
+    }
+  }
+
+  .subtitle{
+    @apply uppercase text-[1.1rem];
+  }
+
+  /* Links */
+  a {
+    @apply no-underline text-current;
+  }
+
+  button {
+    @apply clean-btn;
+  }
+
+  /* Images */
+  figure {
+    @apply relative m-0;
+  }
+
+  /* Misc. */
+  /* hr {
+    @apply my-60 mx-0 border-0 h-1 bg-pageText;
+  } */
+  
+  ::-moz-selection {
+    @apply bg-pageText text-pageBG;
+  }
+  ::selection {
+    @apply bg-pageText text-pageBG;
+  }
+
+  .blink {
+    animation: blinker 1s linear infinite;
+  }
+  
+  @keyframes blinker {
+    0% {
+      opacity: 1;
+    }
+    49% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .5;
+    }
+    100% {
+      opacity: .5;
+    }
+  }
+}

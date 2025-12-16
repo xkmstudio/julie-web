@@ -1,0 +1,98 @@
+.drawer {
+    @apply fixed top-0 right-0 w-full h-screen z-[99991] pointer-events-none flex justify-end;
+    height: calc(var(--vh, 1vh) * 100);
+    will-change: opacity;
+    transition: visibility .2s .8s;
+  
+    &.is-active {
+      @apply visible pointer-events-auto;
+      transition-delay: 0s;
+    }
+  
+    &.is-updating {
+      @apply cursor-wait !important;
+    }
+  
+    &--backdrop {
+      @apply fixed inset-0 z-8 bg-black bg-opacity-70 pointer-events-none opacity-0 transition-opacity duration-300;
+  
+      &.is-active {
+        @apply pointer-events-auto opacity-100;
+      }
+    }
+  
+    &--inner {
+      @apply flex flex-col relative h-full w-full max-w-[72rem] bg-white;
+    }
+  
+    &--header {
+      @apply leading-100 flex items-end relative h-45 border-b border-black;
+  
+      &::after {
+        @apply absolute inset-x-0 bottom-0;
+        content: "";
+      }
+    }
+  
+    &--title {
+      @apply flex items-center mr-auto;
+    }
+  
+    &--content {
+      @apply flex-1 flex flex-col overflow-y-scroll p-10 md:p-15;
+    }
+
+    &--items{
+      @apply flex flex-col gap-20
+    }
+  
+    &--footer {
+      @apply relative;
+    }
+  
+    &--subtotal {
+      @apply flex justify-between;
+    }
+  
+    &--message {
+      @apply text-center text-12 mt-25;
+    }
+  
+    &--empty {
+      @apply my-auto text-center;
+    }
+
+    &-toggle{
+      &--count{
+        @apply text-center min-w-[1.8rem] md:min-w-[1.2rem] block;
+      }
+    }
+  }
+  
+  .drawer-item {
+    @apply flex relative;
+  
+    &--details {
+      @apply flex flex-col flex-grow;
+    }
+  
+    &--header {
+      @apply flex pt-10;
+  
+      .price {
+        @apply ml-auto;
+      }
+    }
+  
+    &--link {
+      @apply block text-current;
+    }
+  
+    &--title {
+      @apply flex-1 m-0;
+    }
+  
+    &--tools {
+      @apply flex justify-between items-baseline relative z-1 mt-auto;
+    }
+  }

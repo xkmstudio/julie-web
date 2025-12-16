@@ -1,0 +1,96 @@
+[data-marqy] {
+  position: relative;
+  /* overflow: hidden; */
+}
+
+[data-marqy-inner] {
+  display: flex;
+}
+
+[data-marqy][data-direction='right'] [data-marqy-inner] {
+  justify-content: flex-end;
+}
+
+[data-marqy-content] {
+  display: flex;
+  flex: 1 0 auto;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  will-change: transform;
+}
+
+[data-marqy][data-direction='left'] [data-marqy-content] {
+  animation-name: marqyL;
+}
+
+[data-marqy][data-direction='right'] [data-marqy-content] {
+  animation-name: marqyR;
+}
+
+[data-marqy][data-pause-on-hover]:hover [data-marqy-content] {
+  animation-play-state: paused;
+}
+
+[data-marqy-item] {
+  flex-grow: 0;
+}
+
+@keyframes marqyL {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes marqyR {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion) {
+  [data-marqy-inner] {
+    overflow-x: scroll;
+  }
+
+  [data-marqy-content] {
+    animation: none !important;
+  }
+}
+
+.marquee {
+  &--item {
+    @apply flex;
+  }
+
+  &--text {
+    @apply block px-5 relative;
+  }
+
+  &-section {
+    @apply relative;
+  }
+}
+
+.directory {
+  [data-marqy] {
+    position: absolute;
+  }
+
+  .marquee {
+    @apply relative;
+    &:after{
+      content: '';
+      @apply absolute right-0 top-0 md:bg-gradient-to-l from-white to-transparent h-full w-[5rem];
+    }
+    &--text {
+      @apply pl-0 pr-0;
+    }
+  }
+}

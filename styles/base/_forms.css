@@ -1,0 +1,125 @@
+.form {
+  @apply w-full;
+
+  &-title {
+    @apply mb-10 font-medium font-vm text-14;
+  }
+
+  &-fields {
+    @apply bg-black rounded-[.5rem] translate-x-0 flex gap-5;
+  }
+
+  .textRich {
+    @apply col-span-12;
+  }
+
+  &.signup,
+  &.standard {
+    input,
+    textarea {
+      @apply text-13;
+    }
+
+    .textRich {
+      @apply col-span-12;
+    }
+  }
+
+  input,
+  textarea {
+    @apply bg-transparent font-normal w-full p-15 text-16 text-white;
+
+    outline: none;
+
+    &.is-small {
+      @apply p-10;
+    }
+
+    &.is-light{
+      @apply text-white
+    }
+  }
+
+  textarea {
+    background: transparent;
+    resize: none;
+
+    @apply font-normal font-vm min-h-[15rem] w-full col-span-12;
+  }
+
+  &.newsletter{
+    input,
+    textarea {
+      @apply bg-transparent font-normal font-vm w-full p-0 text-13 ;
+
+      outline: none;
+
+      &.is-small {
+        @apply p-10;
+      }
+    }
+  }
+
+  .is-hidden {
+    @apply hidden;
+  }
+
+  .input {
+    &-email {
+      @apply pb-10;
+    }
+  }
+
+  .alert,
+  p.error {
+    @apply text-[#ff0000] text-10 block pointer-events-none;
+  }
+
+  &.is-slide {
+    label:not(.show) {
+      @apply hidden;
+    }
+
+    .form-fields {
+      @apply h-full min-h-[6rem];
+    }
+  }
+
+  &.is-standard {
+    .form {
+      &-fields {
+        @apply bg-transparent grid grid-cols-2 gap-x-10 gap-y-15 md:gap-y-25 py-10;
+
+        input,
+        textarea {
+          @apply col-span-2 font-normal font-vm w-full p-10 translate-x-0 gap-5;
+        }
+
+        .is-half {
+          @apply col-span-2 md:col-span-1;
+        }
+      }
+    }
+
+    .alert {
+      @apply text-[#ff0000] text-12 px-0 block pointer-events-none static bottom-0 left-0 mt-5;
+    }
+  }
+}
+
+.control {
+  @apply cursor-pointer;
+
+  &--label {
+    @apply cursor-pointer;
+  }
+}
+
+.modal-open {
+  overflow: hidden;
+
+  header {
+    display: none !important;
+    position: relative !important;
+  }
+}

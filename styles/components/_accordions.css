@@ -1,0 +1,64 @@
+.accordion-group {
+}
+
+.accordion {
+  &--toggle {
+    .accordion--title-wrapper {
+      @apply relative block leading-100 my-0;
+      padding-right: 35px;
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 35px;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(
+          to left,
+          var(--accordion-title-fade-color, #fff) 0%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      &.is-overflowing::after {
+        opacity: 1;
+      }
+    }
+
+    .accordion--title {
+      @apply inline-block relative;
+      white-space: nowrap;
+      --accordion-title-offset: 0px;
+      transform: translateX(0);
+      will-change: transform;
+    }
+
+    .accordion--title.is-overflowing {
+      animation: accordion-title-pan 6s ease-in-out infinite;
+      animation-delay: 0.8s;
+    }
+  }
+
+  &--inner{
+    @apply text-left;
+  }
+}
+
+@keyframes accordion-title-pan {
+  0%,
+  20% {
+    transform: translateX(0);
+  }
+  50%,
+  70% {
+    transform: translateX(calc(-1 * var(--accordion-title-offset, 0px)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,5 @@
+.icon{
+    &-pulse{
+        @apply w-[.6rem] h-[.6rem] rounded-full bg-black;
+    }
+}

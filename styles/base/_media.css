@@ -1,0 +1,134 @@
+.ar {
+  @apply relative overflow-hidden z-1;
+  
+  &.has-fill {
+    @apply absolute inset-0 z-1;
+  }
+
+  img {
+    @apply block absolute top-1/2 left-1/2 z-1 opacity-0;
+    width: calc(100% + 1px); /* helps with half pixel renderings */
+    height: calc(100% + 1px); /* helps with half pixel renderings */
+    transform: translate3d(-50%,-50%,0);
+    transition: opacity .4s linear;
+
+    &.is-loaded {
+      @apply opacity-100;
+    }
+  }
+
+  &--placeholder {
+    @apply absolute inset-0;
+    /* filter: grayscale(1); */
+    transform: scale(1.15);
+    transition: opacity 0s .4s linear;
+
+    &.is-loaded {
+      @apply opacity-0;
+    }
+
+    &::after {
+      @apply absolute inset-0 z-2;
+      backdrop-filter: blur(1rem);
+      content: "";
+    }
+
+    &.is-contain{
+      transform: scale(1);
+
+      img{
+        image-rendering: pixelated;
+      }
+
+      &::after {
+        backdrop-filter: none;
+      }
+    }
+    
+    img {
+      @apply opacity-100;
+    }
+  }
+}
+
+.media{
+  &-full{
+    @apply w-full h-full max-w-[80%] max-h-[80%];
+  }
+}
+
+/* .video-loop {
+  @apply absolute inset-0 bg-black;
+  
+  iframe {
+    @apply absolute top-1/2 left-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2 w-screen min-h-screen;
+  }
+} */
+
+/* Custom Video Player Playbar */
+.video-player {
+  @apply relative;
+  
+  video {
+    @apply w-full;
+  }
+  
+  .video-playbar {
+    @apply px-15 py-10 absolute bottom-0 left-0 right-0 transition-opacity duration-300 z-10 flex gap-15 text-white;
+    
+    &:before {
+      @apply absolute bottom-0 left-0 right-0 h-full w-full bg-black;
+      content: "";
+    }
+
+    &:after {
+      @apply absolute -translate-y-full top-0 left-0 h-[5rem] w-full bg-gradient-to-b from-transparent to-black;
+      content: "";
+      pointer-events: none;
+    }
+
+    .progress-bar {
+      @apply relative z-2 h-[.1rem] bg-[rgba(255,255,255,0.5)] text-white cursor-pointer flex-1;
+      
+      &:hover {
+        @apply h-[.5rem];
+      }
+      
+      .progress-fill {
+        @apply absolute top-0 left-0 h-full bg-white transition-all;
+      }
+    }
+    
+    .controls {
+      @apply flex items-center justify-between px-4 py-3 gap-4 text-white;
+      
+      .control-group {
+        @apply flex items-center gap-10;
+      }
+      
+      button {
+        @apply flex items-center justify-center text-white transition-opacity;
+        
+        &:hover:not(:disabled) {
+          @apply opacity-70;
+        }
+        
+        &:disabled {
+          @apply opacity-30 cursor-not-allowed;
+        }
+      }
+      
+      .time-display {
+        @apply text-white;
+      }
+      
+      .section-navigation {
+        @apply flex items-center gap-3 flex-1 justify-center;
+        
+        .section-title {
+          @apply text-white text-center min-w-[100px];
+        }
+      }
+    }
+  }
+}
