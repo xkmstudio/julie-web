@@ -6,12 +6,66 @@ import {
   Bag,
   Copy,
   ShoppingCart,
+  Book,
+  SmileyBlank,
 } from 'phosphor-react'
 
 export default (S) =>
   S.list()
     .title('Content')
     .items([
+      S.divider(),
+      S.listItem()
+        .title('Blog')
+        .id('blog')
+        .child(
+          S.list()
+            .title('Blog')
+            .items([
+              S.listItem()
+                .title('Blog')
+                .icon(Book)
+                .child(
+                  S.editor()
+                    .title('Blog')
+                    .schemaType('blog')
+                    .documentId('blog'),
+                ),
+              S.divider(),
+              S.listItem()
+                .title('Articles')
+                .icon(Bag)
+                .child(
+                  S.documentTypeList('article')
+                    .title('Articles')
+                    .child((documentId) =>
+                      S.document().documentId(documentId).schemaType('article'),
+                    ),
+                ),
+              S.divider(),
+              S.listItem()
+                .title('Tags')
+                .icon(Bag)
+                .child(
+                  S.documentTypeList('tag')
+                    .title('Tags')
+                    .child((documentId) =>
+                      S.document().documentId(documentId).schemaType('tag'),
+                    ),
+                ),
+              S.divider(),
+              S.listItem()
+                .title('Profiles')
+                .icon(SmileyBlank)
+                .child(
+                  S.documentTypeList('profile')
+                    .title('Profiles')
+                    .child((documentId) =>
+                      S.document().documentId(documentId).schemaType('profile'),
+                    ),
+                ),
+            ]),
+        ),
       S.divider(),
       S.listItem()
         .title('Shop')
@@ -125,16 +179,6 @@ export default (S) =>
                 ),
               S.divider(),
               S.listItem()
-                .title('Tutorials')
-                .icon(House)
-                .child(
-                  S.editor()
-                    .title('Tutorials')
-                    .schemaType('tutorialsPage')
-                    .documentId('tutorialsPage'),
-                ),
-              S.divider(),
-              S.listItem()
                 .title('Pages')
                 .icon(Bag)
                 .child(
@@ -189,7 +233,7 @@ export default (S) =>
                   S.editor()
                     .id('shopSettings')
                     .schemaType('shopSettings')
-                    .documentId('shopSettings')
+                    .documentId('shopSettings'),
                 )
                 .icon(Gear),
               S.divider(),

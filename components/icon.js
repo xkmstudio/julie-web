@@ -50,6 +50,37 @@ const getIcon = (name, color) => {
           fill={color}
         />
       )
+    case 'star':
+      // viewBox="0 0 19 19"
+      return (
+        <>
+          <path
+            d="M9.112 0.205658C9.21347 -0.0685524 9.60131 -0.0685528 9.70277 0.205658L11.6057 5.34824C11.9247 6.21035 12.6044 6.89007 13.4665 7.20907L18.6091 9.112C18.8833 9.21347 18.8833 9.60131 18.6091 9.70277L13.4665 11.6057C12.6044 11.9247 11.9247 12.6044 11.6057 13.4665L9.70278 18.6091C9.60131 18.8833 9.21347 18.8833 9.112 18.6091L7.20907 13.4665C6.89007 12.6044 6.21035 11.9247 5.34824 11.6057L0.205658 9.70278C-0.0685524 9.60131 -0.0685528 9.21347 0.205658 9.112L5.34824 7.20907C6.21035 6.89007 6.89007 6.21035 7.20907 5.34824L9.112 0.205658Z"
+            fill="url(#paint0_linear_2438_6401)"
+          />
+          <defs>
+            <linearGradient
+              id="paint0_linear_2438_6401"
+              x1="0"
+              y1="9.40739"
+              x2="18.8148"
+              y2="9.40739"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#ED0E61" />
+              <stop offset="1" stop-color="#FF3BAB" />
+            </linearGradient>
+          </defs>
+        </>
+      )
+    case 'Rating':
+      // viewBox="0 0 25 24"
+      return (
+        <path
+          d="M11.239 0.690984C11.5384 -0.230327 12.8418 -0.230328 13.1411 0.690982L15.3333 7.43769C15.4672 7.84972 15.8511 8.12868 16.2843 8.12868H23.3782C24.347 8.12868 24.7497 9.36829 23.966 9.93769L18.2269 14.1074C17.8764 14.362 17.7298 14.8134 17.8637 15.2254L20.0558 21.9721C20.3552 22.8934 19.3007 23.6596 18.517 23.0902L12.7779 18.9205C12.4274 18.6658 11.9528 18.6658 11.6023 18.9205L5.8632 23.0902C5.07949 23.6596 4.02501 22.8934 4.32436 21.9721L6.5165 15.2254C6.65037 14.8134 6.50371 14.362 6.15323 14.1074L0.414132 9.93769C-0.369582 9.36829 0.0331929 8.12868 1.00192 8.12868H8.09583C8.52905 8.12868 8.91301 7.84972 9.04688 7.43769L11.239 0.690984Z"
+          fill="currentColor"
+        />
+      )
     case 'Instagram':
       return (
         <path
@@ -109,37 +140,44 @@ const getIcon = (name, color) => {
           <path
             d="M6 0.53125L12 6.53125M12 6.53125L6 12.5312M12 6.53125H0"
             stroke="currentColor"
-            stroke-width="1.5"
+            strokeWidth="1.5"
           />
         </>
       )
     case 'Arrow Out':
-      // viewBox="0 0 10 10"
+      // viewBox="0 0 18 18"
       return (
         <>
-          <path d="M1 1H9V9" stroke="currentColor" fill="none" />
-          <path d="M9 1L1 9" stroke="currentColor" fill="none" />
+          <path
+            d="M0 1.5H16V17.5M15.9992 1.89844L1.19922 16.6984"
+            stroke="currentColor"
+            strokeWidth="3"
+            fill="none"
+          />
         </>
       )
     case 'Plus':
+      // viewBox="0 0 12 12"
       return (
         <>
-          <path d="M5 0.5V10.5" stroke="currentColor" />
-          <path d="M10 5.5L-4.76837e-07 5.5" stroke="currentColor" />
+          <path
+            d="M5.75 0.75V10.75M10.75 5.74219L0.75 5.74219"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            stroke-linecap="round"
+          />
         </>
       )
     case 'Minus':
       return <rect x="20" y="46" width="60" height="8" fill={color} />
     case 'Checkmark':
+      // viewBox="0 0 16 12"
       return (
         <path
+          d="M0.707031 4.70703L5.70703 9.70703L14.707 0.707031"
+          stroke="black"
+          strokeWidth="2"
           fill="none"
-          stroke={color}
-          strokeWidth="13"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeMiterlimit="10"
-          d="M12.1 52.1l24.4 24.4 53-53"
         />
       )
     case 'Chevron Down':
@@ -298,8 +336,8 @@ const getIcon = (name, color) => {
       return (
         <>
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M9.81699 0C12.8543 0.00027365 15.3168 2.95493 15.317 6.59961V6.60156H17.5162L19.5211 15.9541C20.1879 19.0666 17.8146 22.002 14.6314 22.002H5.00156C1.81837 22.002 -0.554018 19.0666 0.11289 15.9541L2.1168 6.60156H4.31699V6.59961C4.31717 2.95476 6.77953 0 9.81699 0ZM9.81699 2C8.21001 2 6.31716 3.70246 6.31699 6.59961V6.60156H13.317V6.59961C13.3168 3.70271 11.4239 2.0003 9.81699 2Z"
             fill="currentColor"
           />

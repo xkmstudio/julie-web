@@ -7,7 +7,7 @@ const Hero = ({ data = {} }) => {
   const { backgroundMedia, title, subtitle } = data
 
   return (
-    <div className="w-full h-screen max-h-[60rem] relative mb-15">
+    <div className="hero-bleed w-full h-screen max-h-[60rem] relative mb-15">
       <div className="w-full h-full absolute top-0 left-0 z-1">
         <div className="w-full h-full bg-black">
           <Media
@@ -28,7 +28,6 @@ const Hero = ({ data = {} }) => {
           {subtitle && (
             <div className="">
               <BlockContent blocks={subtitle} />
-              
             </div>
           )}
         </div>

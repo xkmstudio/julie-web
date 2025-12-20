@@ -45,7 +45,9 @@ export async function getProduct(slug, preview) {
             ${queries.modules},
           }
         },
-        "product": ${queries.product},
+        "product": {
+          ${queries.product}
+        },
         title,
         seo
       },
@@ -67,6 +69,7 @@ export async function getCollection(slug, preview) {
           ${queries.modules}
         },
         hero{${queries.mediaContent}},
+        products[]->{${queries.product}},
         title,
         seo
       },
@@ -99,6 +102,115 @@ export async function getPage(slug, preview) {
         },
         title,
         seo,
+      },
+      ${queries.site},
+    }
+    `
+
+  const data = await getSanityClient(preview).fetch(query)
+
+  return data
+}
+
+// Fetch a specific dynamic article with our global data
+export async function getArticle(slug, preview) {
+  const slugs = [`/${slug}`, slug, `/${slug}/`]
+
+  const query = `
+    {
+      "page": *[_type == "article" && slug.current in ${JSON.stringify(
+        slugs
+      )}] | order(date desc)[0]{
+        _type,
+        title,
+        subtitle,
+        'slug': slug.current,
+        date,
+        content[]{${queries.ptContent}},
+        image{${queries.assetMeta}},
+        'tag': tags[0]->{'slug': slug.current, title},
+        summary[]{${queries.ptContent}},
+        excerpt[]{${queries.ptContent}},
+        authors[]->{
+          title,
+          'slug': slug.current,
+          image{${queries.assetMeta}},
+          role,
+          bio[]{${queries.ptContent}},
+        },
+        reviewers[]->{
+          title,
+          'slug': slug.current,
+          image{${queries.assetMeta}},
+          role,
+          bio[]{${queries.ptContent}},
+        },
+        modules[]{
+          defined(_ref) => { ...@->content[0] {
+            ${queries.modules}
+          }},
+          !defined(_ref) => {
+            ${queries.modules},
+          }
+        },
+        related[]->{
+          title,
+          'slug': slug.current,
+          excerpt[]{${queries.ptContent}},
+          'image': image{${queries.assetMeta}},
+          tags[0]->{'slug': slug.current, title},
+          authors[]->{
+            title,
+            'slug': slug.current,
+            image{${queries.assetMeta}},
+            role,
+            bio[]{${queries.ptContent}},
+          },
+        },
+        seo
+      },
+      ${queries.site},
+    }
+    `
+
+  const data = await getSanityClient(preview).fetch(query)
+
+  return data
+}
+
+// Fetch a specific dynamic article with our global data
+export async function getProfile(slug, preview) {
+  const slugs = [`/${slug}`, slug, `/${slug}/`]
+
+  const query = `
+    {
+      "page": *[_type == "profile" && slug.current in ${JSON.stringify(
+        slugs
+      )}] | order(_updatedAt desc)[0]{
+        _type,
+        title,
+        'slug': slug.current,
+        image{${queries.assetMeta}},
+        role,
+        bio[]{${queries.ptContent}},
+        seo,
+        "articles": *[_type == "article" && references(^._id) && wasDeleted != true && isDraft != true] | order(date desc){
+          _type,
+          title,
+          subtitle,
+          'slug': slug.current,
+          date,
+          image{${queries.assetMeta}},
+          'tag': tags[0]->{'slug': slug.current, title},
+          excerpt[]{${queries.ptContent}},
+          authors[]->{
+            title,
+            'slug': slug.current,
+            image{${queries.assetMeta}},
+            role,
+            bio[]{${queries.ptContent}},
+          },
+        }
       },
       ${queries.site},
     }

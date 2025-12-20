@@ -25,7 +25,7 @@ export default {
       title: 'CTA',
       name: 'cta',
       type: 'array',
-      of: [{type: 'navPage'}, {type: 'navLink'}],
+      of: [{type: 'link'}],
       validation: Rule => Rule.max(1)
     },
   ],

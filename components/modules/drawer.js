@@ -41,15 +41,6 @@ const Drawer = ({ data = {} }) => {
           </div>
         </div>
       </div>
-      {cta && (
-        <div className="md:hidden w-full mt-60">
-          <Link
-            className="w-full h-full bg-black text-white flex items-center justify-center btn px-15"
-            link={cta}
-            hasArrow={true}
-          />
-        </div>
-      )}
     </section>
   )
 }

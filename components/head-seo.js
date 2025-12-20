@@ -71,36 +71,6 @@ const HeadSEO = ({ site = {}, page = {}, schema }) => {
       ) : null}
       <link rel="canonical" href={canonicalUrl} />
 
-      {/* Preload Fonts */}
-      <link
-        rel="preload"
-        href="/fonts/VictorMono-Regular.woff2"
-        as="font"
-        type="font/woff2"
-        crossOrigin="anonymous"
-      ></link>
-      <link
-        rel="preload"
-        href="/fonts/VictorMono-Medium.woff2"
-        as="font"
-        type="font/woff2"
-        crossOrigin="anonymous"
-      ></link>
-      <link
-        rel="preload"
-        href="/fonts/VictorMono-SemiBold.woff2"
-        as="font"
-        type="font/woff2"
-        crossOrigin="anonymous"
-      ></link>
-      <link
-        rel="preload"
-        href="/fonts/VictorMono-Bold.woff2"
-        as="font"
-        type="font/woff2"
-        crossOrigin="anonymous"
-      ></link>
-
       {/* <link rel="icon" href={siteFaviconLegacy} sizes="any" /> */}
       <link preload="true" rel="icon" type="image/svg+xml" href={siteFavicon} />
       <link preload="true" rel="mask-icon" href={siteFavicon} color="#000000" />

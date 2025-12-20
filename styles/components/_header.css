@@ -16,13 +16,11 @@ a[href="#content"].skip-link {
   }
 }
 
-header{
-  
-  &.shrink{
+.header{
+  @apply bg-pink transition-colors duration-300;
 
-    .btn-nav{
-      @apply text-black hover:text-black;
-    }
+  &.is-transparent{
+    @apply bg-transparent;
   }
 }
 

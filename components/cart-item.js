@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'next/router'
 
 import Media from '@components/media'
+import Photo from '@components/photo'
 import { ProductCounter, ProductPrice } from '@components/product'
 
 function CartItem({ item }) {
@@ -24,17 +25,29 @@ function CartItem({ item }) {
     updateItem(item.lineID, quantity)
   }
 
-  const cartImage = item.product.productThumbnail?.content
+  // Use variant cart image if available, otherwise fall back to product thumbnail
+  const cartImage = item.cartImage?.asset 
+    ? item.cartImage
+    : item.product.productThumbnail?.content
 
   return (
     <div className="cart-item">
         <div className="w-120 h-160 bg-cement relative overflow-hidden flex-shrink-0">
-          <Media
-            media={cartImage}
-            srcSizes={[400]}
-            layout="fill"
-            className="w-full h-full absolute top-0 left-0 object-cover"
-          />
+          {item.cartImage?.asset ? (
+            <Photo
+              photo={item.cartImage}
+              srcSizes={[400]}
+              layout="fill"
+              className="w-full h-full absolute top-0 left-0 object-cover"
+            />
+          ) : (
+            <Media
+              media={cartImage}
+              srcSizes={[400]}
+              layout="fill"
+              className="w-full h-full absolute top-0 left-0 object-cover"
+            />
+          )}
         </div>
       <div className="cart-item--details">
         <div className="cart-item--header">

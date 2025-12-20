@@ -37,7 +37,7 @@ const Photo = ({
     <div
       className={cx(
         className,
-        { 'w-full h-[auto]': layout === 'intrinsic' },
+        { 'w-full': layout === 'intrinsic' },
         { 'h-full w-[auto]': layout === 'height' },
         {
           'w-full md:h-full md:object-cover md:absolute md:left-0 md:top-0 h-[auto]':
@@ -55,7 +55,7 @@ const Photo = ({
         width={!fill ? width || photo.width : undefined}
         height={!fill ? height || photo.height : undefined}
         sizes={srcSizes}
-        placeholder="blur"
+        placeholder={photo.lqip ? "blur" : undefined}
         fill={fill}
         quality={80}
         priority={force}

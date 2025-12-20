@@ -9,32 +9,48 @@ import Icon from '@components/icon'
 import BlockContent from '@components/block-content'
 import Media from '@components/media'
 import CollectionContent from '@components/shop-collectionContent'
+import ProductCard from '@components/product/product-card'
 
 const CollectionPage = ({ data }) => {
   const { site, page } = data
 
-  const { title, hero, modules } = page
+  const { title, hero, modules, products } = page
+
+  console.log('products',products)
+
+  // return null
+
+  if (!products) return null
 
   return (
     <Layout site={site} page={page}>
-      <div className="w-full h-[60rem] relative">
-        <Media
-          media={hero?.content}
-          width={1600}
-          srcSizes={[800, 1000, 1200, 1600]}
-          sizes="100%"
-          layout={'fill'}
-          className={'absolute top-0 left-0 h-full w-full object-cover'}
-        />
-        <div className="absolute left-0 top-0 w-full h-full">
-          <div className="absolute left-0 bottom-0 w-full grid-standard">
-            <h1 className="col-span-6 bg-white text-black mix-blend-difference p-10 text-center">
-              {title}
-            </h1>
+      <div className={`${!hero ? ' mt-[calc(var(--headerHeight)+2.5rem)] md:mt-[calc(var(--headerHeight)+2rem)]' : ''}`}>
+        {hero && (
+          <div className="w-full h-[60rem] relative">
+            <Media
+              media={hero?.content}
+              width={1600}
+              srcSizes={[800, 1000, 1200, 1600]}
+              sizes="100%"
+              layout={'fill'}
+              className={'absolute top-0 left-0 h-full w-full object-cover'}
+            />
+            <div className="absolute left-0 top-0 w-full h-full">
+              <div className="absolute left-0 bottom-0 w-full grid-standard">
+                <h1 className="col-span-6 bg-white text-black mix-blend-difference p-10 text-center">
+                  {title}
+                </h1>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+        {products && <div className='w-full flex gap-25'>
+          {products?.map((product, index) => (
+            <ProductCard className='w-1/2' key={index} product={product} />
+          ))}
+        </div>}
+        <CollectionContent modules={modules} />
       </div>
-      <CollectionContent modules={modules} />
     </Layout>
   )
 }

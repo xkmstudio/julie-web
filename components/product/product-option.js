@@ -5,12 +5,9 @@ import { hasObject } from '@lib/helpers'
 
 import RadioGroup from '@components/radio-group'
 import RadioItem from '@components/radio-item'
-import Swatch from '@components/swatch'
 
 const ProductOption = ({
   option,
-  optionSettings,
-  swatches,
   optionsAmount,
   position,
   variants,
@@ -76,41 +73,19 @@ const ProductOption = ({
             }
           })
 
-
-          let currentSwatch = null
-          
-          if (
-            option.name.toLowerCase() == 'material' ||
-            option.name.toLowerCase() == 'color'
-          ) {
-            swatches?.forEach((swatch) => {
-              if (swatch.variants?.some((v) => v.title.includes(value))) {
-                currentSwatch = swatch.swatch
-              }
-            })
-          }
-
           return (
             <RadioItem
               key={key}
               title={`${option.name}: ${value}`}
               value={value}
               className={cx('pp-no-hide',{
-                'btn is-variant': !currentSwatch,
-                'option--swatch': currentSwatch,
+                'btn is-variant': true,
                 'is-active': isActive,
                 'is-unavailable': !hasVariants,
                 'is-soldout': !inStock && hasVariants && !isActive,
               })}
             >
-              {currentSwatch ? (
-                <Swatch
-                  label={`Select "${value}" ${option.name} option`}
-                  color={currentSwatch}
-                />
-              ) : (
-                <>{value}</>
-              )} 
+              {value}
             </RadioItem>
           )
         })}

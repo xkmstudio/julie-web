@@ -15,9 +15,7 @@ const ImageFull = ({ data = {}, isProject, isModal }) => {
     >
       {image && (
         <div
-          className={`w-full${
-            isProject ? ' h-full' : isModal ? ' w-full' : ''
-          }`}
+          className={`w-full`}
         >
           <Photo
             photo={image}

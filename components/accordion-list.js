@@ -1,30 +1,50 @@
 import React, { useState } from 'react'
 
+import { AnimatePresence, m } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+
 import Accordion from '@components/accordion'
 import BlockContent from '@components/block-content'
 
-const AccordionList = ({ items, type }) => {
+const AccordionList = ({ items, type, openFirst }) => {
   const [activeAccordion, setActiveAccordion] = useState(null)
 
   const onToggle = (id, status) => {
     setActiveAccordion(status ? id : null)
-  }  
+  }
+
+  const [scrollRef, inView] = useInView({ threshold: 0, triggerOnce: true })
 
   return (
-    <div className="accordion-group flex flex-col">
+    <div ref={scrollRef} className="accordion-group flex flex-col gap-5">
       {items.map((accordion, key) => {
         return (
-          <Accordion
+          <m.div
             key={key}
-            index={key}
-            type={type}
-            id={accordion.title}
-            isOpen={accordion.title === activeAccordion}
-            onToggle={onToggle}
-            title={accordion.title}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: inView ? 0 : 10, opacity: inView ? 1 : 0 }}
+            transition={{
+              duration: 1.5,
+              delay: .1 * key,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className=''
           >
-            <BlockContent blocks={accordion.content} />
-          </Accordion>
+            <Accordion
+              key={key}
+              type={type}
+              index={key}
+              id={accordion._key}
+              isOpen={accordion._key === activeAccordion}
+              onToggle={onToggle}
+              title={accordion.title}
+            >
+              <BlockContent
+                className="w-full max-w-[66rem]"
+                blocks={accordion.content}
+              />
+            </Accordion>
+          </m.div>
         )
       })}
     </div>

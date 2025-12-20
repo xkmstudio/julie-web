@@ -9,6 +9,7 @@
 @import "base/_page";
 @import "base/_icons";
 @import "base/_grid";
+@import "base/_gradients";
 
 @import "components/_accordions";
 @import "components/_drawers";
@@ -21,5 +22,5 @@
 @import "components/_carouselConstruction";
 @import "components/_carousels";
 @import "components/_counters";
-
-@import "_shame";
+@import "components/_article";
+@import "components/_testimonials";

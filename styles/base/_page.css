@@ -48,33 +48,7 @@ main{
 }
 
 section{
-  @apply py-[4.5rem] md:py-[6rem] bg-white relative z-2;
-  
-    &:not(.no-border){
-      @apply relative;
-
-      &:after{
-        content: '';
-        @apply absolute h-[calc(100%+18rem)] md:h-[calc(100%+24rem)] top-[-9rem] md:top-[-12rem] left-10 md:left-15 border-l border-black pointer-events-none;
-      }
-
-      &:first-of-type{
-        @apply pb-[4.5rem] md:pb-[6rem] pt-0;
-
-        &:after{
-          @apply absolute h-[calc(100%+9rem)] md:h-[calc(100%+12rem)] top-[0] left-10 md:left-15 border-l border-black pointer-events-none;
-        }
-        
-      }  
-      
-      &:last-of-type{
-        &:after{
-          @apply absolute h-[calc(100%+9rem)] md:h-[calc(100%+12rem)] bottom-[0] left-10 md:left-15 border-l border-black pointer-events-none;
-        }
-        
-      }
-  }
-
+  @apply my-[6rem] md:my-[9rem] bg-white relative z-2 w-full;
 
   &.drawer-container{
     &.is-standard{
@@ -116,4 +90,8 @@ section{
       }
     }
   }
+}
+
+.section-padding{
+  @apply px-15 md:px-25;
 }

@@ -1,0 +1,196 @@
+import React, { useState, useEffect } from 'react'
+import useEmblaCarousel from 'embla-carousel-react'
+import { useInView } from 'react-intersection-observer'
+import NextLink from 'next/link'
+import cx from 'classnames'
+
+import Photo from '@components/photo'
+import Icon from '@components/icon'
+import BlockContent from '@components/block-content'
+
+const FeaturedArticles = ({ data = {} }) => {
+  const { articles, useList, featuredCard } = data
+
+  if (!articles || articles.length === 0) return null
+
+  // List view (gradient style)
+  if (useList) {
+    return (
+      <section className="w-full section-padding grid grid-cols-12 gap-25">
+        <div
+          className={cx(`w-full mx-auto border-t-2 border-ash`, {
+            'col-span-8': featuredCard?.media?.content,
+            'col-span-12': !featuredCard?.media?.content,
+          })}
+        >
+          <div className="w-full flex flex-col gap-0">
+            {articles.map((article, key) => (
+              <NextLink
+                key={key}
+                href={`/blog/${article.slug}`}
+                className="group w-full flex items-end justify-between py-20 border-b-2 border-ash hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex-1 flex flex-col gap-10">
+                  <div className="font-lb">
+                    by {article.authors?.[0]?.title || 'Unknown'}
+                  </div>
+                  <h3 className="title-lg font-bold">{article.title}</h3>
+                </div>
+                <div className="flex flex-col items-end gap-15">
+                  <div className="text-ash transition-colors duration-300 group-hover:text-black">
+                    <Icon
+                      name="Arrow Out"
+                      viewBox="0 0 18 18"
+                      className="w-16 h-16"
+                    />
+                  </div>
+                  {article.tags?.[0] && (
+                    <div className="tag">{article.tags[0].title}</div>
+                  )}
+                </div>
+              </NextLink>
+            ))}
+          </div>
+        </div>
+        {featuredCard?.media?.content && (
+          <div className="col-span-4">
+            <div className="w-full bg-[#FF3BAB] rounded-[1.5rem] flex flex-col justify-between h-full gap-10 p-20">
+              <div className="w-full relative">
+                <Photo
+                  photo={featuredCard.logo}
+                  width={1200}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="(max-width: 768px) 83.333vw, 30vw"
+                  layout={'intrinsic'}
+                  className={'w-full'}
+                />
+              </div>
+              <div className="w-full flex-1 relative rounded-[1rem] overflow-hidden">
+                <Photo
+                  photo={featuredCard.media.content}
+                  width={1200}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="(max-width: 768px) 83.333vw, 30vw"
+                  layout={'fill'}
+                  className={'w-full h-full object-cover absolute top-0 left-0'}
+                />
+              </div>
+              <div className='w-full text-center flex flex-col gap-10'>
+                {featuredCard.title && (
+                  <div className="text-24 font-bold">
+                    <BlockContent blocks={featuredCard.description} />
+                  </div>
+                )}
+                {featuredCard.subtitle && (
+                  <div className="text-14 text-ash line-clamp-2">
+                    <BlockContent blocks={featuredCard.subtitle} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  // Carousel view
+  return <FeaturedArticlesCarousel articles={articles} />
+}
+
+const FeaturedArticlesCarousel = ({ articles }) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'start',
+    containScroll: 'trimSnaps',
+    dragFree: false,
+    skipSnaps: false,
+    loop: false,
+  })
+  const [triggerRef, triggerInView] = useInView({
+    threshold: 0,
+    triggerOnce: false,
+  })
+
+  useEffect(() => {
+    if (triggerInView && emblaApi) {
+      emblaApi.reInit()
+    }
+  }, [triggerInView, emblaApi])
+
+  return (
+    <section className="w-full pl-25 overflow-hidden" ref={triggerRef}>
+      <div ref={emblaRef} className="">
+        <div className="flex gap-25">
+          {articles.map((article, key) => {
+            const articleImage = article.useGradient
+              ? article.gradient
+              : article.image
+
+            return (
+              <div
+                key={key}
+                className="flex-[0_0_83.333%] md:flex-[0_0_40%] min-w-0"
+              >
+                <NextLink
+                  href={`/blog/${article.slug}`}
+                  className="block w-full"
+                >
+                  <div className="w-full pb-[66.6667%] relative rounded-[1rem] overflow-hidden">
+                    {articleImage ? (
+                      <Photo
+                        photo={articleImage}
+                        width={1200}
+                        srcSizes={[800, 1000, 1200, 1600]}
+                        sizes="(max-width: 768px) 83.333vw, 30vw"
+                        layout={'fill'}
+                        className={
+                          'w-full h-full object-cover absolute top-0 left-0'
+                        }
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-ash/10 absolute top-0 left-0 flex items-center justify-center">
+                        <span className="text-ash text-14">No image</span>
+                      </div>
+                    )}
+                    {article.tags?.[0] && (
+                      <div className="tag is-card absolute top-10 left-10">
+                        {article.tags[0].title}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-10 p-10 flex flex-col gap-10">
+                    <h2 className="w-full title-2xs">{article.title}</h2>
+                    {article.authors?.length > 0 && (
+                      <div className="flex items-center flex-wrap gap-10">
+                        <div className="flex justify-center items-center gap-3">
+                          <div>by</div>
+                          <div>
+                            <span className="underline font-lb">
+                              {article.authors[0].title}
+                            </span>
+                          </div>
+                        </div>
+                        {article.authors[0].role && (
+                          <div className="flex text-pink justify-center items-center gap-10 tag-role">
+                            {article.authors[0].role}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {article.subtitle && (
+                      <div className="text-14 text-ash line-clamp-2">
+                        {article.subtitle}
+                      </div>
+                    )}
+                  </div>
+                </NextLink>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default FeaturedArticles

@@ -1,0 +1,11 @@
+.article{
+    @apply w-full max-w-[65rem] mx-auto;
+
+    p{
+        @apply indent-30 text-18;
+    }
+
+    h3{
+        @apply text-center mb-20 mt-40;
+    }
+}

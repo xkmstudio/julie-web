@@ -1,109 +1,132 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 import useEmblaCarousel from 'embla-carousel-react'
 import cx from 'classnames'
 
 import Photo from '@components/photo'
+import Icon from '@components/icon'
 
-const ProductGallery = ({ slides, activeVariant, hasDrag, id }) => {
-  if (!slides || !activeVariant) return null
+const ProductGallery = ({ 
+  slides, 
+  hasArrows = false, 
+  hasCounter = false,
+  hasDrag = true,
+  className 
+}) => {
+  if (!slides || slides.length === 0) return null
 
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [scrollSnaps, setScrollSnaps] = useState([])
   const [isDragging, setIsDragging] = useState(false)
+  const [emblaRef, embla] = useEmblaCarousel(
+    {
+      loop: true,
+      draggable: hasDrag && slides.length > 1,
+      align: 'start',
+    },
+    []
+  )
 
-  const [sliderRef, slider] = useEmblaCarousel({
-    loop: true,
-    draggable: slides.length > 1,
-    align: 'start',
-  })
+  const scrollPrev = useCallback(() => {
+    if (embla) embla.scrollPrev()
+  }, [embla])
 
-  const scrollTo = useCallback((index) => slider?.scrollTo(index), [slider])
+  const scrollNext = useCallback(() => {
+    if (embla) embla.scrollNext()
+  }, [embla])
+
+  const scrollTo = useCallback(
+    (index) => {
+      if (embla) embla.scrollTo(index)
+    },
+    [embla]
+  )
 
   const onSelect = useCallback(() => {
-    setCurrentSlide(slider.selectedScrollSnap())
-  }, [slider])
+    if (!embla) return
+    setCurrentSlide(embla.selectedScrollSnap())
+  }, [embla])
 
   useEffect(() => {
-    if (slider) {
-      setScrollSnaps(slider.scrollSnapList())
-      slider.on('select', onSelect)
-      onSelect()
+    if (!embla) return
+
+    onSelect()
+    embla.on('select', onSelect)
+    embla.on('reInit', onSelect)
+
+    return () => {
+      embla.off('select', onSelect)
+      embla.off('reInit', onSelect)
     }
-  }, [slider])
+  }, [embla, onSelect])
+
+  const canScrollPrev = embla?.canScrollPrev() ?? false
+  const canScrollNext = embla?.canScrollNext() ?? false
 
   return (
-    <>
+    <div className={cx('product-gallery w-full h-full', className)}>
+      {/* Main Carousel */}
       <div
-        key={id}
+        className={cx(
+          'relative w-full h-full overflow-hidden rounded-[2rem]',
+          {
+            'cursor-[grab]': hasDrag && slides.length > 1 && !isDragging,
+            'cursor-[grabbing]': hasDrag && slides.length > 1 && isDragging,
+            'cursor-default': !hasDrag || slides.length <= 1,
+          }
+        )}
         onMouseDown={() => setIsDragging(true)}
         onMouseUp={() => setIsDragging(false)}
-        className={cx(
-          `carousel relative w-full is-product${
-            slides.length < 2
-              ? ' cursor-default'
-              : isDragging
-              ? ' cursor-[grabbing]'
-              : ' cursor-[grab]'
-          }`,
-          { 'has-drag': hasDrag },
-          { 'has-title': slides[0]?.title }
-        )}
+        onMouseLeave={() => setIsDragging(false)}
       >
-        <div
-          ref={sliderRef}
-          className="carousel--container w-full relative overflow-hidden rounded-[2rem]"
-        >
-          <div className="carousel--slides w-full relative flex items-center select-none">
-            {slides.map((slide, key) => (
+        <div ref={emblaRef} className="w-full h-full overflow-hidden">
+          <div className="flex w-full h-full">
+            {slides.map((slide, index) => (
               <div
-                className={`relative carousel-slide${
-                  slider?.selectedScrollSnap() == key ? ' is-active' : ''
-                }`}
-                key={key}
+                key={index}
+                className={cx(
+                  'w-full min-w-[100%] h-full'
+                )}
               >
-                <div className="w-full relative carousel-slide--inner">
-                  <div className="w-full pb-[100%] relative carousel-image overflow-hidden">
-                    <Photo
-                      key={key}
-                      width={1600}
-                      srcSizes={[600, 800, 1200, 1600]}
-                      sizes="100%"
-                      layout={'fill'}
-                      photo={slide}
-                      className="w-full h-full object-cover top-0 left-0 absolute"
-                    />
-                  </div>
+                <div className="w-full h-full relative">
+                  <Photo
+                    photo={slide}
+                    width={1600}
+                    srcSizes={[600, 800, 1200, 1600]}
+                    sizes="100vw"
+                    layout="fill"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Thumbnail Navigation */}
       {slides.length > 1 && (
-        <div className="grid grid-cols-6 gap-10 z-3 mt-20">
-          {slides.map((slide, key) => (
+        <div className="absolute z-2 bottom-0 pb-20 left-1/2 -translate-x-1/2 flex gap-10">
+          {slides.map((slide, index) => (
             <button
-              key={key}
-              onClick={() => scrollTo(key)}
-              className={`col-span-1 flex items-center justify-center group`}
+              key={index}
+              onClick={() => scrollTo(index)}
+              aria-label={`Go to image ${index + 1}`}
+              className={cx(
+                'bg-pink w-[1.5rem] h-[1.5rem] relative overflow-hidden rounded-[1rem]',
+                'transition-colors duration-300',
+                'hover:bg-pink',
+                {
+                  'bg-pink': currentSlide === index,
+                  'bg-[#EDD4E4]': currentSlide != index,
+                }
+              )}
             >
-              <div className='w-full pb-[100%] relative rounded-[1rem] overflow-hidden'>
-                <Photo
-                  key={key}
-                  width={1600}
-                  srcSizes={[600, 800, 1200, 1600]}
-                  sizes="100%"
-                  layout={'fill'}
-                  photo={slide}
-                  className="w-full h-full object-cover top-0 left-0 absolute"
-                />
-              </div>
+              
             </button>
           ))}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

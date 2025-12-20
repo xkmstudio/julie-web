@@ -51,18 +51,18 @@ export default {
       of: [
         { type: 'hero' },
         { type: 'productFeature' },
+        { type: 'productShop' },
         { type: 'marquee' },
+        { type: 'marqueeIcons' },
         { type: 'textBlock' },
         { type: 'mediaFeature' },
-        { type: 'mediaBleed' },
-        { type: 'tutorials' },
         { type: 'drawer' },
-        { type: 'indexList' },
-        { type: 'indexTutorials' },
         { type: 'productContents' },
         { type: 'productRelated' },
         { type: 'slideshow' },
         { type: 'generalText' },
+        { type: 'media3Up' },
+        { type: 'featuredArticles' },
       ]
     },
     {
@@ -70,15 +70,6 @@ export default {
       name: 'seo',
       type: 'seo'
     },
-    {
-      title: 'Preview Image',
-      name: 'previewImage',
-      type: 'image',
-      description: 'Preview image for 3D menu. Can be auto-generated via webhook when page is published.',
-      options: {
-        hotspot: true
-      }
-    }
   ],
   preview: {
     select: {

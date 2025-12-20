@@ -21,6 +21,17 @@ export const link = `
   }
 `
 
+// Construct our "gradient" GROQ
+export const gradient = `
+  _type,
+  _key,
+  type,
+  colorStops,
+  customAngle,
+  height,
+  padding
+`
+
 // Construct our "image meta" GROQ
 export const imageMeta = `
   "alt": coalesce(alt, asset->alt),
@@ -40,6 +51,7 @@ export const imageMeta = `
 export const assetMeta = `
   alt,
   'asset': image.asset,
+  "url": image.asset->url,
   "id": image.asset->assetId,
   "type": image.asset->mimeType,
   "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
@@ -118,6 +130,9 @@ export const ptContent = `
   },
   _type == "photo" => {
     ${imageMeta}
+  },
+  _type == "image" => {
+    ${imageMeta}
   }
 `
 
@@ -147,7 +162,6 @@ export const blocks = `
 
 // Construct our "product" GROQ
 export const product = `
-  {
     forceOutOfStock,
     preOrder,
     limitedEdition,
@@ -159,55 +173,33 @@ export const product = `
     title,
     subtitle,
     productType,
+    productTitle,
     price,
     comparePrice,
-    tutorial{
-      ${videoTutorialContent}
-    },
-    backgroundMedia{${mediaContent}},
     description[]{
       ${ptContent}
     },
-    sizingChart{
-      sizes[]{
-        label,
-        italianSize
-      },
-      measurements[]{
-        name,
-        unit,
-        values[]
-      }
-    },
-    "detailImages": {
-      "left": detailImages.left{${assetMeta}},
-      "front": detailImages.front{${assetMeta}},
-      "right": detailImages.right{${assetMeta}},
-      "back": detailImages.back{${assetMeta}}
-    },
-    materialsInfo[]{
-      ${ptContent}
-    },
-    shippingInfo[]{
-      ${ptContent}
-    },
-    returnsInfo[]{
-      ${ptContent}
-    },
-    toolkitProductID,
     buyLinks,
+    productThumbnail{${mediaContent}},
+    productBadge{${assetMeta}},
     message[]{
       ${ptContent}
     },
-    'galleries': productGalleries[]{
-      images[]{${assetMeta}},
-      variants[]->{variantID}
+    drawers[]{
+      _key,
+      _id,
+      title,
+      content[]{${ptContent}}
     },
-    'swatches': productSwatches[]{
-      color,
-      'swatch':swatch.image.asset->url,
-      variants[]->{title}
+    icons[]{
+      _type,
+      icon{${assetMeta}},
+      link
     },
+    additionalLinks[]{
+      ${link}
+    },
+    'defaultGallery': defaultGallery[]{${assetMeta}},
     "photos": {
       "main": galleryPhotos[]{
         forOption,
@@ -246,19 +238,13 @@ export const product = `
     "variants": *[_type == "productVariant" && productID == ^.productID && wasDeleted != true && isDraft != true]{
       "id": variantID,
       title,
-      swatch,
+      "galleryImages": galleryImages[]{${assetMeta}},
+      "cartImage": cartImage{${assetMeta}},
       price,
       comparePrice,
       inStock,
       lowStock,
       forceOutOfStock,
-      "photos": galleryPhotos[]{
-        forOption,
-        photos[]{
-          ${imageMeta}
-        }
-      },
-      cartImage{${assetMeta}},
       options[]{
         name,
         position,
@@ -271,8 +257,7 @@ export const product = `
       "slug": filter->slug.current,
       forOption
     },
-    preOrder,
-  }
+    preOrder
 `
 
 // Construct our content "modules" GROQ
@@ -294,16 +279,6 @@ export const modules = `
     subtitle[]{${ptContent}},
     backgroundMedia{${mediaContent}}
   },
-  _type == 'productConstruction' => {
-    _type,
-    _key,
-    title,
-    contents[]{
-      title,
-      media{${mediaContent}},
-      pattern{${assetMeta}}
-    }
-  },
   _type == 'productFeature' => {
     _type,
     _key,
@@ -314,6 +289,17 @@ export const modules = `
       'slug': slug.current,
       price,
     }
+  },
+  _type == 'productShop' => {
+    _type,
+    _key,
+    product->{
+      ${product}
+    },
+    title,
+    description,
+    values,
+    logos[]{${assetMeta}}
   },
   _type == 'productCollection' => {
     _type,
@@ -337,7 +323,8 @@ export const modules = `
   _type == 'mediaFeature' => {
     _type,
     _key,
-    sizeMobile,
+    title,
+    link[0]{${link}},
     media{${mediaContent}}
   },
   _type == 'mediaBleed' => {
@@ -346,20 +333,6 @@ export const modules = `
     size,
     sizeMobile,
     media{${mediaContentBleed}}
-  },
-  _type == 'tutorials' => {
-    _type,
-    _key,
-    title,
-    products[]->{
-      title,
-      "slug": slug.current,
-      subtitle,
-      productType,
-      tutorial{
-        ${videoTutorialContent}
-      }
-    }
   },
   _type == 'drawer' => {
     _type,
@@ -371,6 +344,69 @@ export const modules = `
     drawers[]{
       title,
       content[]{${ptContent}}
+    }
+  },
+  _type == 'testimonials' => {
+    _type,
+    _key,
+    testimonials[]{
+      _type,
+      _key,
+      name,
+      content[]{${ptContent}}
+    }
+  },
+  _type == 'featuredArticles' => {
+    _type,
+    _key,
+    useList,
+    featuredCard{
+      logo{${assetMeta}},
+      media{${mediaContent}},
+      title,
+      description,
+      link
+    },
+    articles[]->{
+      'slug': slug.current,
+      title,
+      subtitle,
+      image{${assetMeta}},
+      gradient{${assetMeta}},
+      useGradient,
+      authors[]->{
+        title,
+        'slug': slug.current,
+        image{${assetMeta}},
+        role,
+      },
+      tags[]->{'slug': slug.current, title},
+    }
+  },
+  _type == 'productFaqs' => {
+    _type,
+    _key,
+    title,
+    backgroundGradient{${gradient}},
+    sections[]{
+      _type,
+      _key,
+      title,
+      drawers[]{
+        _type,
+        _key,
+        title,
+        content[]{${ptContent}}
+      }
+    }
+  },
+  _type == 'productRelated' => {
+    _type,
+    _key,
+    title,
+    media{${mediaContent}},
+    product->{
+      ${product}
     }
   },
   _type == 'indexList' => {
@@ -407,18 +443,6 @@ export const modules = `
       media{${mediaContent}}
     }
   },
-  _type == 'productRelated' => {
-    _type,
-    _key,
-    title,
-    products[]->{
-      title,
-      subtitle,
-      productThumbnail{${mediaContent}},
-      'slug': slug.current,
-      price,
-    }
-  },
   _type == 'slideshow' => {
     _type,
     _key,
@@ -428,9 +452,46 @@ export const modules = `
       caption
     }
   },
+  _type == 'marqueeIcons' => {
+    _type,
+    _key,
+    title,
+    marquee,
+    items[]{
+      _type,
+     icon{${assetMeta}},
+     link
+    },
+    speed,
+    reverse,
+    pausable
+  },
+  _type == 'media3Up' => {
+    _type,
+    _key,
+    title,
+    subtitle,
+    background,
+    items[]{
+      _type,
+      media{${mediaContent}},
+      title,
+      subtitle
+    }
+  },
   _type == 'marquee' => {
     _type,
     _key,
+    title,
+    icon{${assetMeta}},
+    link->{
+      _type,
+      'url': slug.current,
+      title,
+      "page": page->{
+        ${page}
+      }
+    },
     items[]{
       _type == 'simple' => {
         _type,

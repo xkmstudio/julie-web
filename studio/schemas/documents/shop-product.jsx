@@ -49,14 +49,6 @@ export default {
         'Keep this as short as possible. This will be included in the cart under the product title.'
     },
     {
-      title: 'Toolkit Product Variant ID',
-      name: 'toolkitProductID',
-      type: 'number',
-      group: 'settings',
-      description:
-        'The variant ID of the optional toolkit product. If set, customers can add/remove the toolkit from their cart. Leave empty to disable the toolkit option.'
-    },
-    {
       title: 'Display Title',
       name: 'title',
       type: 'string',
@@ -70,20 +62,6 @@ export default {
       group: 'content'
     },
     {
-      title: 'Product Type',
-      name: 'productType',
-      type: 'string',
-      description: 'e.g., Upper Garment, Lower Garment',
-      group: 'content'
-    },
-    {
-      title: 'Tutorial',
-      name: 'tutorial',
-      type: 'videoTutorial',
-      description: 'Video tutorial for this product with sections',
-      group: 'content'
-    },
-    {
       title: 'Primary Description',
       description: 'This description is shown on the PDP.',
       name: 'description',
@@ -91,123 +69,72 @@ export default {
       group: 'content',
     },
     {
-      title: 'Sizing Chart',
-      description: 'Structured sizing chart data for the product details drawer.',
-      name: 'sizingChart',
-      type: 'object',
-      group: 'details',
-      fields: [
+      title: 'Info Drawers',
+      description: 'This description is shown on the PDP.',
+      name: 'drawers',
+      type: 'array',
+      of: [
         {
-          title: 'Sizes',
-          name: 'sizes',
-          type: 'array',
-          of: [
+          title: 'Drawer',
+          name: 'drawer',
+          type: 'object',
+          fields: [
             {
-              type: 'object',
-              fields: [
-                {
-                  title: 'Size Label',
-                  name: 'label',
-                  type: 'string',
-                  description: 'e.g., XS, S, M, L, XL',
-                },
-                {
-                  title: 'Italian Size',
-                  name: 'italianSize',
-                  type: 'number',
-                  description: 'e.g., 36, 38, 40, 42, 44',
-                },
-              ],
+              title: 'Title',
+              name: 'title',
+              type: 'string',
             },
-          ],
-        },
-        {
-          title: 'Measurements',
-          name: 'measurements',
-          type: 'array',
-          of: [
             {
-              type: 'object',
-              fields: [
-                {
-                  title: 'Measurement Name',
-                  name: 'name',
-                  type: 'string',
-                  description: 'e.g., CHEST, WAIST, LENGTH, SHOULDER',
-                },
-                {
-                  title: 'Unit',
-                  name: 'unit',
-                  type: 'string',
-                  options: {
-                    list: [
-                      { title: 'Centimeters', value: 'cm' },
-                      { title: 'Inches', value: 'in' },
-                    ],
-                  },
-                  initialValue: 'cm',
-                },
-                {
-                  title: 'Values',
-                  name: 'values',
-                  type: 'array',
-                  of: [{ type: 'number' }],
-                  description: 'Values for each size in the same order as sizes array',
-                },
-              ],
+              title: 'Content',
+              name: 'content',
+              type: 'simplePortableText',
             },
-          ],
-        },
+          ]
+        }
       ],
+      group: 'content',
     },
     {
-      title: 'Product Detail Images',
-      description: 'Images showing different views of the product (LEFT, FRONT, RIGHT, BACK)',
-      name: 'detailImages',
-      type: 'object',
-      group: 'details',
-      fields: [
+      title: 'Additional Links',
+      description: 'These links will display as buttons below the add to cart button',
+      name: 'additionalLinks',
+      type: 'array',
+      of: [{ type: 'link' }],
+      group: 'content',
+    },
+    {
+      title: 'Icons',
+      description: 'These icons will display below the product description',
+      name: 'icons',
+      type: 'array',
+      of: [
         {
-          title: 'Left View',
-          name: 'left',
-          type: 'asset',
-        },
-        {
-          title: 'Front View',
-          name: 'front',
-          type: 'asset',
-        },
-        {
-          title: 'Right View',
-          name: 'right',
-          type: 'asset',
-        },
-        {
-          title: 'Back View',
-          name: 'back',
-          type: 'asset',
-        },
+          type: 'object',
+          fields: [
+            {
+              title: 'Icon',
+              name: 'icon',
+              type: 'asset',
+              validation: Rule => Rule.required()
+            },
+            {
+              title: 'Link',
+              name: 'link',
+              type: 'url',
+              description: '(optional)'
+            }
+          ]
+        }
       ],
+      group: 'content',
     },
+
     {
-      title: 'Materials Information',
-      description: 'Materials details shown in the product details drawer.',
-      name: 'materialsInfo',
-      type: 'simplePortableText',
-      group: 'details',
-    },
-    {
-      title: 'Shipping Information',
-      description: 'Shipping details shown in the product details drawer.',
-      name: 'shippingInfo',
-      type: 'simplePortableText',
-      group: 'details',
-    },
-    {
-      title: 'Returns Information',
-      description: 'Returns policy details shown in the product details drawer.',
-      name: 'returnsInfo',
-      type: 'simplePortableText',
+      title: 'Product Badge',
+      description:
+        'Icon that is overlaid on the product thumbnail.',
+      name: 'productBadge',
+      type: 'asset',
       group: 'details',
     },
     {
@@ -219,181 +146,16 @@ export default {
       group: 'details',
     },
     {
-      title: 'Product Galleries',
-      name: 'productGalleries',
+      title: 'Default Gallery Images',
+      name: 'defaultGallery',
       type: 'array',
-      of: [
-        {
-          title: 'Gallery',
-          name: 'gallery',
-          type: 'object',
-          fields: [
-            {
-              title: 'Images',
-              name: 'images',
-              type: 'array',
-              of: [{ type: 'asset' }],
-              options: {
-                layout: 'grid'
-              }
-            },
-            {
-              title: 'Associated Variants',
-              name: 'variants',
-              type: 'array',
-              of: [
-                {
-                  type: 'reference',
-                  to: [{ type: 'productVariant' }],
-                  options: {
-                    filter: ({ document }) => {
-                      return {
-                        filter: 'productID == $productID',
-                        params: { productID: document?.productID }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          preview: {
-            select: {
-              image: 'images.0.image',
-              variants: 'variants'
-            },
-            prepare({ image, variants }) {
-              return {
-                title: 'Product Gallery',
-                media: image,
-                subtitle: variants
-                  ? `${variants.length} ${variants.length > 1 ? 'Variants' : 'Variant'
-                  }`
-                  : null
-              }
-            }
-          }
-        }
-      ],
+      of: [{ type: 'asset' }],
       description:
-        'Define a Gallery for your product, or for a subset of variants',
+        'Default gallery images used when variants don\'t have their own gallery. If variants have galleries, those will be used instead.',
       group: 'photos',
-      hidden: ({ parent }) => parent?.limitedEdition
-    },
-    {
-      title: 'Cart Images',
-      name: 'cartImages',
-      type: 'array',
-      of: [
-        {
-          title: 'Images',
-          name: 'images',
-          type: 'object',
-          fields: [
-            {
-              title: 'Image',
-              name: 'image',
-              type: 'asset'
-            },
-            {
-              title: 'Associated Variants',
-              name: 'variants',
-              type: 'array',
-              of: [
-                {
-                  type: 'reference',
-                  to: [{ type: 'productVariant' }],
-                  options: {
-                    filter: ({ document }) => {
-                      return {
-                        filter: 'productID == $productID',
-                        params: { productID: document?.productID }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          preview: {
-            select: {
-              image: 'image.image',
-              variants: 'variants'
-            },
-            prepare({ image, variants }) {
-              return {
-                title: 'Cart Images',
-                media: image,
-                subtitle: variants
-                  ? `${variants.length} ${variants.length > 1 ? 'Variants' : 'Variant'
-                  }`
-                  : null
-              }
-            }
-          }
-        }
-      ],
-      description:
-        'Define a Gallery for your product, or for a subset of variants',
-      group: 'photos'
-    },
-    {
-      title: 'Product Swatches',
-      name: 'productSwatches',
-      type: 'array',
-      of: [
-        {
-          title: 'Swatches',
-          name: 'swatches',
-          type: 'object',
-          fields: [
-            {
-              title: 'Color',
-              name: 'color',
-              type: 'color',
-              hidden: true
-            },
-            {
-              title: 'Swatch',
-              name: 'swatch',
-              type: 'asset'
-            },
-            {
-              title: 'Associated Variants',
-              name: 'variants',
-              type: 'array',
-              of: [
-                {
-                  type: 'reference',
-                  to: [{ type: 'productVariant' }],
-                  options: {
-                    filter: ({ document }) => {
-                      return {
-                        filter: 'productID == $productID',
-                        params: { productID: document?.productID }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          preview: {
-            select: {
-              image: 'swatch.image',
-              variants: 'variants'
-            },
-            prepare({ image, variants }) {
-              return {
-                title: 'Swatch',
-                media: image
-              }
-            }
-          }
-        }
-      ],
-      description: 'Define swatches for individual variants',
-      group: 'settings'
+      options: {
+        layout: 'grid'
+      }
     },
     {
       title: 'Featured Thumbnail',
@@ -413,6 +175,8 @@ export default {
         { type: 'productConstruction' },
         { type: 'productContents' },
         { type: 'productRelated' },
+        { type: 'productFaqs' },
+        { type: 'testimonials' },
         { type: 'slideshow' },
         { type: 'textBlock' },
         { type: 'drawer' },
@@ -420,7 +184,6 @@ export default {
         { type: 'indexTutorials' },
         { type: 'mediaFeature' },
         { type: 'mediaBleed' },
-        { type: 'tutorials' },
       ],
       group: 'content'
     },
@@ -429,34 +192,6 @@ export default {
       name: 'seo',
       type: 'seo',
       group: 'settings'
-    },
-    {
-      title: 'Preview Image',
-      name: 'previewImage',
-      type: 'image',
-      description: 'Preview image for 3D menu. Can be auto-generated via webhook when product is published.',
-      options: {
-        hotspot: true
-      },
-      hidden: true,
-      group: 'settings'
-    },
-    {
-      title: '3D Model (GLB/GLTF)',
-      name: 'model3D',
-      type: 'file',
-      description: 'Upload a GLB or GLTF 3D model file. This will be displayed in an interactive 3D viewer on the product page.',
-      options: {
-        accept: '.glb,.gltf'
-      },
-      group: 'content'
-    },
-    {
-      title: 'Background Media',
-      name: 'backgroundMedia',
-      type: 'media',
-      description: 'Media which displays behind hero content.',
-      group: 'content'
     },
     {
       title: 'Product Title',
@@ -549,21 +284,7 @@ export default {
       group: 'shopify'
     }
   ],
-  initialValue: {
-    useGallery: 'false',
-    galleryPhotos: {
-      _type: 'productGallery',
-      forOption: ''
-    },
-    listingPhotos: {
-      _type: 'productListingPhotos',
-      forOption: ''
-    },
-    cartPhotos: {
-      _type: 'productCartPhotos',
-      forOption: ''
-    }
-  },
+  initialValue: {},
   preview: {
     select: {
       store: 'store',
@@ -572,10 +293,7 @@ export default {
       title: 'title',
       productTitle: 'productTitle',
       slug: 'slug',
-      cartImages: 'cartImages',
-      listingPhoto: 'listingPhoto',
-      thumbnailFeature: 'thumbnailFeature.image',
-      thumbnailSecondary: 'thumbnailSecondary.image'
+      thumbnailFeature: 'thumbnailFeature.image'
     },
     prepare({
       store,

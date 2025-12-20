@@ -1,19 +1,19 @@
 import React from 'react'
-import cx from 'classnames'
-import BlockContent from '@sanity/block-content-to-react'
 
-import { blockSerializers } from '@components/block-serializers'
+import { portableRichText } from '@components/block-serializers'
+import { PortableText } from '@portabletext/react'
 
-const Content = ({ blocks, className }) => {
+const Content = ({ blocks }) => {
   if (!blocks) return null
 
   return (
-    <BlockContent
-      renderContainerOnSingleChild
-      className={cx('rc', className)}
-      blocks={blocks}
-      serializers={blockSerializers}
-    />
+    <div className="rc">
+      <PortableText
+        className="rc"
+        value={blocks}
+        components={portableRichText}
+      />
+    </div>
   )
 }
 

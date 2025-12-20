@@ -1,65 +1,67 @@
-import React, { useEffect, useState } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
+import React, { useState, useEffect } from 'react'
 
 import ProductCard from '@components/product/product-card'
+import ProductCarousel from '@components/product-carousel'
 import { useWindowSize } from '@lib/helpers'
 
 const MOBILE_BREAKPOINT = 950
+const DESKTOP_CAROUSEL_THRESHOLD = 3
 
 const ProductFeature = ({ data }) => {
   const { products } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
-  const showCarousel = isClient && isMobile
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    containScroll: 'trimSnaps',
-    dragFree: false,
-    skipSnaps: false,
-    loop: true,
-  })
+  const isDesktop = width >= MOBILE_BREAKPOINT
+  const productCount = products?.length || 0
+
+  // Show carousel on mobile, or on desktop if more than 3 products
+  const showCarousel = isClient && (isMobile || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  useEffect(() => {
-    if (showCarousel) {
-      emblaApi?.reInit()
-    }
-  }, [emblaApi, showCarousel, products?.length])
+  // Desktop: use carousel if more than 3 products, otherwise use flex
+  // Mobile: always use carousel
+  if (showCarousel) {
+    const slideClassName = isMobile 
+      ? 'w-[83.333%] min-w-[83.333%] ml-10'
+      : 'min-w-[30%] ml-10'
 
-  return (
-    <section className="px-10 md:px-15 overflow-hidden">
-      <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
-
-      {showCarousel ? (
-        <div ref={emblaRef} className="w-full relative">
-          <div className="flex">
-            {products?.map((product, key) => (
-              <div key={key} className="w-[83.333%] min-w-[83.333%] ml-10">
-                <ProductCard
-                  product={product}
-                  index={key}
-                  className="block w-full"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="w-full h-full grid-standard relative z-2">
-          {products?.map((product, key) => (
+    return (
+      <section className="px-10 md:px-15 overflow-hidden section-padding">
+        <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
+        <ProductCarousel
+          items={products}
+          renderSlide={(product, index) => (
             <ProductCard
-              key={key}
-              index={key}
-              className="col-span-3"
               product={product}
+              index={index}
+              className="block w-full"
             />
-          ))}
-        </div>
-      )}
+          )}
+          slideClassName={slideClassName}
+          enabled={showCarousel}
+        />
+      </section>
+    )
+  }
+
+  // Desktop with 3 or fewer products: use flex layout
+  return (
+    <section className="px-10 md:px-15 overflow-hidden section-padding">
+      <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
+      <div className="w-full h-full flex gap-25 relative z-2">
+        {products?.map((product, key) => (
+          <ProductCard
+            key={key}
+            index={key}
+            className="flex-1"
+            product={product}
+          />
+        ))}
+      </div>
     </section>
   )
 }

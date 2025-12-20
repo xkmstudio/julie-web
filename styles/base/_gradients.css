@@ -1,0 +1,12 @@
+.sky-gradient {
+  background: linear-gradient(to bottom, #019AD7 0%, #ADF4FF 45%, #FEFFD8 74%, #FFFFFF 100%);
+}
+
+.julie-gradient{
+  background: linear-gradient(to top, #ED0E61 0%, #FF3BAB 100%);
+} 
+
+.border-gradient{
+  border: 1px solid;
+  border-image-source: linear-gradient(to right, #ED0E61 0%, #FF3BAB 100%)
+}

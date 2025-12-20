@@ -66,31 +66,52 @@
 
 .marquee {
   &--item {
-    @apply flex;
+    @apply flex ml-50 gap-50;
   }
 
   &--text {
-    @apply block px-5 relative;
+    @apply block px-5 relative text-60 italic font-lxb;
+
+    div{
+      &:first-child{
+        @apply absolute z-1 blur-[10px] text-pink;
+      }
+      &:nth-child(2){
+        @apply absolute z-2 blur-[10px] text-pink;
+      }
+      &:nth-child(3){
+        @apply absolute z-3 blur-[10px] text-pink;
+      }
+      &:last-child{
+        @apply relative z-4 text-white;
+
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: #ED0F6A;
+        -webkit-text-stroke: 1px #ED0F6A;
+      }
+    }
   }
 
   &-section {
     @apply relative;
-  }
-}
 
-.directory {
-  [data-marqy] {
-    position: absolute;
-  }
-
-  .marquee {
-    @apply relative;
-    &:after{
+    &::before{
       content: '';
-      @apply absolute right-0 top-0 md:bg-gradient-to-l from-white to-transparent h-full w-[5rem];
+      @apply absolute z-5 bg-gradient-to-r from-white to-transparent h-[calc(100%+6rem)] w-[30rem] top-0 left-0;
     }
-    &--text {
-      @apply pl-0 pr-0;
+
+    &::after{
+      content: '';
+      @apply absolute z-5 bg-gradient-to-l from-white to-transparent h-[calc(100%+6rem)] w-[30rem] top-0 right-0;
+    }
+  }
+
+  &-link {
+    @apply absolute p-20 text-white text-20 font-lb w-[20rem] bg-white top-0 left-0 z-7 h-full flex items-center justify-center text-pink;
+
+    &::before{
+      content: '';
+      @apply absolute z-5 bg-gradient-to-r from-white to-transparent h-full w-[30rem] top-0 right-0 translate-x-full;
     }
   }
 }

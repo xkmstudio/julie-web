@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 const Marquee = dynamic(() => import('./marquee'))
 const Hero = dynamic(() => import('./hero'))
 const ProductFeature = dynamic(() => import('./productFeature'))
+const ProductShop = dynamic(() => import('./productShop'))
 const TextBlock = dynamic(() => import('./textBlock'))
 const MediaFeature = dynamic(() => import('./mediaFeature'))
 const MediaBleed = dynamic(() => import('./mediaBleed'))
@@ -17,17 +18,26 @@ const Slideshow = dynamic(() => import('./slideshow'))
 const ProductConstruction = dynamic(() => import('./productConstruction'))
 const ProductCollection = dynamic(() => import('./productCollection'))
 const GeneralText = dynamic(() => import('./generalText'))
+const MarqueeIcons = dynamic(() => import('./marqueeIcons'))
+const Media3Up = dynamic(() => import('./media3Up'))
+const ProductFaqs = dynamic(() => import('./productFaqs'))
+const Testimonials = dynamic(() => import('./testimonials'))
+const FeaturedArticles = dynamic(() => import('./featuredArticles'))
 
-export const Module = ({ module }) => {
+export const Module = ({ module, product, activeVariant, onVariantChange }) => {
   const type = module._type
 
   switch (type) {
     case 'marquee':
       return <Marquee data={module} />
+    case 'marqueeIcons':
+      return <MarqueeIcons data={module} />
     case 'hero':
       return <Hero data={module} />
     case 'productFeature':
       return <ProductFeature data={module} />
+    case 'productShop':
+      return <ProductShop data={module} product={product} activeVariant={activeVariant} onVariantChange={onVariantChange} />
     case 'textBlock':
       return <TextBlock data={module} />
     case 'mediaFeature':
@@ -54,6 +64,14 @@ export const Module = ({ module }) => {
       return <ProductCollection data={module} />
     case 'generalText':
       return <GeneralText data={module} />
+    case 'media3Up':
+      return <Media3Up data={module} />
+    case 'productFaqs':
+      return <ProductFaqs data={module} />
+    case 'testimonials':
+      return <Testimonials data={module} />
+    case 'featuredArticles':
+      return <FeaturedArticles data={module} />
     default:
       return null
   }

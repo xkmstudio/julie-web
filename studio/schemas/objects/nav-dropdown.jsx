@@ -16,7 +16,7 @@ export default {
       title: 'Dropdown Items',
       name: 'dropdownItems',
       type: 'array',
-      of: [{ type: 'navPage' }, { type: 'navLink' }],
+      of: [{ type: 'link' }],
       hidden: ({ parent }) => parent.isLocation
     },
   ]

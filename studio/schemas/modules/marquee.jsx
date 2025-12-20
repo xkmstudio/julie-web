@@ -3,7 +3,7 @@ import { Circle, Infinity } from 'phosphor-react'
 import customImage from '../../lib/custom-image'
 
 export default {
-  title: 'Marquee',
+  title: 'Text Marquee',
   name: 'marquee',
   type: 'object',
   icon: Infinity,
@@ -15,6 +15,25 @@ export default {
     }
   ],
   fields: [
+    {
+      title: 'Title',
+      name: 'title',
+      type: 'string',
+      description: '(optional)'
+    },
+    {
+      name: 'link',
+      title: 'Link',
+      type: 'reference',
+      to: [{ type: 'page' }],
+      description: '(optional)'
+    },
+    {
+      name: 'icon',
+      title: 'Icon Overlay',
+      type: 'asset',
+      description: '(optional)'
+    },
     {
       title: 'Items',
       name: 'items',
@@ -71,7 +90,7 @@ export default {
       type: 'boolean',
       initialValue: false,
       fieldset: 'options'
-    }
+    },    
   ],
   preview: {
     select: {

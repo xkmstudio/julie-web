@@ -12,20 +12,19 @@ export default {
             type: 'media'
         },
         {
-            title: 'Mobile Sizing',
-            name: 'sizeMobile',
+            title: 'Title',
+            name: 'title',
             type: 'string',
-            options: {
-                list: [
-                    { title: 'Intrinsic', value: 'intrinsic' },
-                    { title: 'Portrait', value: 'portrait' },
-                    { title: 'Square', value: 'square' },
-                ],
-                layout: 'radio',
-                direction: 'horizontal'
-            },
-            initialValue: 'intrinsic'
+            description: '(Optional)',
         },
+        {
+            title: 'Link',
+            name: 'link',
+            type: 'array',
+            description: '(Optional)',
+            of: [{ type: 'link' }],
+            validation: Rule => Rule.max(1)
+        }
     ],
     preview: {
         select: {

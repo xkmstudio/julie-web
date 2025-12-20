@@ -67,7 +67,7 @@ const ProductAdd = ({
             })}
             onClick={handleClick}
           >
-            <div className="flex items-center gap-5 blink group-hover:opacity-100">
+            <div className="flex items-center gap-5 group-hover:opacity-100">
               {isAvailable
                 ? isAdding
                   ? 'Adding...'

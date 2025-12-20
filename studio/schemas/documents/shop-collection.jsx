@@ -37,19 +37,29 @@ export default {
       group: 'content'
     },
     {
+      title: 'Products',
+      name: 'products',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'product' }] }],
+      validation: Rule => Rule.required().min(1),
+      group: 'content'
+    },
+    {
       title: 'Page Content',
       name: 'contentModules',
       type: 'array',
       of: [
+        { type: 'hero' },
+        { type: 'marquee' },
+        { type: 'marqueeIcons' },
         { type: 'productCollection' },
         { type: 'slideshow' },
         { type: 'textBlock' },
         { type: 'drawer' },
-        { type: 'indexList' },
-        { type: 'indexTutorials' },
         { type: 'mediaFeature' },
         { type: 'mediaBleed' },
-        { type: 'tutorials' },
+        { type: 'productFeature' },
+        { type: 'productShop' },
       ],
       group: 'content'
     },
@@ -59,16 +69,6 @@ export default {
       type: 'seo',
       group: 'settings'
     },
-    {
-      title: 'Preview Image',
-      name: 'previewImage',
-      type: 'image',
-      description: 'Preview image for 3D menu. Can be auto-generated via webhook when collection is published.',
-      options: {
-        hotspot: true
-      },
-      group: 'settings'
-    }
   ],
   preview: {
     select: {

@@ -4,7 +4,11 @@ button{
 
 .btn{
 
-  @apply flex items-center justify-between gap-10 uppercase font-medium font-vm h-30;
+  @apply flex items-center justify-center text-center rounded-full border border-pink bg-pink text-white font-lb lowercase flex-shrink-0 px-20 py-10;
+
+  &.is-outline{
+    @apply bg-transparent text-pink;
+  }
   
   &-text{
     @apply uppercase text-16 font-lb
@@ -25,15 +29,10 @@ button{
   }
 
   &.is-add,
-  &.is-checkout{
-    @apply w-full bg-white font-medium font-vm text-black h-[14rem] pt-20 px-10 md:px-15 mix-blend-difference flex items-start justify-center text-13;
+  &.is-checkout,
+  &.is-large{
+    @apply py-12 px-20 text-20;
 
-    &:hover{
-      .blink{
-       opacity: 1!important;
-       animation: none!important;
-      }
-    }
   }
 
   &-nav,
@@ -130,15 +129,15 @@ button{
 }
 
 .tag{
-  @apply text-12 text-white bg-[rgba(255,255,255,.2)] backdrop-blur-[4px] py-10 px-10 rounded-[.5rem];
+  @apply font-plaid uppercase leading-100 text-16 tracking-[-.02em] bg-[rgba(0,0,0,.1)] py-10 px-10 rounded-[.5rem];
 
-  &.is-dark{
-    @apply text-black bg-black;
+  &.is-card{
+    @apply text-white text-14 backdrop-blur-[30px];
   }
+}
 
-  &.is-mid{
-    @apply text-black bg-white;
-  }
+.tag-role{
+  @apply text-current rounded-full px-5 py-3 leading-100 border border-current font-plaid;
 }
 
 .link{

@@ -26,7 +26,7 @@ const ProductActions = ({
     <>
       <div
         className={`product--actions${
-          type == 'feature' || type == 'lab' ? ' w-full' : ''
+          type == 'feature' ? ' flex-1' : ''
         }`}
       >
         {activeVariant?.inStock && !activeVariant?.forceOutOfStock ? (
@@ -42,9 +42,9 @@ const ProductActions = ({
               onAddToCart={onAddToCart}
               toolkitIncluded={toolkitIncluded}
               toolkitProductID={toolkitProductID}
-              className={`btn is-add is-block flex items-center gap-5`}
+              className={`btn is-add is-block flex items-center gap-5${type == 'feature' ? ' w-full' : ''}`}
             >
-              <div className="flex items-center gap-5 blink">
+              <div className="flex items-center gap-5">
                 <span>{product?.preOrder ? 'Pre-Order' : 'Add to Cart'}</span>{' '}
                 &mdash;{' '}
                 <ProductPrice
@@ -57,11 +57,8 @@ const ProductActions = ({
             </ProductAdd>
           </>
         ) : (
-          <div className="w-full flex flex-col gap-10">
-            <div className="subtitle-small text-smoke">Out of Stock</div>
-            <div className="w-full md:w-full flex-shrink-0 mt-35 md:mt-0">
-              <Newsletter type="product" />
-            </div>
+          <div className="btn is-add w-full flex flex-col gap-10">
+            Out of Stock
           </div>
         )}
       </div>

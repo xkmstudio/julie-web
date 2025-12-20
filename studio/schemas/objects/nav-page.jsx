@@ -18,7 +18,15 @@ export default {
       title: 'Page',
       name: 'page',
       type: 'reference',
-      to: [{ type: 'page' }],
+      to: [
+        { type: 'page' }, 
+        { type: 'blog' }, 
+        { type: 'article' },
+        { type: 'profile' },
+        { type: 'product' },
+        { type: 'collection' },
+        { type: 'home' },
+      ],
     }
   ],
   preview: {

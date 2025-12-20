@@ -40,6 +40,26 @@ export default {
       group: 'content'
     },
     {
+      title: 'Gallery Images',
+      name: 'galleryImages',
+      type: 'array',
+      of: [{ type: 'asset' }],
+      description:
+        'Product gallery images for this variant. If empty, the product\'s default gallery will be used.',
+      group: 'content',
+      options: {
+        layout: 'grid'
+      }
+    },
+    {
+      title: 'Cart Image',
+      name: 'cartImage',
+      type: 'asset',
+      description:
+        'Image shown in the cart for this variant. If empty, the product thumbnail will be used.',
+      group: 'content'
+    },
+    {
       title: 'SEO / Share Settings',
       name: 'seo',
       type: 'seo',

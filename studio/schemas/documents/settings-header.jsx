@@ -11,13 +11,13 @@ export default {
       name: 'nav',
       title: 'Navigation',
       type: 'array',
-      of: [{ type: 'navPage' }, { type: 'navLink' }]
+      of: [{ type: 'link' }]
     },
     {
       name: 'navSecondary',
       title: 'Secondary Navigation',
       type: 'array',
-      of: [{ type: 'navPage' }, { type: 'navLink' }]
+      of: [{ type: 'link' }]
     },
     // {
     //   name: 'marquee',

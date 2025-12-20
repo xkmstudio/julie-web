@@ -12,16 +12,15 @@ export default {
       type: 'string'
     },
     {
-      title: 'Products',
-      name: 'products',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: [{ type: 'product' }],
-        }
-      ],
-      validation: Rule => Rule.max(4).unique()
+      title: 'Media',
+      name: 'media',
+      type: 'media'
+    },
+    {
+      title: 'Product',
+      name: 'product',
+      type: 'reference',
+      to: [{ type: 'product' }],
     }
   ],
   preview: {

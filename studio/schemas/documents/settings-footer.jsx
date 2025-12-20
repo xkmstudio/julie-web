@@ -31,8 +31,7 @@ export default {
               name: 'items',
               type: 'array',
               of: [
-                {type: 'navPage'},
-                {type: 'navLink'}
+                {type: 'link'}
               ]
             }
           ]

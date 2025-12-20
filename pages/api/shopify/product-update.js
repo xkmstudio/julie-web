@@ -5,11 +5,20 @@ import { nanoid } from 'nanoid'
 const getRawBody = require('raw-body')
 const jsondiffpatch = require('jsondiffpatch')
 
+// Validate required environment variables
+if (!process.env.SANITY_PROJECT_DATASET || !process.env.SANITY_PROJECT_ID || !process.env.SANITY_API_TOKEN) {
+  console.error('Missing Sanity environment variables:', {
+    hasDataset: !!process.env.SANITY_PROJECT_DATASET,
+    hasProjectId: !!process.env.SANITY_PROJECT_ID,
+    hasToken: !!process.env.SANITY_API_TOKEN,
+  })
+}
+
 const sanity = createClient({
   dataset: process.env.SANITY_PROJECT_DATASET,
   projectId: process.env.SANITY_PROJECT_ID,
   token: process.env.SANITY_API_TOKEN,
-  apiVersion: '2022-08-30',
+  apiVersion: '2021-03-25',
   useCdn: false,
 })
 
@@ -195,16 +204,26 @@ export default async function send(req, res) {
   }
 
   // Fetch the metafields for this product
-  const shopifyProduct = await axios({
-    url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2022-10/products/${id}/metafields.json`,
-    method: 'GET',
-    headers: shopifyConfig,
-  })
+  let shopifyProduct
+  let previousSync = null
+  
+  try {
+    shopifyProduct = await axios({
+      url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields.json`,
+      method: 'GET',
+      headers: shopifyConfig,
+    })
 
-  // See if our metafield exists
-  const previousSync = shopifyProduct.data?.metafields.find(
-    (mf) => mf.key === 'product_sync'
-  )
+    // See if our metafield exists
+    previousSync = shopifyProduct.data?.metafields?.find(
+      (mf) => mf.key === 'product_sync'
+    )
+  } catch (error) {
+    // If metafields endpoint fails (404 or other error), log it and continue
+    // This can happen if the product doesn't have metafields yet or API version issues
+    console.warn('Could not fetch metafields, proceeding with sync:', error.response?.status || error.message)
+    previousSync = null
+  }
 
   // Metafield found
   if (previousSync) {
@@ -216,7 +235,7 @@ export default async function send(req, res) {
 
       // update our shopify metafield with the new data before continuing sync with Sanity
       axios({
-        url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2022-10/products/${id}/metafields/${previousSync.id}.json`,
+        url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields/${previousSync.id}.json`,
         method: 'PUT',
         headers: shopifyConfig,
         data: {
@@ -226,6 +245,8 @@ export default async function send(req, res) {
             type: 'json',
           },
         },
+      }).catch((error) => {
+        console.error('Failed to update metafield:', error.response?.status || error.message)
       })
 
       // No changes found
@@ -239,7 +260,7 @@ export default async function send(req, res) {
   } else {
     console.warn('No previous sync found, Start sync...')
     axios({
-      url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2022-10/products/${id}/metafields.json`,
+      url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields.json`,
       method: 'POST',
       headers: shopifyConfig,
       data: {
@@ -250,6 +271,8 @@ export default async function send(req, res) {
           type: 'json',
         },
       },
+    }).catch((error) => {
+      console.error('Failed to create metafield:', error.response?.status || error.message)
     })
   }
 
@@ -258,6 +281,12 @@ export default async function send(req, res) {
   /*  ------------------------------ */
 
   console.log('Writing product to Sanity...')
+  console.log('Sanity config:', {
+    projectId: process.env.SANITY_PROJECT_ID,
+    dataset: process.env.SANITY_PROJECT_DATASET,
+    hasToken: !!process.env.SANITY_API_TOKEN,
+  })
+  
   let stx = sanity.transaction()
 
   // create product if doesn't exist
@@ -311,11 +340,27 @@ export default async function send(req, res) {
     }
   })
 
-  const result = await stx.commit()
+  try {
+    const result = await stx.commit()
 
-  console.info('Sync complete!')
-  console.log(result)
+    console.info('Sync complete!')
+    console.log(result)
 
-  res.statusCode = 200
-  res.json(JSON.stringify(result))
+    res.statusCode = 200
+    res.json(JSON.stringify(result))
+  } catch (error) {
+    console.error('Sanity sync error:', {
+      message: error.message,
+      statusCode: error.statusCode,
+      responseBody: error.responseBody,
+      details: error.details,
+    })
+    
+    res.statusCode = error.statusCode || 500
+    res.json({
+      error: 'Failed to sync product to Sanity',
+      message: error.message,
+      statusCode: error.statusCode,
+    })
+  }
 }

@@ -54,6 +54,12 @@ module.exports = withBundleAnalyzer({
 
     // Needed for SendGrid forms
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+
+    // Needed for Algolia search
+    NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+    NEXT_PUBLIC_ALGOLIA_SEARCH_KEY: process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY,
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
+    ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
   },
   async redirects() {
     const sanityRedirects = await fetchSanityRedirects()

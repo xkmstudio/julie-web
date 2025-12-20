@@ -26,7 +26,10 @@ export default {
           }
         }
       ],
-      lists: [{ title: 'Bullet', value: 'bullet' }],
+      lists: [
+        { title: 'Bullet', value: 'bullet' },
+        { title: 'Numbered', value: 'number' }
+      ],
       marks: {
         decorators: [
           { title: 'Strong', value: 'strong' },

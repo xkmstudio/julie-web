@@ -35,6 +35,7 @@ const Header = ({ data, work, pages }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [menu3DOpen, setMenu3DOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
+  const [isTransparent, setIsTransparent] = useState(false)
 
   useEffect(() => {
     document.body.style.setProperty(
@@ -48,6 +49,40 @@ const Header = ({ data, work, pages }) => {
     setMenuOpen(false)
   }, [router])
 
+  // Check for hero-bleed element and update header transparency based on scroll
+  useEffect(() => {
+    const checkScrollAndHeroBleed = () => {
+      const hasHeroBleed = document.querySelector('.hero-bleed') !== null
+      const scrollY = window.scrollY || window.pageYOffset
+      
+      if (hasHeroBleed && scrollY < 100) {
+        setIsTransparent(true)
+      } else {
+        setIsTransparent(false)
+      }
+    }
+
+    // Check on mount and route changes
+    checkScrollAndHeroBleed()
+
+    // Add scroll listener
+    window.addEventListener('scroll', checkScrollAndHeroBleed, { passive: true })
+
+    // Re-check when route changes (after a short delay to allow DOM to update)
+    const handleRouteChange = () => {
+      setTimeout(() => {
+        checkScrollAndHeroBleed()
+      }, 100)
+    }
+
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    return () => {
+      window.removeEventListener('scroll', checkScrollAndHeroBleed)
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [router])
+
   return (
     <>
       <a href="#content" className="skip-link">
@@ -57,77 +92,81 @@ const Header = ({ data, work, pages }) => {
       <header
         ref={headerRef}
         className={cx(
-          'fixed z-[91] flex justify-between w-full p-20 text-white'
+          'fixed z-[91] flex top-0 left-0 justify-between w-full px-25 pt-20 text-white',
         )}
       >
-        <div className="flex gap-15 items-center font-lxb">
-          {nav?.map((item, index) => (
-            <div key={index} className={`flex`}>
-              <Link key={index} link={item} className={``} />
-            </div>
-          ))}
-        </div>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex justify-start">
-            <NextLink className="h-35" href={`/`}>
-              <Icon name="Logo" viewBox="0 0 543 265" />
-            </NextLink>
+        <div className={cx(`header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
+          { 'is-transparent': isTransparent }
+        )}>
+          <div className="flex gap-15 items-center font-lxb">
+            {nav?.map((item, index) => (
+              <div key={index} className={`flex`}>
+                <Link key={index} link={item} className={``} />
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="flex">
-          <div className="col-span-3 col-start-9 fixed md:relative top-0 right-10 md:right-0 flex items-center gap-15">
-            <div className="flex md:hidden items-center gap-20">
-              <button
-                ref={burgerRef}
-                onClick={() => {
-                  setMenuOpen(!menuOpen)
-                }}
-                aria-label={menuOpen ? 'close menu' : 'open menu'}
-                className={cx('w-[2rem] nav-toggle px-0 mb-3')}
-              >
-                <svg
-                  className={cx('menu_svg', { 'is-open': menuOpen })}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 12 10"
-                  fill="none"
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="flex justify-start">
+              <NextLink className="h-35" href={`/`}>
+                <Icon name="Logo" viewBox="0 0 543 265" />
+              </NextLink>
+            </div>
+          </div>
+          <div className="flex">
+            <div className="col-span-3 col-start-9 fixed md:relative top-0 right-10 md:right-0 flex items-center gap-15">
+              <div className="flex md:hidden items-center gap-20">
+                <button
+                  ref={burgerRef}
+                  onClick={() => {
+                    setMenuOpen(!menuOpen)
+                  }}
+                  aria-label={menuOpen ? 'close menu' : 'open menu'}
+                  className={cx('w-[2rem] nav-toggle px-0 mb-3')}
                 >
-                  <path
-                    className="menu_line menu_line_one"
-                    d="M1 1H11"
-                    stroke="currentColor"
-                    strokeWidth=".751"
-                    strokeLinecap="square"
-                    strokeLinejoin="square"
-                  />
-                  <path
-                    className="menu_line menu_line_two"
-                    d="M1 5H11"
-                    stroke="currentColor"
-                    strokeWidth=".75"
-                    strokeLinecap="square"
-                    strokeLinejoin="square"
-                  />
-                  <path
-                    className="menu_line menu_line_three"
-                    d="M1 9H11"
-                    stroke="currentColor"
-                    strokeWidth=".75"
-                    strokeLinecap="square"
-                    strokeLinejoin="square"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className={cx('menu_svg', { 'is-open': menuOpen })}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 12 10"
+                    fill="none"
+                  >
+                    <path
+                      className="menu_line menu_line_one"
+                      d="M1 1H11"
+                      stroke="currentColor"
+                      strokeWidth=".751"
+                      strokeLinecap="square"
+                      strokeLinejoin="square"
+                    />
+                    <path
+                      className="menu_line menu_line_two"
+                      d="M1 5H11"
+                      stroke="currentColor"
+                      strokeWidth=".75"
+                      strokeLinecap="square"
+                      strokeLinejoin="square"
+                    />
+                    <path
+                      className="menu_line menu_line_three"
+                      d="M1 9H11"
+                      stroke="currentColor"
+                      strokeWidth=".75"
+                      strokeLinecap="square"
+                      strokeLinejoin="square"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex gap-15 items-center font-lxb">
+                {navSecondary?.map((item, index) => (
+                  <div key={index} className={`flex`}>
+                    <Link key={index} link={item} className={``} />
+                  </div>
+                ))}
+              </div>
+              <CartToggle />
             </div>
-            <div className="flex gap-15 items-center font-lxb">
-              {navSecondary?.map((item, index) => (
-                <div key={index} className={`flex`}>
-                  <Link key={index} link={item} className={``} />
-                </div>
-              ))}
-            </div>
-            <CartToggle />
           </div>
         </div>
       </header>
