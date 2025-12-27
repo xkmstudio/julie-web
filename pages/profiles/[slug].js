@@ -35,7 +35,7 @@ const Profile = ({ data, sanityConfig }) => {
       {!router.isFallback && (
         <Layout site={site} page={page}>
           <div className="w-full">
-            <div className="w-full h-screen min-h-[50rem] flex gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 section-padding">
+            <div className="w-full h-screen min-h-[50rem] flex gap-15 md:gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 section-padding">
               <div className="w-1/2 h-full relative rounded-[1.5rem] overflow-hidden">
                 {image && (
                   <Photo
@@ -48,8 +48,8 @@ const Profile = ({ data, sanityConfig }) => {
                   />
                 )}
               </div>
-              <div className="w-1/2 flex flex-col gap-25 items-center p-25">
-                <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-25 h-full">
+              <div className="w-1/2 flex flex-col gap-15 md:gap-25 items-center p-25">
+                <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
                   <div className="w-full text-center flex-1 flex flex-col justify-center gap-35 items-center">
                     <div className="w-full flex flex-col gap-20">
                       <h1 className="title-2xl">{title}</h1>

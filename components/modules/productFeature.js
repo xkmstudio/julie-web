@@ -52,7 +52,7 @@ const ProductFeature = ({ data }) => {
   return (
     <section className="px-10 md:px-15 overflow-hidden section-padding">
       <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
-      <div className="w-full h-full flex gap-25 relative z-2">
+      <div className="w-full h-full flex gap-15 md:gap-25 relative z-2">
         {products?.map((product, key) => (
           <ProductCard
             key={key}

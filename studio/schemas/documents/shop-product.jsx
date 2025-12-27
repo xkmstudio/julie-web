@@ -179,7 +179,7 @@ export default {
         { type: 'testimonials' },
         { type: 'slideshow' },
         { type: 'textBlock' },
-        { type: 'drawer' },
+        { type: 'faqs' },
         { type: 'indexList' },
         { type: 'indexTutorials' },
         { type: 'mediaFeature' },

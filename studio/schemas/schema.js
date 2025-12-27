@@ -26,7 +26,7 @@ import productShop from './modules/productShop'
 import textBlock from './modules/textBlock'
 import mediaFeature from './modules/mediaFeature'
 import mediaBleed from './modules/mediaBleed'
-import drawer from './modules/drawer'
+import faqs from './modules/faqs'
 import indexList from './modules/indexList'
 import indexTutorials from './modules/indexTutorials'
 import productContents from './modules/productContents'
@@ -40,6 +40,7 @@ import media3Up from './modules/media3Up'
 import gradient from './modules/gradient'
 import testimonials from './modules/testimonials'
 import featuredArticles from './modules/featuredArticles'
+import storeLocator from './modules/storeLocator'
 
 // Object types
 import seo from './objects/seo'
@@ -110,7 +111,7 @@ export default [
     textBlock,
     mediaFeature,
     mediaBleed,
-    drawer,
+    faqs,
     indexList,
     indexTutorials,
     productContents,
@@ -124,7 +125,8 @@ export default [
     gradient,
     testimonials,
     featuredArticles,
-
+    storeLocator,
+    
     productGalleryPhotos,
     productListingPhotos,
     productCartPhotos,

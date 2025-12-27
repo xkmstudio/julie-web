@@ -94,7 +94,7 @@ export default {
         { type: 'marqueeIcons' },
         { type: 'textBlock' },
         { type: 'mediaFeature' },
-        { type: 'drawer' },
+        { type: 'faqs' },
         { type: 'indexList' },
         { type: 'indexTutorials' },
         { type: 'productContents' },

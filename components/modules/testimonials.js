@@ -103,12 +103,12 @@ const Testimonials = ({ data = {} }) => {
                 {testimonials?.map((testimonial, key) => {
                   return (
                     <div
-                      className="relative w-[66.6667%] min-w-[66.6667%] flex flex-col items-center gap-15 px-15 md:px-30 py-40"
+                      className="relative w-[calc(100%+6rem)] md:w-[66.6667%] min-w-[calc(100%+6rem)] md:min-w-[66.6667%] flex flex-col items-center gap-15 px-15 md:px-30 py-40"
                       key={key}
                     >
                       <div className="relative w-full h-full py-60">
                         <div className="absolute left-0 top-0 w-full h-full rounded-[100%] bg-pink blur-[20px]"></div>
-                        <div className="relative z-2 w-full flex flex-col items-center gap-25 text-center text-white">
+                        <div className="relative z-2 w-full flex flex-col items-center gap-15 md:gap-25 text-center text-white">
                           <div className="flex gap-5">
                             <div className='w-[2rem] h-[2rem]'><Icon name="Rating" viewBox="0 0 25 24" /></div>
                             <div className='w-[2rem] h-[2rem]'><Icon name="Rating" viewBox="0 0 25 24" /></div>
@@ -116,7 +116,7 @@ const Testimonials = ({ data = {} }) => {
                             <div className='w-[2rem] h-[2rem]'><Icon name="Rating" viewBox="0 0 25 24" /></div>
                             <div className='w-[2rem] h-[2rem]'><Icon name="Rating" viewBox="0 0 25 24" /></div>
                           </div>
-                          <div className="w-full max-w-[60rem] mx-auto font-lxb text-18 md:text-24">
+                          <div className="w-full max-w-[60rem] mx-auto font-lxb text-18 md:text-24 px-30">
                             <BlockContent blocks={testimonial.content} />
                           </div>
                           <div className="text-18 font-plaid uppercase">

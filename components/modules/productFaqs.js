@@ -63,7 +63,7 @@ const ProductFaqs = ({ data = {} }) => {
       // Scroll carousel to selected button
       emblaApi.scrollTo(index)
       // Scroll page to section
-      scrollToSection(index)
+      // scrollToSection(index)
     }
   }, [isMobile, emblaApi, scrollToSection])
 
@@ -82,10 +82,10 @@ const ProductFaqs = ({ data = {} }) => {
   return (
     <section
       ref={triggerRef}
-      className="w-full section-padding"
+      className="w-full md:px-25"
     >
-      <div className="w-full h-full rounded-[1.5rem] overflow-hidden" style={sectionStyle}>
-        <div className="mx-auto px-10 md:px-15 pt-60 w-full max-w-[100rem]">
+      <div className="w-full h-full md:rounded-[1.5rem] overflow-hidden" style={sectionStyle}>
+        <div className="mx-auto px-10 md:px-15 pb-20 pt-60 w-full max-w-[100rem]">
           {/* Section Button Toggles - Only show if multiple sections */}
           {hasMultipleSections && (
             <div className="w-full mb-60">

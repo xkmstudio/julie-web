@@ -32,7 +32,7 @@ function CartItem({ item }) {
 
   return (
     <div className="cart-item">
-        <div className="w-120 h-160 bg-cement relative overflow-hidden flex-shrink-0">
+        <div className="w-120 h-160 bg-cement rounded-[1.5rem] relative overflow-hidden flex-shrink-0">
           {item.cartImage?.asset ? (
             <Photo
               photo={item.cartImage}
@@ -52,7 +52,7 @@ function CartItem({ item }) {
       <div className="cart-item--details">
         <div className="cart-item--header">
           <div className="cart-item--title">
-            <h2 className="cart-item--name">
+            <div className="cart-item--name">
               <Link
                 onClick={() => toggleCart(false)}
                 className="cart-item--link"
@@ -61,7 +61,7 @@ function CartItem({ item }) {
               >
                 {item.product.title}
               </Link>
-            </h2>
+            </div>
             {item.subtitle && (
               <div className="cart-item--subtitle mt-5">{item.subtitle}</div>
             )}
@@ -70,35 +70,25 @@ function CartItem({ item }) {
             )}
             {item.product?.noteShipping && (
               <div className="cart-item--note mt-5">
-                Pre-Order:
-                <br /> {item.product?.noteShipping}
+                {item.product?.noteShipping}
               </div>
             )}
           </div>
           <ProductPrice price={item.price} />
         </div>
-        <div className="cart-item--tools border-t border-cement">
+        <div className="cart-item--tools">
           <div className="cart-item--quantity w-3/4">
             <ProductCounter
               key={item.id}
               id={item.id}
               lineID={item.lineID}
               defaultCount={item.quantity}
-              max={
-                item.product.slug.includes('sol-reader') &&
-                router.query?.betatester == 'TRUE'
-                  ? 10
-                  : item.product.slug.includes('sol-reader') &&
-                    router.query?.betatester != 'TRUE'
-                  ? 10
-                  : 999
-              }
               onUpdate={changeQuantity}
               removeItem={removeItem}
               className="is-small"
             />
           </div>
-          <button onClick={() => removeItem(item.lineID)} className="btn-text cart-item--remove w-1/4">
+          <button onClick={() => removeItem(item.lineID)} className="btn-text cart-item--remove">
             Remove
           </button>
         </div>

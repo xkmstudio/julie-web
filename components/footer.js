@@ -9,17 +9,20 @@ import BlockContent from '@components/block-content'
 const Footer = ({ data }) => {
   const { disclaimer, menus, newsletter } = data
   return (
-    <footer className="w-full flex flex-col justify-between relative bg-pink text-white px-25 py-40">
-      <div className="grid-standard">
+    <footer className="w-full flex flex-col justify-between relative bg-pink text-white px-15 md:px-25 py-40">
+      <div className="grid-standard gap-y-20 md:gap-y-0">
         <div className="col-span-5">
-          <div className="w-[28rem]">
+          <div className="w-[16rem] md:w-[28rem]">
             <Icon name="Logo" viewBox="0 0 543 265" />
           </div>
+        </div>
+        <div className="block md:hidden col-span-12 mt-20">
+          <Newsletter newsletter={newsletter} />
         </div>
         {menus?.map((item, index) => (
           <div
             key={index}
-            className="hidden md:flex flex-col gap-10 col-span-2 pb-30"
+            className="flex flex-col gap-10 col-span-6 md:col-span-2 pb-30 mt-20 md:mt-0"
           >
             <div className="flex flex-col gap-5">
               {item.items?.map((link, index) => (
@@ -29,10 +32,9 @@ const Footer = ({ data }) => {
           </div>
         ))}
       </div>
-      
 
-      <div className="grid-standard items-start mt-100">
-        <div className="col-span-5">
+      <div className="grid-standard items-start mt-45 md:mt-100">
+        <div className="col-span-12 md:col-span-5">
           <div className="flex gap-15">
             <div className="flex justify-start">
               © {new Date().getFullYear()} Julie Products Inc

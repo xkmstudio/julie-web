@@ -3,11 +3,11 @@
 
     &::before{
         content: '';
-        @apply absolute z-3 left-0 top-0 w-[15rem] h-full bg-gradient-to-r from-white to-transparent;
+        @apply absolute z-3 left-0 top-0 w-[0] md:w-[15rem] h-full bg-gradient-to-r from-white to-transparent;
     }
 
     &::after{
         content: '';
-        @apply absolute z-3 right-0 top-0 w-[15rem] h-full bg-gradient-to-l from-white to-transparent;
+        @apply absolute z-3 right-0 top-0 w-[0] md:w-[15rem] h-full bg-gradient-to-l from-white to-transparent;
     }
 }

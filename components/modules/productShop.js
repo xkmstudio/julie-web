@@ -14,7 +14,14 @@ const ProductShop = ({
   activeVariant: pageActiveVariant,
   onVariantChange,
 }) => {
-  const { product: dataProduct, title, description, values, logos } = data
+  const {
+    product: dataProduct,
+    title,
+    description,
+    values,
+    logos,
+    mobileTag,
+  } = data
   const addItem = useAddItem()
 
   // Use page-level product if it matches data.product (has inventory data), otherwise use data.product
@@ -77,8 +84,20 @@ const ProductShop = ({
     product.heroImage
 
   return (
-    <section className="px-10 md:px-15">
+    <section className="px-10 md:px-15 shop-feature">
       <div className="grid-standard">
+        {mobileTag && (
+          <div className="text-pink items-center justify-center md:hidden col-span-12 flex mb-15">
+            <div className="tag-glass">
+              <div className="w-[1.5rem] flex items-center justify-center flex-shrink-0 rotate-180">
+                <Icon name="Arrow Curve" viewBox="0 0 19 14" />
+              </div>
+              <div className="text-14 text-center flex-shrink-0">
+                {mobileTag}
+              </div>
+            </div>
+          </div>
+        )}
         <div className="col-span-12 md:col-span-3 pr-20">
           {productImage && (
             <div className="relative w-full pb-[100%]">
@@ -107,16 +126,22 @@ const ProductShop = ({
           )}
         </div>
 
-        <div className="col-span-12 md:col-span-9 flex flex-col justify-center gap-30">
+        <div className="col-span-12 md:col-span-9 flex flex-col items-center md:items-start justify-center gap-20 md:gap-30 mt-20 md:mt-0">
           <div>
-            {title && <h2 className="subtitle text-pink mb-20">{title}</h2>}
+            {title && (
+              <h2 className="hidden md:block subtitle text-pink mb-20">
+                {title}
+              </h2>
+            )}
             {description && (
-              <div className="text-36 font-lxb">{description}</div>
+              <div className="text-24 md:text-36 text-center md:text-left font-lxb leading-[1.05] tracking-[-.02rem]">
+                {description}
+              </div>
             )}
           </div>
 
           {values && values.length > 0 && (
-            <ul className="flex flex-wrap gap-20">
+            <ul className="flex flex-col md:flex-row flex-wrap gap-10 md:gap-20">
               {values.map((value, index) => (
                 <li className="flex items-center gap-5" key={index}>
                   <span className="flex items-center justify-center w-[1.5rem]">
@@ -129,7 +154,7 @@ const ProductShop = ({
           )}
 
           <div className="flex gap-30 items-center">
-            <div className="flex gap-10">
+            <div className="flex flex-col md:flex-row gap-10">
               <NextLink
                 className="btn is-outline is-large"
                 href={`/products/${product.slug}`}
@@ -149,10 +174,10 @@ const ProductShop = ({
               )}
             </div>
             {logos && logos.length > 0 && (
-              <div className="flex gap-35">
+              <div className="hidden md:flex gap-35">
                 {logos.map((logo, index) =>
                   logo?.asset ? (
-                    <div className="h-[3rem]">
+                    <div className="h-[2.5rem] md:h-[3rem]">
                       <Photo
                         width={500}
                         srcSizes={[800, 1000, 1200, 1600]}

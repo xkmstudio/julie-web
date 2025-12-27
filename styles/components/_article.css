@@ -9,3 +9,43 @@
         @apply text-center mb-20 mt-40;
     }
 }
+
+.article-card{
+    @apply relative rounded-[1.5rem];
+    transition: border-radius 200ms linear 0ms;
+    
+    &::before{
+        content: '';
+        @apply absolute inset-0 rounded-[1.5rem] bg-pink opacity-0 blur-[10px];
+        transition: border-radius 200ms linear 0ms, opacity 200ms linear 0ms;
+    }
+    
+    img{
+        @apply rounded-[1.5rem];
+        transition: border-radius 200ms linear 0ms;
+    }
+    
+    &:hover{
+        @apply rounded-[20vw];
+        
+        &::before{
+            @apply opacity-100 rounded-[20vw];
+        }
+        
+        img{
+            @apply rounded-[20vw];
+        }        
+    }    
+}
+
+.article-card-container{
+    .tag{
+        @apply transition-opacity duration-100;
+    }
+
+    &:hover{
+        .tag{
+            @apply opacity-0;
+        }
+    }
+}

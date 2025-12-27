@@ -7,6 +7,12 @@ export default {
     icon: Bag,
     fields: [
         {
+            title: 'Mobile Tag',
+            name: 'mobileTag',
+            type: 'string',
+            description: 'This will be displayed on the mobile at the bottom and stretch the hero to the bottom of the screen',
+        },
+        {
             title: 'Product',
             name: 'product',
             type: 'reference',

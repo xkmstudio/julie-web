@@ -42,12 +42,7 @@ const Shop = ({ data }) => {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-2 w-full max-w-[65rem] bg-glass backdrop-blur-frame px-15 py-30 md:p-50 rounded-[.5rem]"
         >
-          <div className="text-20 flex flex-col md:flex-row justify-between items-center gap-25 flex-wrap">
-            <h1 className="title-small">Our beta is now closed.</h1>
-            <NextLink href="/products/sol-reader">
-              <a className="inline-block btn">Shop Sol Reader</a>
-            </NextLink>
-          </div>
+          
         </m.div>
       </div>
     </Layout>

@@ -65,8 +65,8 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
       ref={containerRef}
       className={`product md:h-screen md:min-h-[60rem] px-15 md:px-25 pb-[2.5rem] pt-[calc(var(--headerHeight)+2.5rem)]`}
     >
-      <div className={`w-full h-full flex gap-25`}>
-        <div className={`w-full h-full sticky top-0`}>
+      <div className={`w-full h-full flex flex-col md:flex-row gap-15 md:gap-25`}>
+        <div className={`w-full h-[100vw] md:h-full`}>
           <div className="w-full h-full relative z-2">
             {(activeVariant?.galleryImages &&
             activeVariant.galleryImages.length > 0
@@ -86,8 +86,8 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
           </div>
         </div>
 
-        <div className="w-full col-span-12 md:col-span-6 flex flex-col justify-start pt-15 md:py-50">
-          <div className="w-full max-w-[50rem] md:mx-auto pt-10 md:pt-0 flex flex-col flex-1">
+        <div className={`w-full col-span-12 md:col-span-6 flex flex-col pt-15 md:py-50${product.drawers?.length > 0 ? ' justify-start' : ' justify-center'}`}>
+          <div className={`w-full max-w-[50rem] md:mx-auto pt-10 md:pt-0 flex flex-col flex-1${product.drawers?.length > 0 ? ' justify-start' : ' justify-center'}`}>
             <div className="">
               <div className="mb-20 md:mb-20 flex flex-col items-center text-center gap-15 md:gap-10">
                 {product.subtitle && (
@@ -97,7 +97,7 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
 
 
                 {product.description && (
-                  <div className="mt-10 md:mt-10 body-medium leading-130 product-description">
+                  <div className="md:mt-10 body-medium leading-130 product-description">
                     <BlockContent blocks={product.description} />
                   </div>
                 )}

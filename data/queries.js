@@ -14,6 +14,7 @@ export const link = `
   _key,
   _type,
   title,
+  linkType,
   url,
   anchor,
   "page": page->{
@@ -277,7 +278,8 @@ export const modules = `
     _key,
     title[]{${ptContent}},
     subtitle[]{${ptContent}},
-    backgroundMedia{${mediaContent}}
+    backgroundMedia{${mediaContent}},
+    mobileTag
   },
   _type == 'productFeature' => {
     _type,
@@ -293,6 +295,7 @@ export const modules = `
   _type == 'productShop' => {
     _type,
     _key,
+    mobileTag,
     product->{
       ${product}
     },
@@ -334,16 +337,26 @@ export const modules = `
     sizeMobile,
     media{${mediaContentBleed}}
   },
-  _type == 'drawer' => {
+  _type == 'faqs' => {
     _type,
     _key,
     title,
-    cta[0]{${link}},
-    icon,
-    type,
-    drawers[]{
+    cta{
+      text,
+      link{${link}}
+    },
+    backgroundGradient{${gradient}},
+    sections[]{
+      _type,
+      _key,
       title,
-      content[]{${ptContent}}
+      content[]{${ptContent}},
+      drawers[]{
+        _type,
+        _key,
+        title,
+        content[]{${ptContent}}
+      }
     }
   },
   _type == 'testimonials' => {
@@ -356,15 +369,23 @@ export const modules = `
       content[]{${ptContent}}
     }
   },
+  _type == 'storeLocator' => {
+    _type,
+    _key,
+    title,
+    subtitle
+  },
   _type == 'featuredArticles' => {
     _type,
     _key,
+    title,
     useList,
     featuredCard{
       logo{${assetMeta}},
       media{${mediaContent}},
       title,
-      description,
+      description[]{${ptContent}},
+      subtitle,
       link
     },
     articles[]->{

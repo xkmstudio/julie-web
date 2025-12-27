@@ -9,6 +9,14 @@ button{
   &.is-outline{
     @apply bg-transparent text-pink;
   }
+
+  &.is-variant{
+    @apply bg-white border-2 border-pink rounded-[.5rem] text-pink p-0 w-[4rem] h-[4rem] flex items-center justify-center uppercase text-14 font-lb transition-colors duration-300 hover:bg-pink hover:text-white;
+
+    &.is-active{
+      @apply bg-pink text-white;
+    }
+  }
   
   &-text{
     @apply uppercase text-16 font-lb
@@ -35,14 +43,13 @@ button{
 
   }
 
-  &-nav,
-  &-filter--inner,
-  &-service{
-    @apply bg-white h-45 py-5 border border-black flex flex-col justify-between leading-100 duration-300 hover:text-black flex-shrink-0 text-[1.1rem] 2xl:text-[1rem];
-  }
+  &.is-tag{
+    @apply bg-cement text-black transition-colors duration-300 border-none px-10;
 
-  &-service{
-    @apply text-black;
+    &.is-active{
+      @apply bg-pink text-white border-none;
+      color: white!important;
+    }
   }
 
   &-nav{
@@ -134,10 +141,14 @@ button{
   &.is-card{
     @apply text-white text-14 backdrop-blur-[30px];
   }
+
+  &-glass{
+    @apply inline-flex items-center justify-center gap-10 w-fit min-w-0 rounded-full font-plaid uppercase leading-100 text-14 tracking-[-.02em] bg-[rgba(0,0,0,.1)] backdrop-blur-[30px] py-10 px-10;
+  }
 }
 
 .tag-role{
-  @apply text-current rounded-full px-5 py-3 leading-100 border border-current font-plaid;
+  @apply text-current rounded-full px-5 py-3 leading-100 border border-current font-plaid uppercase;
 }
 
 .link{

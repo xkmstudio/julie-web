@@ -16,7 +16,6 @@ gsap.registerPlugin(ScrollToPlugin)
 import Marquee from '@components/modules/marquee'
 import Icon from '@components/icon'
 import Link from '@components/link'
-import Menu3D from '@components/menu-3d'
 
 import { useSiteContext, useToggleCart, useCartCount } from '@lib/context'
 
@@ -33,7 +32,6 @@ const Header = ({ data, work, pages }) => {
   const headerRef = useRef()
   const burgerRef = useRef()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [menu3DOpen, setMenu3DOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
   const [isTransparent, setIsTransparent] = useState(false)
 
@@ -92,13 +90,13 @@ const Header = ({ data, work, pages }) => {
       <header
         ref={headerRef}
         className={cx(
-          'fixed z-[91] flex top-0 left-0 justify-between w-full px-25 pt-20 text-white',
+          'fixed z-[91] flex top-0 left-0 justify-between w-full px-15 md:px-25 pt-20 text-white',
         )}
       >
         <div className={cx(`header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
-          { 'is-transparent': isTransparent }
+          { 'is-transparent': isTransparent && !menuOpen }
         )}>
-          <div className="flex gap-15 items-center font-lxb">
+          <div className="hidden md:flex gap-15 items-center font-lxb">
             {nav?.map((item, index) => (
               <div key={index} className={`flex`}>
                 <Link key={index} link={item} className={``} />
@@ -112,16 +110,16 @@ const Header = ({ data, work, pages }) => {
               </NextLink>
             </div>
           </div>
-          <div className="flex">
-            <div className="col-span-3 col-start-9 fixed md:relative top-0 right-10 md:right-0 flex items-center gap-15">
-              <div className="flex md:hidden items-center gap-20">
+          <div className="flex w-full md:w-[unset]">
+            <div className="flex justify-between w-full gap-15">
+              <div className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink">
                 <button
                   ref={burgerRef}
                   onClick={() => {
                     setMenuOpen(!menuOpen)
                   }}
                   aria-label={menuOpen ? 'close menu' : 'open menu'}
-                  className={cx('w-[2rem] nav-toggle px-0 mb-3')}
+                  className={cx('w-[1.8rem] nav-toggle px-0 mb-1')}
                 >
                   <svg
                     className={cx('menu_svg', { 'is-open': menuOpen })}
@@ -135,30 +133,30 @@ const Header = ({ data, work, pages }) => {
                       className="menu_line menu_line_one"
                       d="M1 1H11"
                       stroke="currentColor"
-                      strokeWidth=".751"
-                      strokeLinecap="square"
-                      strokeLinejoin="square"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       className="menu_line menu_line_two"
                       d="M1 5H11"
                       stroke="currentColor"
-                      strokeWidth=".75"
-                      strokeLinecap="square"
-                      strokeLinejoin="square"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       className="menu_line menu_line_three"
                       d="M1 9H11"
                       stroke="currentColor"
-                      strokeWidth=".75"
-                      strokeLinecap="square"
-                      strokeLinejoin="square"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </button>
               </div>
-              <div className="flex gap-15 items-center font-lxb">
+              <div className="hidden md:flex gap-15 items-center font-lxb">
                 {navSecondary?.map((item, index) => (
                   <div key={index} className={`flex`}>
                     <Link key={index} link={item} className={``} />
@@ -236,11 +234,6 @@ const Header = ({ data, work, pages }) => {
           </FocusTrap>
         )}
       </AnimatePresence>
-      <Menu3D
-        isOpen={menu3DOpen}
-        onClose={() => setMenu3DOpen(false)}
-        pages={menuPages}
-      />
     </>
   )
 }

@@ -12,6 +12,21 @@ export default {
   ],
   fields: [
     {
+      name: 'type',
+      title: 'Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Primary', value: 'primary' },
+          { title: 'Alternative', value: 'alternative' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      initialValue: 'primary',
+      group: 'settings'
+    },
+    {
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -55,7 +70,7 @@ export default {
         { type: 'productCollection' },
         { type: 'slideshow' },
         { type: 'textBlock' },
-        { type: 'drawer' },
+        { type: 'faqs' },
         { type: 'mediaFeature' },
         { type: 'mediaBleed' },
         { type: 'productFeature' },

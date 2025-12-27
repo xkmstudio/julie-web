@@ -164,7 +164,7 @@ const getIcon = (name, color) => {
             d="M5.75 0.75V10.75M10.75 5.74219L0.75 5.74219"
             stroke="currentColor"
             strokeWidth="1.5"
-            stroke-linecap="round"
+            strokeLinecap="round"
           />
         </>
       )
@@ -181,10 +181,14 @@ const getIcon = (name, color) => {
         />
       )
     case 'Chevron Down':
+      // viewBox="0 0 22 13"
       return (
-        <polygon
-          points="51.5 85.657 8.672 42.828 14.328 37.172 51.5 74.343 88.672 37.172 94.328 42.828 51.5 85.657"
-          fill={color}
+        <path
+          d="M1 1L11 11L21 1"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
         />
       )
     case 'Close':
@@ -216,6 +220,11 @@ const getIcon = (name, color) => {
             stroke="currentColor"
           />
         </>
+      )
+    case 'Arrow Curve':
+      // viewBox="0 0 19 14"
+      return (
+        <path d="M13.5 10.7499C13.5 12.2687 12.2688 13.4999 10.75 13.4999H0.75C0.335786 13.4999 -3.62117e-08 13.1642 0 12.7499C3.62117e-08 12.3357 0.335786 11.9999 0.75 11.9999H10.75C11.4404 11.9999 12 11.4403 12 10.7499V2.56147L8.50781 6.05365C8.21492 6.34655 7.73918 6.34655 7.44629 6.05365C7.1534 5.76076 7.1534 5.28502 7.44629 4.99213L12.2197 0.21967C12.5126 -0.0732233 12.9874 -0.0732233 13.2803 0.21967L18.0537 4.99213C18.3466 5.28502 18.3466 5.76076 18.0537 6.05365C17.7608 6.34655 17.2851 6.34655 16.9922 6.05365L13.5 2.56147V10.7499Z" fill="currentColor"/>
       )
     case 'Expand':
       // viewBox="0 0 12 11"

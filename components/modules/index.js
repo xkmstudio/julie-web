@@ -1,6 +1,11 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
 
+// export {
+//   default as LuckyLocalScripts,
+//   LuckyIdScripts,
+// } from './LuckyLocal/Scripts';
+
 const Marquee = dynamic(() => import('./marquee'))
 const Hero = dynamic(() => import('./hero'))
 const ProductFeature = dynamic(() => import('./productFeature'))
@@ -9,7 +14,7 @@ const TextBlock = dynamic(() => import('./textBlock'))
 const MediaFeature = dynamic(() => import('./mediaFeature'))
 const MediaBleed = dynamic(() => import('./mediaBleed'))
 const Tutorials = dynamic(() => import('./tutorials'))
-const Drawer = dynamic(() => import('./drawer'))
+const Faqs = dynamic(() => import('./faqs'))
 const IndexList = dynamic(() => import('./indexList'))
 const IndexTutorials = dynamic(() => import('./indexTutorials'))
 const ProductContents = dynamic(() => import('./productContents'))
@@ -23,6 +28,7 @@ const Media3Up = dynamic(() => import('./media3Up'))
 const ProductFaqs = dynamic(() => import('./productFaqs'))
 const Testimonials = dynamic(() => import('./testimonials'))
 const FeaturedArticles = dynamic(() => import('./featuredArticles'))
+const StoreLocator = dynamic(() => import('./storeLocator'))
 
 export const Module = ({ module, product, activeVariant, onVariantChange }) => {
   const type = module._type
@@ -46,8 +52,8 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
       return <MediaBleed data={module} />
     case 'tutorials':
       return <Tutorials data={module} />
-    case 'drawer':
-      return <Drawer data={module} />
+    case 'faqs':
+      return <Faqs data={module} />
     case 'indexList':
       return <IndexList data={module} />
     case 'indexTutorials':
@@ -72,6 +78,8 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
       return <Testimonials data={module} />
     case 'featuredArticles':
       return <FeaturedArticles data={module} />
+    case 'storeLocator':
+      return <StoreLocator data={module} />
     default:
       return null
   }

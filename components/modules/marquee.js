@@ -18,8 +18,8 @@ const Marquee = ({ data = {} }) => {
 
   return (
     <section ref={marqueeRef} className={`relative w-full`}>
-      <div className={`${icon ? 'min-h-[35rem] flex items-center justify-center' : ''}`}>
-        {link && (
+      <div className={`${icon ? 'min-h-[28rem] md:min-h-[35rem] flex flex-col md:flex-row items-center justify-center' : ' flex flex-col md:flex-row items-center'}`}>
+        {link && !icon && (
           <div className="marquee-link">
             <div className="bg-pink rounded-full w-full flex items-center justify-center text-white">
               <NextLink href={link.url}>{title}</NextLink>
@@ -49,7 +49,7 @@ const Marquee = ({ data = {} }) => {
         </div>
         {icon && (
           <div className="marquee-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="h-[35rem]">
+            <div className="h-[28rem] md:h-[35rem]">
               <Photo
                 photo={icon}
                 width={1600}

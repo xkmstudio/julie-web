@@ -51,18 +51,18 @@ const ProductCard = ({ product, index, className, type = 'feature' }) => {
   return type == 'feature' ? (
     <div
       className={cx(
-        'flex flex-col bg-cement p-25 rounded-[1.5rem] overflow-hidden',
+        'flex flex-col bg-cement p-15 md:p-25 rounded-[1.5rem] overflow-hidden',
         className
       )}
     >
       <NextLink href={`/products/${product.slug}`} className="w-full">
-        <div className="w-full h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+        <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
           {product?.title && (
             <div className="w-full text-center title-2xl max-w-[50rem]">
               {product?.title}
             </div>
           )}
-          <div className="flex-1 w-full min-h-0 relative py-40">
+          <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
             <div className="w-full h-full relative">
               <Media
                 media={product.productThumbnail?.content}
@@ -77,7 +77,7 @@ const ProductCard = ({ product, index, className, type = 'feature' }) => {
         </div>
       </NextLink>
 
-      <div className="flex gap-10" onClick={(e) => e.stopPropagation()}>
+      <div className="flex flex-col md:flex-row gap-10" onClick={(e) => e.stopPropagation()}>
         <NextLink
           className="btn is-outline is-large flex-1"
           href={`/products/${product.slug}`}

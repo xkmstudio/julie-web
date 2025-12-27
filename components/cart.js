@@ -16,6 +16,7 @@ import {
 } from '@lib/context'
 
 import CartItem from '@components/cart-item'
+import Icon from '@components/icon'
 
 const Cart = ({ data }) => {
   const { shop } = data
@@ -105,19 +106,17 @@ const Cart = ({ data }) => {
         >
           <div
             onClick={() => toggleCart(false)}
-            className="hidden md:block close-zone w-full h-full flex-1 cursor-pointer"
+            className="hidden md:block z-[3] close-zone w-full h-full flex-1 cursor-pointer"
           ></div>
           <div className="cart--inner flex-shrink-0">
             <div className="cart--header">
               <div className="cart--title">
-                Cart [
-                <span className="cart--count px-[.2rem]">{cartCount}</span>]
+                <span className="cart--count">{`Cart (${cartCount})`}</span>
               </div>
-              <button
-                className="cart-toggle p-10 md:p-15 pb-10 md:pb-10 btn-text"
-                onClick={() => toggleCart(false)}
-              >
-                X
+              <button className="cart--close" onClick={() => toggleCart(false)}>
+                <div className='flex items-center justify-center w-[1.5rem] rotate-45'>
+                  <Icon name="Plus" viewBox="0 0 12 12" />
+                </div>
               </button>
             </div>
 
@@ -143,7 +142,7 @@ const Cart = ({ data }) => {
                   onClick={(e) => goToCheckout(e)}
                   className="btn is-primary is-large is-white is-checkout"
                 >
-                  {isUpdating ? 'Updating...' : 'Checkout >'}
+                  {isUpdating ? 'Updating...' : 'Checkout'}
                 </a>
 
                 {shop.cartMessage && (

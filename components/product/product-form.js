@@ -13,7 +13,7 @@ const ProductForm = ({ product, type, activeVariant, onVariantChange, hideSizeOp
   if (!optionsToShow.length) return null
   
   return (
-    <div className="product--options flex flex-col gap-30">
+    <div className="product--options flex flex-col items-center gap-15 mb-20">
       {optionsToShow.map(
         (option, key) =>
           option.values?.length > 0 && (

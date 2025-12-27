@@ -64,10 +64,10 @@ const MarqueeIcons = ({ data = {} }) => {
           </Marqy>
         </div>
       ) : (
-        <div className="relative w-full">
-          <div className="flex gap-50 justify-center items-center">
+        <div className="relative w-full px-15 md:px-25">
+          <div className="flex flex-col md:flex-row gap-15 md:gap-50 justify-center items-center">
             {items.map((item, key) => {
-              return <MarqueeIcon className="h-[4rem]" item={item} index={key} />
+              return <MarqueeIcon className="h-[4rem] w-1/2 md:w-[unset]" item={item} index={key} />
             })}
           </div>
         </div>

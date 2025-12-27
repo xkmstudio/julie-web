@@ -14,7 +14,7 @@ const MediaFeature = ({ data = {} }) => {
 
   return (
     <section className={`mx-auto relative section-padding`}>
-      <div className='w-full pb-[50%] relative rounded-[1.5rem] overflow-hidden flex items-center justify-center'>
+      <div className='w-full pb-[150%] md:pb-[50%] relative rounded-[1.5rem] overflow-hidden flex items-center justify-center'>
         {media && (
           <Media
             media={media?.content}
@@ -26,9 +26,9 @@ const MediaFeature = ({ data = {} }) => {
           />
         )}
 
-        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-25 text-white'>
+        <div className='absolute w-full top-1/2 px-15 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-15 md:gap-25 text-white'>
           {title && (
-            <h2 className='title-2xl'>{title}</h2>
+            <h2 className='w-full max-w-[80rem] mx-auto title-2xl text-center'>{title}</h2>
           )}
   
           {link && (

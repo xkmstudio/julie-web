@@ -13,11 +13,11 @@ const Media3Up = ({ data = {} }) => {
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const showCarousel = isClient && isMobile
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
+    align: 'center',
     containScroll: 'trimSnaps',
     dragFree: false,
     skipSnaps: false,
-    loop: false,
+    loop: true,
   })
 
   const [triggerRef, triggerInView] = useInView({
@@ -63,12 +63,12 @@ const Media3Up = ({ data = {} }) => {
         <div className="absolute z-2 bottom-0 left-0 right-0 w-full text-white">
           <div className="absolute flex flex-col items-center z-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             {item.title && (
-              <div className="text-48 font-lxb">
+              <div className="text-40 md:text-48 font-lxb">
                 {item.title}
               </div>
             )}
             {item.subtitle && (
-              <div className="text-16 font-plaid uppercase">
+              <div className="text-14 md:text-16 font-plaid uppercase">
                 {item.subtitle}
               </div>
             )}
@@ -89,12 +89,12 @@ const Media3Up = ({ data = {} }) => {
 
   return (
     <section ref={triggerRef} className="relative w-full section-padding">
-      <div className="w-full rounded-[1.2rem] sky-gradient px-30 pt-60">
+      <div className="w-full rounded-[1.2rem] sky-gradient md:px-30 pt-60">
         {/* Header */}
         {(title || subtitle) && (
-          <div className="px-10 md:px-15 mb-30 md:mb-40 text-center text-white">
+          <div className="px-30 md:px-15 mb-30 md:mb-40 text-center text-white">
             {subtitle && (
-              <div className="text-16 md:text-20 font-lm mb-5">{subtitle}</div>
+              <div className="text-20 font-lb mb-5">{subtitle}</div>
             )}
             {title && (
               <div className="text-32 md:text-48 font-lxb leading-110">
@@ -106,13 +106,13 @@ const Media3Up = ({ data = {} }) => {
 
         {/* Carousel on mobile, grid on desktop */}
         {showCarousel ? (
-          <div className="w-full px-10 md:px-15">
+          <div className="w-full">
             <div ref={emblaRef} className="">
               <div className="flex">
                 {items.map((item, index) => (
                   <div
                     key={index}
-                    className="w-[83.333%] min-w-[83.333%] ml-10 first:ml-0"
+                    className="w-full md:w-[83.333%] min-w-full md:min-w-[83.333%] ml-10 first:ml-0"
                   >
                     {renderCard(item, index)}
                   </div>
@@ -122,7 +122,7 @@ const Media3Up = ({ data = {} }) => {
           </div>
         ) : (
           <div className="w-full px-10 md:px-15">
-            <div className="w-full flex gap-25 md:gap-30">
+            <div className="w-full flex gap-15 md:gap-30">
               {items.map((item, index) => (
                 <div key={index} className="flex-1">
                   {renderCard(item, index)}

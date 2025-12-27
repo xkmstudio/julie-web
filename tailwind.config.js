@@ -91,6 +91,7 @@ module.exports = {
       pink: '#ED0E6A',
       primary: '#fff',
       secondary: '#000',
+      slate: '#777777'
     },
     backdropBlur: {
       frame: '30px',

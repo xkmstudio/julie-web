@@ -1,5 +1,5 @@
 .cart {
-    @apply fixed top-0 right-0 w-full h-screen z-[99991] pointer-events-none flex justify-end;
+    @apply fixed px-15 md:px-25 py-15 md:py-20 top-0 right-0 w-full h-screen z-[99991] pointer-events-none flex justify-end;
     height: calc(var(--vh, 1vh) * 100);
     will-change: opacity;
     transition: visibility .2s .8s;
@@ -12,9 +12,13 @@
     &.is-updating {
       @apply cursor-wait !important;
     }
+
+    .price{
+      @apply text-18;
+    }
   
     &--backdrop {
-      @apply fixed inset-0 z-8 bg-black bg-opacity-70 pointer-events-none opacity-0 transition-opacity duration-300;
+      @apply fixed inset-0 z-[9991] bg-black bg-opacity-70 pointer-events-none opacity-0 transition-opacity duration-300;
   
       &.is-active {
         @apply pointer-events-auto opacity-100;
@@ -22,11 +26,15 @@
     }
   
     &--inner {
-      @apply flex flex-col relative h-full w-full max-w-[54rem] bg-white;
+      @apply flex flex-col relative h-full w-full max-w-[54rem] rounded-[1.5rem] overflow-hidden bg-white;
+    }
+
+    &--close{
+      @apply w-[3.5rem] h-[3.5rem] flex items-center justify-center bg-pink text-white rounded-full;
     }
   
     &--header {
-      @apply leading-100 flex items-end relative h-45 border-b border-black;
+      @apply text-pink px-15 py-10 leading-100 flex items-center relative border-b-2 border-ash;
   
       &::after {
         @apply absolute inset-x-0 bottom-0;
@@ -35,7 +43,7 @@
     }
   
     &--title {
-      @apply flex items-center mr-auto p-15 pb-10;
+      @apply flex items-center mr-auto text-16 font-lxb;
     }
   
     &--content {
@@ -47,11 +55,11 @@
     }
   
     &--footer {
-      @apply relative;
+      @apply relative p-15;
     }
   
     &--subtotal {
-      @apply flex justify-between;
+      @apply flex justify-between font-lxb text-18;
     }
   
     &--message {
@@ -69,14 +77,18 @@
     }
 
     .counter{
-      @apply flex justify-between;
+      @apply flex justify-between border-2 border-pink rounded-[1.5rem];
 
       &--input{
-        @apply flex-1 h-full text-center flex items-center justify-center;
+        @apply flex-1 h-full text-center flex items-center justify-center font-lxb text-18;
+
+        input, button{
+          @apply text-center h-full flex items-center justify-center font-lxb text-16;
+        }
       }
 
       &--amount{
-        @apply flex-1 text-center flex-shrink border-r border-black;
+        @apply flex-1 text-center flex-shrink;
       }
 
       input{
@@ -84,13 +96,13 @@
       }
 
       button{
-        @apply w-[33.33333%] border-r border-black flex-shrink-0 flex-1 flex items-center justify-center h-30 text-center;
+        @apply w-[33.33333%] flex-shrink-0 flex-1 flex items-center justify-center h-30 text-center;
       }
     }
   }
   
   .cart-item {
-    @apply flex relative border-b border-black;
+    @apply flex relative border-b-2 border-ash p-15;
   
     .is-updating & {
       @apply pointer-events-none;
@@ -101,11 +113,11 @@
     }
   
     &--details {
-      @apply flex flex-col flex-grow;
+      @apply flex flex-col flex-grow pl-10 md:pl-15;
     }
   
     &--header {
-      @apply flex p-10 md:p-15;
+      @apply flex py-10 md:py-15 gap-20;
   
       .price {
         @apply ml-auto;
@@ -124,9 +136,21 @@
     &--title {
       @apply flex-1 m-0;
     }
+
+    &--subtitle{
+      @apply text-14 font-lb;
+    }
+
+    &--variant{
+      @apply text-16;
+    }
+
+    &--name{
+      @apply text-18 font-lxb;
+    }
   
     &--price {
-      @apply text-black;
+      @apply text-black text-18 font-lxb;
     }
   
     &--tools {
@@ -134,7 +158,7 @@
     }
 
     &--remove{
-      @apply bg-white p-0 h-full flex items-center justify-center;
+      @apply bg-white p-0 text-12 text-slate h-full flex items-center justify-center transition-colors duration-300;
 
       &:hover{
         @apply text-black;

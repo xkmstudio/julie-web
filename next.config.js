@@ -60,6 +60,14 @@ module.exports = withBundleAnalyzer({
     NEXT_PUBLIC_ALGOLIA_SEARCH_KEY: process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY,
     NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
     ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
+
+    // Needed for LuckyLabs store locator
+    NEXT_PUBLIC_LK_APP_BASE_URL: process.env.NEXT_PUBLIC_LK_APP_BASE_URL,
+    NEXT_PUBLIC_LK_BRAND_NAME: process.env.NEXT_PUBLIC_LK_BRAND_NAME,
+    
+    // Server-side only (not exposed to browser)
+    // LUCKY_API_KEY: process.env.LUCKY_API_KEY,
+    // LUCKY_EXT_API_URL: process.env.LUCKY_EXT_API_URL,
   },
   async redirects() {
     const sanityRedirects = await fetchSanityRedirects()

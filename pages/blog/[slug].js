@@ -41,7 +41,7 @@ const Article = ({ data, sanityConfig }) => {
       {!router.isFallback && (
         <Layout site={site} page={page}>
           <div className="w-full">
-            <div className="w-full flex gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 h-screen section-padding">
+            <div className="w-full flex gap-15 md:gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 h-screen section-padding">
               <div className="w-1/2 h-full relative rounded-[1.5rem] overflow-hidden">
                 <Photo
                   photo={image}
@@ -52,8 +52,8 @@ const Article = ({ data, sanityConfig }) => {
                   className={'object-cover h-full w-full'}
                 />
               </div>
-              <div className="w-1/2 flex flex-colflex flex-col gap-25 items-center p-25">
-                <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-25 h-full">
+              <div className="w-1/2 flex flex-colflex flex-col gap-15 md:gap-25 items-center p-25">
+                <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
                   <div className="w-full text-center flex-1 flex flex-col justify-center gap-20 items-center">
                     <NextLink href={`/blog/tags/${tag.slug}`} className="tag">
                       {tag.title}
@@ -188,7 +188,7 @@ const Article = ({ data, sanityConfig }) => {
             </div>
             {/* Author and reviewer section */}
             {(authors?.length > 0 || reviewers?.length > 0) && (
-              <div className="w-full flex gap-25 section-padding">
+              <div className="w-full flex gap-15 md:gap-25 section-padding">
                 {[
                   ...(authors?.map((author) => ({
                     ...author,

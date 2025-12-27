@@ -28,7 +28,7 @@ const ProductOption = ({
       className={`option is-${option.name.toLowerCase().replace(' ', '-')}`}
     >
       {!hideLabels && (
-        <div className="option--title flex gap-5 mb-15 text-14">
+        <div className="option--title gap-5 mb-15 text-14 hidden">
           <span className="text-smoke">{option.name}:</span>
           {optionsAmount < 2 && <span>{activeVariant?.title}</span>}
         </div>
@@ -78,7 +78,7 @@ const ProductOption = ({
               key={key}
               title={`${option.name}: ${value}`}
               value={value}
-              className={cx('pp-no-hide',{
+              className={cx('',{
                 'btn is-variant': true,
                 'is-active': isActive,
                 'is-unavailable': !hasVariants,

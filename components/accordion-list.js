@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer'
 import Accordion from '@components/accordion'
 import BlockContent from '@components/block-content'
 
-const AccordionList = ({ items, type, openFirst }) => {
+const AccordionList = ({ items, type, openFirst, contentClassName }) => {
   const [activeAccordion, setActiveAccordion] = useState(null)
 
   const onToggle = (id, status) => {
@@ -16,7 +16,7 @@ const AccordionList = ({ items, type, openFirst }) => {
   const [scrollRef, inView] = useInView({ threshold: 0, triggerOnce: true })
 
   return (
-    <div ref={scrollRef} className="accordion-group flex flex-col gap-5">
+    <div ref={scrollRef} className={`accordion-group flex flex-col`}>
       {items.map((accordion, key) => {
         return (
           <m.div
@@ -39,10 +39,19 @@ const AccordionList = ({ items, type, openFirst }) => {
               onToggle={onToggle}
               title={accordion.title}
             >
-              <BlockContent
-                className="w-full max-w-[66rem]"
-                blocks={accordion.content}
-              />
+              {contentClassName ? (
+                <div className={contentClassName}>
+                  <BlockContent
+                    className="w-full max-w-[66rem]"
+                    blocks={accordion.content}
+                  />
+                </div>
+              ) : (
+                <BlockContent
+                  className="w-full max-w-[66rem]"
+                  blocks={accordion.content}
+                />
+              )}
             </Accordion>
           </m.div>
         )

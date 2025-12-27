@@ -28,6 +28,9 @@ const Accordion = ({
   isControlled = false,
   onToggle = () => {},
   className,
+  titleClassName,
+  iconName = 'Plus',
+  iconViewBox = '0 0 12 12',
   children,
 }) => {
   const [hasFocus, setHasFocus] = useState(isOpen)
@@ -58,7 +61,7 @@ const Accordion = ({
           aria-expanded={isOpen}
           aria-controls={`accordion-${id}`}
           className={cx(
-            `accordion--toggle w-full flex justify-between items-center relative`,
+            `group accordion--toggle w-full flex justify-between items-center relative`,
             {
               'is-open': isOpen,
             }
@@ -66,22 +69,28 @@ const Accordion = ({
         >
           <div className="w-full flex items-start gap-20 justify-between text-18 md:text-36 py-15 md:py-15 px-15">
             <div
-              className={`text-left leading-100 ${
-                type === 'faqs' ? 'title-lg' : ' font-lb uppercase text-12'
-              }`}
+              className={cx(
+                'text-left leading-100',
+                titleClassName || (
+                  type === 'faqs' ? 'title-md md:title-lg' : ' font-lb uppercase text-12'
+                )
+              )}
             >
               {title}
             </div>
 
             <div
               className={cx(
-                `flex items-center justify-center transition-transform duration-300`,
-                {'rotate-[45deg]': isOpen},
-                {'w-[2rem] h-[2rem] translate-y-5': type === 'faqs'},
+                `flex items-center justify-center transition-[color,transform] duration-300`,
+                {'rotate-180': isOpen && iconName === 'Chevron Down'},
+                {'rotate-[45deg]': isOpen && iconName !== 'Chevron Down'},
+                {'w-[1.5rem] translate-y-5': type === 'faqs'},
                 {'w-[1.2rem] h-[1.2rem]': type !== 'faqs'},
+                {'text-pink': iconName === 'Chevron Down'},
+                {'text-ash group-hover:text-black': iconName !== 'Chevron Down'},
               )}
             >
-              <Icon name="Plus" viewBox="0 0 12 12" />
+              <Icon name={iconName} viewBox={iconViewBox} />
             </div>
           </div>
         </button>
@@ -97,7 +106,7 @@ const Accordion = ({
         onAnimationComplete={(v) => setHasFocus(v === 'open')}
       >
         <div
-          className="accordion--inner p-15 border-t border-[#E8E8E8] text-14"
+          className="accordion--inner border-t border-[#E8E8E8] text-14"
           hidden={!isOpen && !hasFocus}
         >
           {children}

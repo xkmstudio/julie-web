@@ -174,7 +174,7 @@
 
   .title{
     &-2xl{
-      @apply my-0 leading-105 tracking-[-.02em] text-24 md:text-[6rem] font-lxb;
+      @apply my-0 leading-105 tracking-[-.02em] text-36 md:text-[6rem] font-lxb;
     }
     &-lg{
       @apply my-0 leading-110 tracking-[-.02em] text-24 md:text-[3.6rem] font-lxb;

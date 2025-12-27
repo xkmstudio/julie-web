@@ -71,6 +71,7 @@ export async function getCollection(slug, preview) {
         hero{${queries.mediaContent}},
         products[]->{${queries.product}},
         title,
+        type,
         seo
       },
       ${queries.site}
