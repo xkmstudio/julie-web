@@ -1,12 +1,13 @@
 import React from 'react'
 import NextLink from 'next/link'
+import cx from 'classnames'
 
 import Photo from '@components/photo'
 
-const RelatedCard = ({ item }) => {
+const RelatedCard = ({ item, className }) => {
   return (
     <>
-      <div className="w-full md:w-1/2 flex flex-col gap-20">
+      <div className={cx('flex flex-col gap-15 md:gap-20', className || 'w-full md:w-1/2')}>
         <div className="w-full flex flex-col">
           <div className="w-full pb-[100%] relative rounded-[1rem] overflow-hidden">
             <Photo
@@ -24,15 +25,15 @@ const RelatedCard = ({ item }) => {
             )}
           </div>
         </div>
-        <div className="md:flex-1 flex flex-col justify-between">
+        <div className="md:flex-1 flex flex-col items-center md:items-start justify-between">
           <div className="flex flex-col gap-10">
-            <div className="text-18 md:text-40 font-lxb leading-[1.05]">
+            <div className="text-24 md:text-40 font-lxb text-center md:text-left leading-[1.05]">
               {item.title}
             </div>
           </div>
         </div>
         {item.authors?.length > 0 && (
-          <div className='flex items-center flex-wrap gap-10'>
+          <div className='flex flex-col md:flex-row items-center flex-wrap gap-10'>
             <div className="flex justify-center items-center gap-3">
               <div>by</div>
               <div>

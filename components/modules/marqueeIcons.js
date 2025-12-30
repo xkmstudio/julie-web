@@ -36,7 +36,7 @@ const MarqueeIcon = ({ item, index, className }) => {
 }
 
 const MarqueeIcons = ({ data = {} }) => {
-  const { items, speed, reverse, marquee, pausable } = data
+  const { items, speed, reverse, marquee, pausable, title } = data
 
   if (!items?.length) return null
 
@@ -47,7 +47,8 @@ const MarqueeIcons = ({ data = {} }) => {
   })
 
   return (
-    <section ref={marqueeRef} className="relative w-full overflow-hidden">
+    <section ref={marqueeRef} className="relative w-full overflow-hidden flex flex-col gap-50">
+      {title && <h2 className="title-2xl w-full text-center max-w-[78rem] mx-auto mb-25">{title}</h2>}
       {marquee ? (
         <div className="relative w-full marquee-section">
           <Marqy
@@ -58,7 +59,11 @@ const MarqueeIcons = ({ data = {} }) => {
           >
             <div className="marquee--item">
               {items.map((item, key) => {
-                return <MarqueeIcon className="h-[5rem]" item={item} index={key} />
+                return (
+                  <React.Fragment key={key}>
+                    <MarqueeIcon className="h-[5rem]" item={item} index={key} />
+                  </React.Fragment>
+                )
               })}
             </div>
           </Marqy>
@@ -67,7 +72,13 @@ const MarqueeIcons = ({ data = {} }) => {
         <div className="relative w-full px-15 md:px-25">
           <div className="flex flex-col md:flex-row gap-15 md:gap-50 justify-center items-center">
             {items.map((item, key) => {
-              return <MarqueeIcon className="h-[4rem] w-1/2 md:w-[unset]" item={item} index={key} />
+              return (
+                <MarqueeIcon
+                  className="h-[4rem] w-1/2 md:w-[unset]"
+                  item={item}
+                  index={key}
+                />
+              )
             })}
           </div>
         </div>

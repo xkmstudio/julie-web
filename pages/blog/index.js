@@ -314,7 +314,7 @@ const Articles = ({ data }) => {
 
   return (
     <Layout site={site} page={page}>
-      <div className={`mb-60 md:mb-100${tagMobile ? ' hero-bleed' : ''}`}>
+      <div className={`mb-60 md:mb-100 hero-bleed`}>
         <Link
           className="block relative w-full h-[100vw] md:h-[60rem] overflow-hidden"
           href={`/blog/${featuredArticle.slug}`}

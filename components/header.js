@@ -52,7 +52,7 @@ const Header = ({ data, work, pages }) => {
     const checkScrollAndHeroBleed = () => {
       const hasHeroBleed = document.querySelector('.hero-bleed') !== null
       const scrollY = window.scrollY || window.pageYOffset
-      
+
       if (hasHeroBleed && scrollY < 100) {
         setIsTransparent(true)
       } else {
@@ -64,7 +64,9 @@ const Header = ({ data, work, pages }) => {
     checkScrollAndHeroBleed()
 
     // Add scroll listener
-    window.addEventListener('scroll', checkScrollAndHeroBleed, { passive: true })
+    window.addEventListener('scroll', checkScrollAndHeroBleed, {
+      passive: true,
+    })
 
     // Re-check when route changes (after a short delay to allow DOM to update)
     const handleRouteChange = () => {
@@ -90,12 +92,15 @@ const Header = ({ data, work, pages }) => {
       <header
         ref={headerRef}
         className={cx(
-          'fixed z-[91] flex top-0 left-0 justify-between w-full px-15 md:px-25 pt-20 text-white',
+          'fixed z-[91] flex top-0 left-0 justify-between w-full px-15 md:px-25 pt-20 text-white'
         )}
       >
-        <div className={cx(`header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
-          { 'is-transparent': isTransparent && !menuOpen }
-        )}>
+        <div
+          className={cx(
+            `header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
+            { 'is-transparent': isTransparent && !menuOpen }
+          )}
+        >
           <div className="hidden md:flex gap-15 items-center font-lxb">
             {nav?.map((item, index) => (
               <div key={index} className={`flex`}>
@@ -112,12 +117,14 @@ const Header = ({ data, work, pages }) => {
           </div>
           <div className="flex w-full md:w-[unset]">
             <div className="flex justify-between w-full gap-15">
-              <div className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink">
-                <button
+              <button
+                onClick={() => {
+                  setMenuOpen(!menuOpen)
+                }}
+                className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink"
+              >
+                <div
                   ref={burgerRef}
-                  onClick={() => {
-                    setMenuOpen(!menuOpen)
-                  }}
                   aria-label={menuOpen ? 'close menu' : 'open menu'}
                   className={cx('w-[1.8rem] nav-toggle px-0 mb-1')}
                 >
@@ -154,8 +161,8 @@ const Header = ({ data, work, pages }) => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                </button>
-              </div>
+                </div>
+              </button>
               <div className="hidden md:flex gap-15 items-center font-lxb">
                 {navSecondary?.map((item, index) => (
                   <div key={index} className={`flex`}>
@@ -186,7 +193,7 @@ const Header = ({ data, work, pages }) => {
                 variants={backgroundAnim}
                 transition={{ duration: 0.7, ease: [0.19, 1.0, 0.22, 1.0] }}
                 aria-label="Close Menu"
-                className="absolute left-0 top-0 w-full h-full bg-[rgba(255,255,255,.1)] backdrop-blur-[60px]"
+                className="absolute left-0 top-0 w-full h-full bg-[rgba(0,0,0,.7)]"
               ></m.button>
               <m.nav
                 key={'navbg'}
@@ -195,9 +202,9 @@ const Header = ({ data, work, pages }) => {
                 exit="closed"
                 variants={menuAnim}
                 transition={{ duration: 0.5, ease: [0.19, 1.0, 0.22, 1.0] }}
-                className="w-full bg-white pt-100"
+                className="w-full bg-pink text-white pt-100"
               >
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-10 pb-30">
                   {nav?.map((link, key) => {
                     return (
                       <Link
@@ -206,28 +213,30 @@ const Header = ({ data, work, pages }) => {
                           setMenuOpen(false)
                         }}
                         className={
-                          'uppercase leading-100 w-full flex items-center justify-between border-b border-cement p-10'
+                          'title-2xl leading-100 w-full flex items-center justify-center text-center px-35 border-white'
                         }
-                        hasArrow={true}
+                        hasArrow={false}
                         key={key}
                         link={link}
                       />
                     )
                   })}
-                </div>
-                <div className="flex w-full justify-between mt-50 p-10">
-                  <div className="flex gap-5">
-                    <span>© {new Date().getFullYear()} Julie Products Inc</span>
-                  </div>
-
-                  <a
-                    className="link-text"
-                    href="https://xkm.studio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span>Site Credits</span>
-                  </a>
+                  {navSecondary?.map((link, key) => {
+                    return (
+                      <Link
+                        onClick={() => {
+                          setModalActive(link._key)
+                          setMenuOpen(false)
+                        }}
+                        className={
+                          'title-2xl leading-100 w-full flex items-center justify-center text-center px-35 border-white'
+                        }
+                        hasArrow={false}
+                        key={key}
+                        link={link}
+                      />
+                    )
+                  })}
                 </div>
               </m.nav>
             </div>
@@ -249,7 +258,7 @@ const CartToggle = () => {
         toggleCart()
       }}
     >
-      <div className='relative w-[2rem] -translate-y-3'>
+      <div className="relative w-[2rem] -translate-y-3">
         <div className="w-[2rem] text-pink">
           <Icon name="Cart" viewBox="0 0 20 22" />
         </div>

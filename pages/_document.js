@@ -16,6 +16,7 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
           <div id="drawer" />
+          <div id="ema-chat" />
         </body>
       </Html>
     )

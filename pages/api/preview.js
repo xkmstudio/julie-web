@@ -24,9 +24,14 @@ export default function handler(req, res) {
   )
 
   // Redirect to the associated page
-  res.redirect(
-    isStatic
-      ? `/${isStatic}`
-      : `/${isDynamic ? `${isDynamic}/` : ''}${req.query.slug}`
-  )
+  // Handle page type with /pages/ prefix
+  if (req.query.type === 'page' && !isStatic) {
+    res.redirect(`/pages/${req.query.slug || ''}`)
+  } else {
+    res.redirect(
+      isStatic
+        ? `/${isStatic}`
+        : `/${isDynamic ? `${isDynamic}/` : ''}${req.query.slug}`
+    )
+  }
 }

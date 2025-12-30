@@ -4,7 +4,7 @@ import FocusTrap from 'focus-trap-react'
 import cx from 'classnames'
 import useEmblaCarousel from 'embla-carousel-react'
 
-import { InPortal, useWindowSize } from '../lib/helpers'
+import { InPortal, useWindowSize, useIsInFrame } from '../lib/helpers'
 
 const Drawer = ({
   direction = 'right',
@@ -23,8 +23,9 @@ const Drawer = ({
   const MOBILE_BREAKPOINT = 950
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
+  const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
-  const showCarousel = isClient && isMobile
+  const showCarousel = isClient && (isMobile || isInFrame)
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',

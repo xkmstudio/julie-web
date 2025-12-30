@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { useInView } from 'react-intersection-observer'
 import Media from '@components/media'
-import { useWindowSize } from '@lib/helpers'
+import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
 const MOBILE_BREAKPOINT = 950
 
@@ -10,8 +10,9 @@ const Media3Up = ({ data = {} }) => {
   const { items, title, subtitle, background } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
+  const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
-  const showCarousel = isClient && isMobile
+  const showCarousel = isClient && (isMobile || isInFrame)
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'center',
     containScroll: 'trimSnaps',

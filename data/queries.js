@@ -276,6 +276,7 @@ export const modules = `
   _type == 'hero' => {
     _type,
     _key,
+    hasEma,
     title[]{${ptContent}},
     subtitle[]{${ptContent}},
     backgroundMedia{${mediaContent}},
@@ -329,6 +330,16 @@ export const modules = `
     title,
     link[0]{${link}},
     media{${mediaContent}}
+  },
+  _type == 'mediaText' => {
+    _type,
+    _key,
+    config,
+    subtitle,
+    title,
+    content[]{${ptContent}},
+    media{${mediaContent}},
+    cta[0]{${link}}
   },
   _type == 'mediaBleed' => {
     _type,
@@ -402,6 +413,17 @@ export const modules = `
         role,
       },
       tags[]->{'slug': slug.current, title},
+    }
+  },
+  _type == 'featuredProfiles' => {
+    _type,
+    _key,
+    title,
+    profiles[]->{
+      title,
+      'slug': slug.current,
+      image{${assetMeta}},
+      role,
     }
   },
   _type == 'productFaqs' => {

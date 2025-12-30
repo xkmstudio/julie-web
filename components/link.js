@@ -31,7 +31,7 @@ const getPageUrl = (page) => {
       return `/blog/${slug}`
     case 'page':
     default:
-      return `/${slug}`
+      return `/pages/${slug}`
   }
 }
 

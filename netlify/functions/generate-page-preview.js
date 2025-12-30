@@ -122,7 +122,7 @@ exports.handler = async (event, context) => {
     } else if (documentType === 'tutorialsPage') {
       pageUrl = `${baseUrl}/tutorials`
     } else if (documentType === 'page') {
-      pageUrl = slug ? `${baseUrl}/${slug}` : baseUrl
+      pageUrl = slug ? `${baseUrl}/pages/${slug}` : baseUrl
     } else {
       return {
         statusCode: 400,

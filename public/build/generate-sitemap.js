@@ -18,7 +18,7 @@ const client = createClient({
 // })
 
 const SITEMAP_PATH = path.resolve(process.cwd(), 'public', 'sitemap.xml')
-const SITE_ROOT = 'https://xkm.studio'
+const SITE_ROOT = 'https://juliecare.co'
 
 //
 // === Queries ===
@@ -55,7 +55,7 @@ const generateSitemap = async () => {
   const workLocation = `<url><loc>${SITE_ROOT}/work</loc></url>`
 
   const pagesLocations = pages.map(
-    slug => `<url><loc>${SITE_ROOT}/${slug}</loc></url>`,
+    slug => `<url><loc>${SITE_ROOT}/pages/${slug}</loc></url>`,
   )
 
   const projectsLocations = projects.map(

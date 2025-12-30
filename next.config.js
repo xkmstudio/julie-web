@@ -73,4 +73,19 @@ module.exports = withBundleAnalyzer({
     const sanityRedirects = await fetchSanityRedirects()
     return sanityRedirects
   },
+  async rewrites() {
+    return [
+      // Rewrite /apps/app-proxy/* to /api/apps/app-proxy/*
+      // This matches the Hydrogen route structure
+      {
+        source: '/apps/app-proxy/:path*',
+        destination: '/api/apps/app-proxy/:path*',
+      },
+      // Rewrite /lucky-local/shopify/* to /api/lucky-local/shopify/*
+      {
+        source: '/lucky-local/shopify/:path*',
+        destination: '/api/lucky-local/shopify/:path*',
+      },
+    ]
+  },
 })

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 const HeadSEO = ({ site = {}, page = {}, schema }) => {
   const router = useRouter()
-  const BASE_URL = 'https://xkm.studio' // Hardcoded base URL
+  const BASE_URL = 'https://juliecare.co' // Hardcoded base URL
 
   // set <head> variables
   const siteTitle = site.title

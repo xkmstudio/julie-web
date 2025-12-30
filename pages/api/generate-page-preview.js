@@ -157,7 +157,7 @@ export default async function handler(req, res) {
       // tutorialsPage doesn't need a slug - URL is hardcoded
       pageUrl = `${baseUrl}/tutorials`
     } else if (documentType === 'page') {
-      pageUrl = slug ? `${baseUrl}/${slug}` : baseUrl
+      pageUrl = slug ? `${baseUrl}/pages/${slug}` : baseUrl
     } else {
       console.error(`[${requestId}] Unknown document type:`, documentType)
       return res.status(400).json({ 

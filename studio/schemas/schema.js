@@ -21,6 +21,7 @@ import shopHome from './documents/shop-home'
 // Module types
 import hero from './modules/hero'
 import featuredProducts from './modules/productFeature'
+import featuredProfiles from './modules/featuredProfiles'
 import marquee from './modules/marquee'
 import productShop from './modules/productShop'
 import textBlock from './modules/textBlock'
@@ -37,6 +38,7 @@ import slideshow from './modules/slideshow'
 import generalText from './modules/generalText'
 import marqueeIcons from './modules/marqueeIcons'
 import media3Up from './modules/media3Up'
+import mediaText from './modules/mediaText'
 import gradient from './modules/gradient'
 import testimonials from './modules/testimonials'
 import featuredArticles from './modules/featuredArticles'
@@ -108,9 +110,11 @@ export default [
     marquee,
     productShop,
     featuredProducts,
+    featuredProfiles,
     textBlock,
     mediaFeature,
     mediaBleed,
+    mediaText,
     faqs,
     indexList,
     indexTutorials,

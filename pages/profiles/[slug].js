@@ -35,8 +35,8 @@ const Profile = ({ data, sanityConfig }) => {
       {!router.isFallback && (
         <Layout site={site} page={page}>
           <div className="w-full">
-            <div className="w-full h-screen min-h-[50rem] flex gap-15 md:gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 section-padding">
-              <div className="w-1/2 h-full relative rounded-[1.5rem] overflow-hidden">
+            <div className="w-full md:h-screen min-h-[50rem] flex flex-col md:flex-row gap-15 md:gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 section-padding">
+              <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
                 {image && (
                   <Photo
                     photo={image}
@@ -48,7 +48,7 @@ const Profile = ({ data, sanityConfig }) => {
                   />
                 )}
               </div>
-              <div className="w-1/2 flex flex-col gap-15 md:gap-25 items-center p-25">
+              <div className="w-full md:w-1/2 flex flex-col gap-15 md:gap-25 items-center p-25">
                 <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
                   <div className="w-full text-center flex-1 flex flex-col justify-center gap-35 items-center">
                     <div className="w-full flex flex-col gap-20">
@@ -66,13 +66,13 @@ const Profile = ({ data, sanityConfig }) => {
             </div>
             
             {articles && articles.length > 0 && (
-              <div className="w-full flex flex-col items-center gap-50 my-90 section-padding">
+              <div className="w-full flex flex-col items-center gap-30 md:gap-50 mt-30 mb-90 md:my-90 section-padding">
                 <div className="title-lg text-center">Articles with {title}</div>
-                <div className="flex flex-col md:flex-row gap-20 w-full">
+                <div className="grid-standard gap-y-40">
                   {articles.map((article, key) => {
                     return (
                       <React.Fragment key={key}>
-                        <ArticleCard item={article} />
+                        <ArticleCard item={article} className="col-span-12 md:col-span-4" />
                       </React.Fragment>
                     )
                   })}

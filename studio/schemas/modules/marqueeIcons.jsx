@@ -19,7 +19,7 @@ export default {
             title: 'Title',
             name: 'title',
             type: 'string',
-            description: 'Internal use only'
+            // description: 'Internal use only'
         },
         {
             title: 'Use Marquee',

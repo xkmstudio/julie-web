@@ -7,6 +7,12 @@ export default {
   icon: Star,
   fields: [
     {
+      title: 'Include Ema',
+      name: 'hasEma',
+      type: 'boolean',
+      initialValue: true,
+    },
+    {
       title: 'Title',
       name: 'title',
       type: 'simplePortableText'

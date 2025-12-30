@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import ProductCard from '@components/product/product-card'
 import ProductCarousel from '@components/product-carousel'
-import { useWindowSize } from '@lib/helpers'
+import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
 const MOBILE_BREAKPOINT = 950
 const DESKTOP_CAROUSEL_THRESHOLD = 3
@@ -11,12 +11,13 @@ const ProductFeature = ({ data }) => {
   const { products } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
+  const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const isDesktop = width >= MOBILE_BREAKPOINT
   const productCount = products?.length || 0
 
-  // Show carousel on mobile, or on desktop if more than 3 products
-  const showCarousel = isClient && (isMobile || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
+  // Show carousel on mobile, in frame, or on desktop if more than 3 products
+  const showCarousel = isClient && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
 
   useEffect(() => {
     setIsClient(true)

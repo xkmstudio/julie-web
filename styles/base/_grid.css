@@ -1,5 +1,5 @@
 .grid{
     &-standard{
-        @apply grid grid-cols-12 gap-x-10 md:gap-x-15;
+        @apply grid grid-cols-12 gap-x-15 md:gap-x-25;
     }
 }

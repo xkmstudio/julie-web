@@ -13,14 +13,13 @@ const ProductShop = dynamic(() => import('./productShop'))
 const TextBlock = dynamic(() => import('./textBlock'))
 const MediaFeature = dynamic(() => import('./mediaFeature'))
 const MediaBleed = dynamic(() => import('./mediaBleed'))
+const MediaText = dynamic(() => import('./mediaText'))
 const Tutorials = dynamic(() => import('./tutorials'))
 const Faqs = dynamic(() => import('./faqs'))
 const IndexList = dynamic(() => import('./indexList'))
 const IndexTutorials = dynamic(() => import('./indexTutorials'))
-const ProductContents = dynamic(() => import('./productContents'))
 const ProductRelated = dynamic(() => import('./productRelated'))
 const Slideshow = dynamic(() => import('./slideshow'))
-const ProductConstruction = dynamic(() => import('./productConstruction'))
 const ProductCollection = dynamic(() => import('./productCollection'))
 const GeneralText = dynamic(() => import('./generalText'))
 const MarqueeIcons = dynamic(() => import('./marqueeIcons'))
@@ -28,6 +27,7 @@ const Media3Up = dynamic(() => import('./media3Up'))
 const ProductFaqs = dynamic(() => import('./productFaqs'))
 const Testimonials = dynamic(() => import('./testimonials'))
 const FeaturedArticles = dynamic(() => import('./featuredArticles'))
+const FeaturedProfiles = dynamic(() => import('./featuredProfiles'))
 const StoreLocator = dynamic(() => import('./storeLocator'))
 
 export const Module = ({ module, product, activeVariant, onVariantChange }) => {
@@ -50,6 +50,8 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
       return <MediaFeature data={module} />
     case 'mediaBleed':
       return <MediaBleed data={module} />
+    case 'mediaText':
+      return <MediaText data={module} />
     case 'tutorials':
       return <Tutorials data={module} />
     case 'faqs':
@@ -58,14 +60,10 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
       return <IndexList data={module} />
     case 'indexTutorials':
       return <IndexTutorials data={module} />
-    case 'productContents':
-      return <ProductContents data={module} />
     case 'productRelated':
       return <ProductRelated data={module} />
     case 'slideshow':
       return <Slideshow data={module} />
-    case 'productConstruction':
-      return <ProductConstruction data={module} />
     case 'productCollection':
       return <ProductCollection data={module} />
     case 'generalText':
@@ -78,6 +76,8 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
       return <Testimonials data={module} />
     case 'featuredArticles':
       return <FeaturedArticles data={module} />
+    case 'featuredProfiles':
+      return <FeaturedProfiles data={module} />
     case 'storeLocator':
       return <StoreLocator data={module} />
     default:

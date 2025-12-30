@@ -24,3 +24,85 @@
 @import "components/_counters";
 @import "components/_article";
 @import "components/_testimonials";
+
+/* Ema Widget Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  /* Wait 5 seconds at start (approximately 31.25% of 16s total) */
+  31.25% {
+    transform: translateX(0);
+  }
+  /* Animate to end position (50% of animation) */
+  50% {
+    transform: translateX(calc(-100% + var(--marquee-container-width, 100%)));
+  }
+  /* Wait 5 seconds at end (approximately 81.25% of 16s total) */
+  81.25% {
+    transform: translateX(calc(-100% + var(--marquee-container-width, 100%)));
+  }
+  /* Return to start */
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 16s ease-in-out infinite;
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Force mobile rendering in Ema frame */
+/* Override md: breakpoint (850px) styles to force mobile layout */
+@media (min-width: 850px) {
+  /* Common flex direction overrides */
+  .ema-frame-mobile .md\:flex-row,
+  .ema-frame-mobile [class*="md:flex-row"] {
+    flex-direction: column !important;
+  }
+  
+  /* Common width overrides */
+  .ema-frame-mobile .md\:w-1\/2,
+  .ema-frame-mobile [class*="md:w-1/2"],
+  .ema-frame-mobile [class*="md:w-1\/2"] {
+    width: 100% !important;
+  }
+  
+  /* Common height overrides */
+  .ema-frame-mobile .md\:h-screen,
+  .ema-frame-mobile [class*="md:h-screen"] {
+    height: auto !important;
+  }
+  
+  /* Common display overrides */
+  .ema-frame-mobile .md\:block,
+  .ema-frame-mobile [class*="md:block"] {
+    display: block !important;
+  }
+  
+  .ema-frame-mobile .md\:hidden,
+  .ema-frame-mobile [class*="md:hidden"] {
+    display: none !important;
+  }
+  
+  /* Common padding - remove md: padding to keep mobile values */
+  .ema-frame-mobile .md\:p-30 {
+    padding: 2rem !important; /* Use mobile p-20 value */
+  }
+  
+  .ema-frame-mobile .md\:p-25 {
+    padding: 2rem !important; /* Use mobile p-20 value */
+  }
+  
+  /* Common gap overrides */
+  .ema-frame-mobile .md\:gap-25 {
+    gap: 1.5rem !important; /* Use mobile gap-15 value */
+  }
+}

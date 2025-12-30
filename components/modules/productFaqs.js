@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { useInView } from 'react-intersection-observer'
 import AccordionList from '@components/accordion-list'
-import { buildGradientStyle, useWindowSize } from '@lib/helpers'
+import { buildGradientStyle, useWindowSize, useIsInFrame } from '@lib/helpers'
 
 const MOBILE_BREAKPOINT = 950
 
@@ -10,6 +10,7 @@ const ProductFaqs = ({ data = {} }) => {
   const { title, backgroundGradient, sections } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
+  const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const [activeSectionIndex, setActiveSectionIndex] = useState(0)
   const sectionRefs = useRef([])
@@ -89,7 +90,7 @@ const ProductFaqs = ({ data = {} }) => {
           {/* Section Button Toggles - Only show if multiple sections */}
           {hasMultipleSections && (
             <div className="w-full mb-60">
-              {isMobile && isClient ? (
+              {(isMobile || isInFrame) && isClient ? (
                 // Mobile: Horizontal carousel
                 <div className="overflow-hidden -mx-10 md:mx-0">
                   <div ref={emblaRef} className="overflow-visible">

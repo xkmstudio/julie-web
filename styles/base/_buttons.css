@@ -148,7 +148,7 @@ button{
 }
 
 .tag-role{
-  @apply text-current rounded-full px-5 py-3 leading-100 border border-current font-plaid uppercase;
+  @apply rounded-full px-5 py-3 leading-100 border border-current font-plaid uppercase;
 }
 
 .link{

@@ -42,7 +42,8 @@ export default {
         layout: 'radio',
         direction: 'horizontal',
       },
-      initialValue: 'standard'
+      initialValue: 'none',
+      // hidden: true,
     },
     {
       title: 'Page Modules',
@@ -56,14 +57,16 @@ export default {
         { type: 'marqueeIcons' },
         { type: 'textBlock' },
         { type: 'mediaFeature' },
+        { type: 'mediaText' },
+        { type: 'media3Up' },
         { type: 'faqs' },
         { type: 'storeLocator' },
         { type: 'productContents' },
         { type: 'productRelated' },
         { type: 'slideshow' },
         { type: 'generalText' },
-        { type: 'media3Up' },
         { type: 'featuredArticles' },
+        { type: 'featuredProfiles' },
       ]
     },
     {
@@ -78,7 +81,7 @@ export default {
       slug: 'slug'
     },
     prepare({ title = 'Untitled', slug = {} }) {
-      const path = `/${slug.current}`
+      const path = `/pages/${slug.current}`
       return {
         title,
         subtitle: slug.current ? path : '(missing slug)'

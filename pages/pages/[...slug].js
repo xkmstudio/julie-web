@@ -32,7 +32,8 @@ const Page = ({ data }) => {
 } 
 
 export async function getStaticProps({ params, preview, previewData }) {
-  const pageData = await getPage(params.slug.join('/'), {
+  const pageSlug = params.slug.join('/')
+  const pageData = await getPage(pageSlug, {
     active: preview,
     token: previewData?.token,
   })
@@ -62,3 +63,4 @@ export async function getStaticPaths() {
 }
 
 export default Page
+
