@@ -49,3 +49,40 @@
         }
     }
 }
+
+@keyframes jewelFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.jewel-float {
+    animation: jewelFloat 2s ease-in-out infinite;
+}
+
+.jewel-float-1 {
+    animation: jewelFloat 1.85s ease-in-out infinite;
+}
+
+.jewel-float-2 {
+    animation: jewelFloat 1.95s ease-in-out infinite;
+}
+
+.jewel-float-3 {
+    animation: jewelFloat 2.05s ease-in-out infinite;
+}
+
+.jewel-float-4 {
+    animation: jewelFloat 1.9s ease-in-out infinite;
+}
+
+.jewel-float-5 {
+    animation: jewelFloat 2.1s ease-in-out infinite;
+}
+
+.jewel-float-6 {
+    animation: jewelFloat 2.15s ease-in-out infinite;
+}

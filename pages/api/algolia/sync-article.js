@@ -77,24 +77,28 @@ function transformArticleToAlgolia(article) {
         aspectRatio: article.image.aspectRatio || null,
       }
     })(),
-    // Transform gradient - store as object with url, alt, lqip, etc.
-    gradient: (() => {
-      if (!article.gradient) return null
-      const url = article.gradient.url || (article.gradient.asset ? buildImageUrlFromRef(
-        typeof article.gradient.asset === 'string'
-          ? article.gradient.asset
-          : article.gradient.asset?._ref || article.gradient.asset
-      ) : null)
-      if (!url) return null
-      return {
-        url,
-        alt: article.gradient.alt || '',
-        lqip: article.gradient.lqip || null,
-        width: article.gradient.width || null,
-        height: article.gradient.height || null,
-        aspectRatio: article.gradient.aspectRatio || null,
-      }
-    })(),
+    // Transform gradient - store the full gradient object structure
+    gradient: article.gradient && article.gradient.colorStops && article.gradient.colorStops.length >= 2
+      ? {
+          type: article.gradient.type || 'linear',
+          direction: article.gradient.direction || 'to bottom',
+          customAngle: article.gradient.customAngle || null,
+          colorStops: (article.gradient.colorStops || []).map((stop) => {
+            // Preserve the full color object structure (hex, rgb, alpha)
+            const color = stop.color
+            return {
+              color: color ? {
+                hex: color.hex || null,
+                rgb: color.rgb || null,
+                alpha: color.alpha !== undefined ? color.alpha : (color.rgb?.a !== undefined ? color.rgb.a : 1),
+              } : null,
+              position: stop.position || 0,
+            }
+          }),
+          height: article.gradient.height || null,
+          padding: article.gradient.padding || null,
+        }
+      : null,
     // Include content for search (plain text from portable text)
     _content: extractTextFromPortableText(article.content || []),
     _excerpt: extractTextFromPortableText(article.excerpt || []),
@@ -128,15 +132,19 @@ async function fetchArticleFromSanity(articleId) {
       date,
       useGradient,
           gradient{
-            alt,
-            "asset": image.asset._ref,
-            "url": image.asset->url,
-            "id": image.asset->assetId,
-            "type": image.asset->mimeType,
-            "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
-            "lqip": image.asset->metadata.lqip,
-            "width": image.asset->metadata.dimensions.width,
-            "height": image.asset->metadata.dimensions.height
+            type,
+            direction,
+            customAngle,
+            colorStops[]{
+              color{
+                hex,
+                rgb,
+                alpha
+              },
+              position
+            },
+            height,
+            padding
           },
           image{
             alt,
@@ -247,40 +255,30 @@ export default async function handler(req, res) {
           date,
           useGradient,
       gradient{
-        alt,
-        image{
-          asset->{
-            _ref,
-            assetId,
-            mimeType,
-            metadata{
-              dimensions{
-                aspectRatio,
-                width,
-                height
-              },
-              lqip
-            }
-          }
-        }
+        type,
+        direction,
+        customAngle,
+        colorStops[]{
+          color{
+            hex,
+            rgb,
+            alpha
+          },
+          position
+        },
+        height,
+        padding
       },
       image{
         alt,
-        image{
-          asset->{
-            _ref,
-            assetId,
-            mimeType,
-            metadata{
-              dimensions{
-                aspectRatio,
-                width,
-                height
-              },
-              lqip
-            }
-          }
-        }
+        "asset": image.asset._ref,
+        "url": image.asset->url,
+        "id": image.asset->assetId,
+        "type": image.asset->mimeType,
+        "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
+        "lqip": image.asset->metadata.lqip,
+        "width": image.asset->metadata.dimensions.width,
+        "height": image.asset->metadata.dimensions.height
       },
           tags[]->{
             title,

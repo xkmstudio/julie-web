@@ -1,19 +1,82 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import NextLink from 'next/link'
 import BlockContent from '@components/block-content'
 import Photo from '@components/photo'
 import Icon from '@components/icon'
 import { Module } from '@components/modules'
-import { useIsInFrame } from '@lib/helpers'
+import { useIsInFrame, useWindowSize, hasObject } from '@lib/helpers'
+import cx from 'classnames'
+import AuthorCard from '@components/author-card'
+import ArticleCard from '@components/related-card'
+import ProductCarousel from '@components/product-carousel'
+import ProductHero from '@components/modules/productHero'
+import Gradient from '@components/gradient'
+
+const MOBILE_BREAKPOINT = 950
 
 /**
  * Reusable component to render page or article content
  * This ensures we only write the rendering logic once
  */
-const PageContent = ({ page, type = 'page', sanityConfig = null, isInFrame = false }) => {
+const PageContent = ({
+  page,
+  type = 'page',
+  sanityConfig = null,
+  isInFrame = false,
+  onFrameLinkClick = null,
+}) => {
   const detectedInFrame = useIsInFrame()
   const actuallyInFrame = isInFrame || detectedInFrame
-  
+  const { width } = useWindowSize()
+  const [isClient, setIsClient] = useState(false)
+  const isMobile = width > 0 && width < MOBILE_BREAKPOINT
+
+  // Product-specific state
+  const [product, setProduct] = useState(
+    type === 'product' ? page?.product : null
+  )
+  const [activeVariantID, setActiveVariantID] = useState(null)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Initialize product variant on mount
+  useEffect(() => {
+    if (type === 'product' && page?.product?.variants?.length > 0) {
+      // Find default variant
+      const defaultVariant = page.product.variants.find((v) => {
+        const option = {
+          name: page.product.options?.[0]?.name,
+          value: page.product.options?.[0]?.values[0],
+          position: page.product.options?.[0]?.position,
+        }
+        return hasObject(v.options, option)
+      })
+      setActiveVariantID(defaultVariant?.id ?? page.product.variants[0].id)
+      setProduct(page.product)
+    }
+  }, [type, page])
+
+  // Handle variant change for products
+  const updateVariant = useCallback(
+    (id) => {
+      if (type === 'product' && page?.product?.variants) {
+        const isValidVariant = page.product.variants.find((v) => v.id == id)
+        if (isValidVariant) {
+          setActiveVariantID(id)
+        }
+      }
+    },
+    [type, page]
+  )
+
+  const activeVariant =
+    type === 'product' && product?.variants
+      ? product.variants.find((v) => v.id == activeVariantID) ||
+        product.variants[0]
+      : null
+
   if (!page) return null
 
   // Render article content
@@ -28,145 +91,249 @@ const PageContent = ({ page, type = 'page', sanityConfig = null, isInFrame = fal
       authors,
       reviewers,
       modules,
+      related,
+      useGradient,
+      gradient,
     } = page
+
+    console.log(useGradient, gradient)
 
     return (
       <div className="w-full">
         {/* Article Header Section */}
-        <div className="w-full flex flex-col md:flex-row gap-15 md:gap-25 pt-[calc(var(--headerHeight)+2.5rem)] pb-20 md:h-screen section-padding">
-          <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
+        <div
+          className={cx(
+            'w-full flex flex-col md:flex-row gap-15 md:gap-25 pb-20 md:h-screen section-padding relative',
+            {
+              'pt-[calc(var(--headerHeight)+2.5rem)]': !actuallyInFrame,
+            }
+          )}
+        >
+          <div className="w-full flex flex-col md:flex-row gap-15 md:gap-25 relative">
             {image && (
-              <Photo
-                photo={image}
-                width={2400}
-                srcSizes={[800, 1200, 1600, 2400]}
-                sizes="100%"
-                layout="fill"
-                className="object-cover h-full w-full"
-              />
-            )}
-          </div>
-          <div className="w-full md:w-1/2 flex flex-col gap-15 md:gap-25 items-center md:p-25 mt-10 md:mt-0">
-            <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
-              <div className="w-full text-center flex-1 flex flex-col justify-center gap-20 items-center">
-                {tag && (
-                  <NextLink href={`/blog/tags/${tag.slug}`} className="tag">
-                    {tag.title}
-                  </NextLink>
+              <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
+                {image && (
+                  <Photo
+                    photo={image}
+                    width={2400}
+                    srcSizes={[800, 1200, 1600, 2400]}
+                    sizes="100%"
+                    layout="fill"
+                    className="object-cover h-full w-full"
+                  />
                 )}
-                <div className="w-full my-10 md:my-0">
-                  <h1 className="title-2xl">{title}</h1>
-                </div>
-                {(authors?.length > 0 || reviewers?.length > 0) && (
-                  <div className="w-full flex flex-col gap-10">
-                    <div className="flex items-center justify-center">
-                      {authors?.map((author, key) => {
-                        return (
-                          <NextLink
-                            className="underline font-lb -ml-5"
-                            href={`/profiles/${author.slug}`}
-                            key={key}
-                          >
-                            <div className="w-50 h-50 rounded-full overflow-hidden relative">
-                              <Photo
-                                photo={author.image}
-                                width={600}
-                                srcSizes={[800, 1200, 1600, 2400]}
-                                sizes="100%"
-                                layout="fill"
-                                className="object-cover h-full w-full"
-                              />
-                            </div>
-                          </NextLink>
-                        )
-                      })}
-                      {reviewers?.map((reviewer, key) => {
-                        return (
-                          <NextLink
-                            className="underline font-lb -ml-5"
-                            href={`/profiles/${reviewer.slug}`}
-                            key={key}
-                          >
-                            <div className="w-50 h-50 rounded-full overflow-hidden relative">
-                              <Photo
-                                photo={reviewer.image}
-                                width={600}
-                                srcSizes={[800, 1200, 1600, 2400]}
-                                sizes="100%"
-                                layout="fill"
-                                className="object-cover h-full w-full"
-                              />
-                            </div>
-                          </NextLink>
-                        )
-                      })}
-                    </div>
-                    {authors?.length > 0 && (
-                      <div>
-                        <div className="w-full flex justify-center items-center gap-3">
-                          <div>Written by</div>
-                          <div>
-                            {authors?.map((author, key) => {
-                              return (
-                                <NextLink
-                                  className="underline font-lb"
-                                  href={`/profiles/${author.slug}`}
-                                  key={key}
-                                >
-                                  {author.title}
-                                </NextLink>
-                              )
-                            })}
-                          </div>
-                        </div>
-                        <div className="w-full flex justify-center items-center gap-2">
-                          {authors[0].role}
-                        </div>
+              </div>
+            )}
+            {useGradient && gradient && (
+              <div className="absolute left-0 bottom-0 w-full h-[100vw] md:h-full rounded-[1.5rem] overflow-hidden">
+                <Gradient gradient={gradient} />
+              </div>
+            )}
+            <div className="relative z-2 w-full md:w-1/2 mx-auto flex flex-col gap-15 md:gap-25 items-center md:p-25 mt-10 md:mt-0">
+              <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
+                <div className="w-full text-center flex-1 flex flex-col justify-center gap-20 items-center">
+                  {tag &&
+                    (actuallyInFrame && onFrameLinkClick ? (
+                      <a
+                        href={`/blog/tags/${tag.slug}`}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          onFrameLinkClick(`/blog/tags/${tag.slug}`)
+                        }}
+                        className="tag"
+                      >
+                        {tag.title}
+                      </a>
+                    ) : (
+                      <NextLink href={`/blog/tags/${tag.slug}`} className="tag">
+                        {tag.title}
+                      </NextLink>
+                    ))}
+                  <div className="w-full my-10 md:my-0">
+                    <h1 className="title-2xl">{title}</h1>
+                  </div>
+                  {(authors?.length > 0 || reviewers?.length > 0) && (
+                    <div className="w-full flex flex-col gap-10">
+                      <div className="flex items-center justify-center">
+                        {authors?.map((author, key) => {
+                          const authorHref = `/profiles/${author.slug}`
+                          return actuallyInFrame && onFrameLinkClick ? (
+                            <a
+                              key={key}
+                              className="underline font-lb -ml-5"
+                              href={authorHref}
+                              onClick={(e) => {
+                                e.preventDefault()
+                                onFrameLinkClick(authorHref)
+                              }}
+                            >
+                              <div className="w-50 h-50 rounded-full overflow-hidden relative">
+                                <Photo
+                                  photo={author.image}
+                                  width={600}
+                                  srcSizes={[800, 1200, 1600, 2400]}
+                                  sizes="100%"
+                                  layout="fill"
+                                  className="object-cover h-full w-full"
+                                />
+                              </div>
+                            </a>
+                          ) : (
+                            <NextLink
+                              className="underline font-lb -ml-5"
+                              href={authorHref}
+                              key={key}
+                            >
+                              <div className="w-50 h-50 rounded-full overflow-hidden relative">
+                                <Photo
+                                  photo={author.image}
+                                  width={600}
+                                  srcSizes={[800, 1200, 1600, 2400]}
+                                  sizes="100%"
+                                  layout="fill"
+                                  className="object-cover h-full w-full"
+                                />
+                              </div>
+                            </NextLink>
+                          )
+                        })}
+                        {reviewers?.map((reviewer, key) => {
+                          const reviewerHref = `/profiles/${reviewer.slug}`
+                          return actuallyInFrame && onFrameLinkClick ? (
+                            <a
+                              key={key}
+                              className="underline font-lb -ml-5"
+                              href={reviewerHref}
+                              onClick={(e) => {
+                                e.preventDefault()
+                                onFrameLinkClick(reviewerHref)
+                              }}
+                            >
+                              <div className="w-50 h-50 rounded-full overflow-hidden relative">
+                                <Photo
+                                  photo={reviewer.image}
+                                  width={600}
+                                  srcSizes={[800, 1200, 1600, 2400]}
+                                  sizes="100%"
+                                  layout="fill"
+                                  className="object-cover h-full w-full"
+                                />
+                              </div>
+                            </a>
+                          ) : (
+                            <NextLink
+                              className="underline font-lb -ml-5"
+                              href={reviewerHref}
+                              key={key}
+                            >
+                              <div className="w-50 h-50 rounded-full overflow-hidden relative">
+                                <Photo
+                                  photo={reviewer.image}
+                                  width={600}
+                                  srcSizes={[800, 1200, 1600, 2400]}
+                                  sizes="100%"
+                                  layout="fill"
+                                  className="object-cover h-full w-full"
+                                />
+                              </div>
+                            </NextLink>
+                          )
+                        })}
                       </div>
-                    )}
-                    {reviewers?.length > 0 && (
-                      <div>
-                        <div className="w-full flex flex-col justify-center items-center">
-                          <div>Reviewed by</div>
-                          <div className="flex flex-wrap justify-center items-center gap-3">
-                            {reviewers.map((reviewer, key) => {
-                              return (
-                                <React.Fragment key={key}>
-                                  {key > 0 && <span>&</span>}
-                                  <NextLink
-                                    className="underline font-lb italic"
-                                    href={`/profiles/${reviewer.slug}`}
+                      {authors?.length > 0 && (
+                        <div>
+                          <div className="w-full flex justify-center items-center gap-3">
+                            <div>Written by</div>
+                            <div>
+                              {authors?.map((author, key) => {
+                                const authorHref = `/profiles/${author.slug}`
+                                return actuallyInFrame && onFrameLinkClick ? (
+                                  <a
+                                    key={key}
+                                    className="underline font-lb"
+                                    href={authorHref}
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      onFrameLinkClick(authorHref)
+                                    }}
                                   >
-                                    {reviewer.title}
+                                    {author.title}
+                                  </a>
+                                ) : (
+                                  <NextLink
+                                    className="underline font-lb"
+                                    href={authorHref}
+                                    key={key}
+                                  >
+                                    {author.title}
                                   </NextLink>
-                                </React.Fragment>
-                              )
-                            })}
+                                )
+                              })}
+                            </div>
+                          </div>
+                          <div className="w-full flex justify-center items-center gap-2">
+                            {authors[0].role}
                           </div>
                         </div>
+                      )}
+                      {reviewers?.length > 0 && (
+                        <div>
+                          <div className="w-full flex flex-col justify-center items-center">
+                            <div>Reviewed by</div>
+                            <div className="flex flex-wrap justify-center items-center gap-3">
+                              {reviewers.map((reviewer, key) => {
+                                const reviewerHref = `/profiles/${reviewer.slug}`
+                                return (
+                                  <React.Fragment key={key}>
+                                    {key > 0 && <span>&</span>}
+                                    {actuallyInFrame && onFrameLinkClick ? (
+                                      <a
+                                        className="underline font-lb italic"
+                                        href={reviewerHref}
+                                        onClick={(e) => {
+                                          e.preventDefault()
+                                          onFrameLinkClick(reviewerHref)
+                                        }}
+                                      >
+                                        {reviewer.title}
+                                      </a>
+                                    ) : (
+                                      <NextLink
+                                        className="underline font-lb italic"
+                                        href={reviewerHref}
+                                      >
+                                        {reviewer.title}
+                                      </NextLink>
+                                    )}
+                                  </React.Fragment>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {summary && (
+                  <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-10 bg-white rounded-[1.5rem] julie-gradient p-1 relative mt-30">
+                    <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient"></div>
+                    <div className="relative z-2 w-full flex flex-col gap-10 bg-white p-20 rounded-[1.5rem]">
+                      <div className="flex items-center gap-10">
+                        <div className="w-[2rem]">
+                          <Icon name="star" viewBox="0 0 19 19" />
+                        </div>
+                        <div className="font-plaid text-14 tracking-[-.02em] uppercase">
+                          Summary
+                        </div>
                       </div>
-                    )}
+                      <div className="text-16">
+                        <BlockContent blocks={summary} />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
-              {summary && (
-                <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-10 bg-white rounded-[1.5rem] julie-gradient p-1 relative mt-30">
-                  <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient"></div>
-                  <div className="relative z-2 w-full flex flex-col gap-10 bg-white p-20 rounded-[1.5rem]">
-                    <div className="flex items-center gap-10">
-                      <div className="w-[2rem]">
-                        <Icon name="star" viewBox="0 0 19 19" />
-                      </div>
-                      <div className="font-plaid text-14 tracking-[-.02em] uppercase">
-                        Summary
-                      </div>
-                    </div>
-                    <div className="text-16">
-                      <BlockContent blocks={summary} />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -175,7 +342,11 @@ const PageContent = ({ page, type = 'page', sanityConfig = null, isInFrame = fal
         <div className="w-full max-w-[80rem] mx-auto flex flex-col items-center pt-0 md:pt-60 gap-60 section-padding">
           {articleContent && (
             <div className="w-full article">
-              <BlockContent blocks={articleContent} sanityConfig={sanityConfig} />
+              <BlockContent
+                blocks={articleContent}
+                sanityConfig={sanityConfig}
+                onFrameLinkClick={onFrameLinkClick}
+              />
             </div>
           )}
         </div>
@@ -184,8 +355,191 @@ const PageContent = ({ page, type = 'page', sanityConfig = null, isInFrame = fal
         {modules && modules.length > 0 && (
           <div className="w-full mx-auto flex flex-col items-center md:pt-60 gap-60">
             {modules.map((module, key) => (
-              <Module key={key} index={key} module={module} />
+              <Module
+                key={key}
+                index={key}
+                module={module}
+                onFrameLinkClick={onFrameLinkClick}
+              />
             ))}
+          </div>
+        )}
+
+        {/* Author and reviewer section */}
+        {(authors?.length > 0 || reviewers?.length > 0) && (
+          <div
+            className={`w-full section-padding ${
+              isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
+            }`}
+          >
+            {isClient && (isMobile || actuallyInFrame) ? (
+              <ProductCarousel
+                items={[
+                  ...(authors?.map((author) => ({
+                    ...author,
+                    type: 'author',
+                  })) || []),
+                  ...(reviewers?.map((reviewer) => ({
+                    ...reviewer,
+                    type: 'reviewer',
+                  })) || []),
+                ]}
+                renderSlide={(person, key) => (
+                  <AuthorCard
+                    key={key}
+                    person={person}
+                    className="w-full"
+                    onFrameLinkClick={onFrameLinkClick}
+                  />
+                )}
+                slideClassName="w-[83.333%] min-w-[83.333%] ml-15"
+                enabled={isClient && (isMobile || actuallyInFrame)}
+              />
+            ) : (
+              <div className="w-full flex gap-15 md:gap-25">
+                {[
+                  ...(authors?.map((author) => ({
+                    ...author,
+                    type: 'author',
+                  })) || []),
+                  ...(reviewers?.map((reviewer) => ({
+                    ...reviewer,
+                    type: 'reviewer',
+                  })) || []),
+                ].map((person, key) => {
+                  return (
+                    <AuthorCard
+                      key={key}
+                      person={person}
+                      onFrameLinkClick={onFrameLinkClick}
+                    />
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Still have questions section */}
+        <div className="w-full flex flex-col items-center gap-35 my-90 section-padding">
+          <div className="title-2xl">still have questions?</div>
+          <button className="btn" href="/contact">
+            Ask Julie
+          </button>
+        </div>
+
+        {/* Related articles */}
+        {related && related.length > 0 && (
+          <div
+            className={`mt-60 md:mt-100 flex flex-col items-center gap-30 md:gap-60 pb-60 md:pb-120 section-padding ${
+              isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
+            }`}
+          >
+            {isClient && (isMobile || actuallyInFrame) ? (
+              <ProductCarousel
+                items={related}
+                renderSlide={(item, key) => (
+                  <ArticleCard key={key} item={item} />
+                )}
+                slideClassName="w-[83.333%] min-w-[83.333%] ml-15"
+                enabled={isClient && (isMobile || actuallyInFrame)}
+              />
+            ) : (
+              <div className="flex flex-col md:flex-row gap-40 md:gap-20 w-full">
+                {related.map((item, key) => {
+                  return (
+                    <React.Fragment key={key}>
+                      <ArticleCard item={item} />
+                    </React.Fragment>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Render product content
+  if (type === 'product' && page?.product) {
+    return (
+      <div className="w-full">
+        <ProductHero
+          product={product || page.product}
+          modules={page.modules}
+          onVariantChange={updateVariant}
+          activeVariant={activeVariant}
+        />
+        {page.modules?.map((module, key) => (
+          <Module
+            key={key}
+            index={key}
+            module={module}
+            product={product || page.product}
+            activeVariant={activeVariant}
+            onVariantChange={updateVariant}
+            onFrameLinkClick={onFrameLinkClick}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  // Render profile content
+  if (type === 'profile') {
+    const { title, image, role, bio, articles } = page
+
+    return (
+      <div className="w-full">
+        <div className="w-full md:h-screen min-h-[50rem] flex flex-col md:flex-row gap-15 md:gap-25 pt-0 pb-20 section-padding">
+          <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
+            {image && (
+              <Photo
+                photo={image}
+                width={2400}
+                srcSizes={[800, 1200, 1600, 2400]}
+                sizes="100%"
+                layout={'fill'}
+                className={'object-cover h-full w-full'}
+              />
+            )}
+          </div>
+          <div className="w-full md:w-1/2 flex flex-col gap-15 md:gap-25 items-center p-25">
+            <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
+              <div className="w-full text-center flex-1 flex flex-col justify-center gap-35 items-center">
+                <div className="w-full flex flex-col gap-20">
+                  <h1 className="title-2xl">{title}</h1>
+                  {role && <div className="title-sm">{role}</div>}
+                </div>
+                <div className="w-full text-16">
+                  <BlockContent
+                    blocks={bio}
+                    onFrameLinkClick={onFrameLinkClick}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {articles && articles.length > 0 && (
+          <div className="w-full flex flex-col items-center gap-30 md:gap-50 mt-30 mb-90 md:my-90 section-padding">
+            <div className="title-lg text-center">Articles with {title}</div>
+            <div className="grid-standard gap-y-40">
+              {articles.map((article, key) => {
+                const articleHref = `/blog/${article.slug}`
+                return (
+                  <ArticleCard
+                    key={key}
+                    item={article}
+                    className="col-span-12 md:col-span-4"
+                    articleHref={articleHref}
+                    onFrameLinkClick={onFrameLinkClick}
+                  />
+                )
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -196,11 +550,15 @@ const PageContent = ({ page, type = 'page', sanityConfig = null, isInFrame = fal
   return (
     <div className="w-full">
       {page.modules?.map((module, key) => (
-        <Module key={key} index={key} module={module} />
+        <Module
+          key={key}
+          index={key}
+          module={module}
+          onFrameLinkClick={onFrameLinkClick}
+        />
       ))}
     </div>
   )
 }
 
 export default PageContent
-

@@ -16,7 +16,7 @@ const AccordionList = ({ items, type, openFirst, contentClassName }) => {
   const [scrollRef, inView] = useInView({ threshold: 0, triggerOnce: true })
 
   return (
-    <div ref={scrollRef} className={`accordion-group flex flex-col`}>
+    <div ref={scrollRef} className={`accordion-group flex flex-col${type === 'product' ? ' gap-10' : ''}`}>
       {items.map((accordion, key) => {
         return (
           <m.div

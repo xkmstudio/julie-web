@@ -51,14 +51,14 @@ const Faqs = ({ data = {} }) => {
                   type="faqs"
                   isOpen={isOpen}
                   onToggle={handleSectionToggle}
-                  titleClassName="text-14 md:text-18 font-plaid uppercase text-pink"
+                  titleClassName="text-14 md:text-18 font-plaid uppercase text-pink faqs"
                   iconName="Chevron Down"
                   iconViewBox="0 0 22 13"
                 >
                   <AccordionList
                     type="faqs"
                     items={section.drawers || []}
-                    contentClassName="px-15"
+                    contentClassName=""
                   />
                 </Accordion>
               )

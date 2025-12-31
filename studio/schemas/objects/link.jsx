@@ -35,15 +35,19 @@ export default {
       type: 'url',
       description: 'Enter an external URL',
       hidden: ({ parent }) => !parent || parent.linkType !== 'navLink',
-      validation: Rule => Rule.custom((value, context) => {
-        if (context.parent?.linkType === 'navLink' && !value) {
+      validation: Rule => Rule.uri({
+        scheme: ['http', 'https', 'mailto', 'tel']
+      }).custom((value, context) => {
+        if (!context || !context.parent) {
+          return true
+        }
+        
+        const linkType = context.parent.linkType
+        
+        if (linkType === 'navLink' && !value) {
           return 'URL is required for external links'
         }
-        if (value) {
-          return Rule.uri({
-            scheme: ['http', 'https', 'mailto', 'tel']
-          }).validate(value)
-        }
+        
         return true
       })
     },
@@ -62,9 +66,16 @@ export default {
       ],
       hidden: ({ parent }) => !parent || parent.linkType !== 'navPage',
       validation: Rule => Rule.custom((value, context) => {
-        if (context.parent?.linkType === 'navPage' && !value) {
+        if (!context || !context.parent) {
+          return true
+        }
+        
+        const linkType = context.parent.linkType
+        
+        if (linkType === 'navPage' && !value) {
           return 'Page is required for internal page links'
         }
+        
         return true
       })
     },

@@ -5,7 +5,8 @@ import cx from 'classnames'
 import Icon from '@components/icon'
 
 import { getStaticRoute, getDynamicRoute } from '@lib/routes'
-import { useToggleEmail } from '@lib/context'
+import { useToggleEmail, useToggleEmaChat } from '@lib/context'
+import { useIsInFrame } from '@lib/helpers'
 
 // Helper function to build URL for different page types
 const getPageUrl = (page) => {
@@ -28,19 +29,24 @@ const getPageUrl = (page) => {
     case 'profile':
       return `/profiles/${slug}`
     case 'blog':
-      return `/blog/${slug}`
+      return `/blog`
     case 'page':
     default:
       return `/pages/${slug}`
   }
 }
 
-const Link = ({ link, children, hasArrow = false, ...rest }) => {
+const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) => {
   if (!link) return null
 
   const linkType = link.linkType || (link.url ? 'navLink' : 'navPage')
   const isAnchor = link.anchor != null || link.anchor != undefined
   const toggleEmail = useToggleEmail()
+  const toggleEmaChat = useToggleEmaChat()
+  const isInFrame = useIsInFrame()
+  
+  // Check if we should handle link in frame
+  const shouldHandleInFrame = isInFrame && onFrameLinkClick
 
   // External Link (navLink)
   if (linkType === 'navLink') {
@@ -69,11 +75,41 @@ const Link = ({ link, children, hasArrow = false, ...rest }) => {
     )
   }
 
-  // Ask Julie - render as button that opens email modal
+  // Ask Julie - render as button that opens Ema chat
   if (linkType === 'askJulie') {
     const handleClick = (e) => {
       e.preventDefault()
-      toggleEmail(true)
+      toggleEmaChat(true)
+      if (rest.onClick) {
+        rest.onClick(e)
+      }
+    }
+
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className={cx('btn', link.styles?.style, {
+          'is-large': link.styles?.isLarge,
+          'is-block': link.styles?.isBlock,
+        })}
+        {...rest}
+      >
+        <span>{link.title || children}</span>
+        {hasArrow && (
+          <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
+            <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
+          </span>
+        )}
+      </button>
+    )
+  }
+
+  // Nav Julie - render as button that opens Ema chat
+  if (linkType === 'navJulie') {
+    const handleClick = (e) => {
+      e.preventDefault()
+      toggleEmaChat(true)
       if (rest.onClick) {
         rest.onClick(e)
       }

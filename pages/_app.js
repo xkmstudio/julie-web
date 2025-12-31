@@ -11,6 +11,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import Header from '@components/header'
 import Footer from '@components/footer'
 import Cart from '@components/cart'
+import EmaChat from '@components/emaChat'
 
 
 import '../styles/tailwind.css'
@@ -169,6 +170,7 @@ const Site = ({ Component, pageProps, router }) => {
           <Component key={pageID} {...pageProps} />
         </AnimatePresence>
         <Cart data={{ ...data?.site }} />
+        <EmaChat />
         <Footer
           key="footer"
           data={data?.site.footer}

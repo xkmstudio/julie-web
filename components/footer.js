@@ -19,18 +19,20 @@ const Footer = ({ data }) => {
         <div className="block md:hidden col-span-12 mt-20">
           <Newsletter newsletter={newsletter} />
         </div>
-        {menus?.map((item, index) => (
-          <div
-            key={index}
-            className="flex flex-col gap-10 col-span-6 md:col-span-2 pb-30 mt-20 md:mt-0"
-          >
-            <div className="flex flex-col gap-5">
-              {item.items?.map((link, index) => (
-                <Link key={index} link={link} className={`btn-text`} />
-              ))}
+        <div className="col-span-7 flex gap-25">
+          {menus?.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col gap-10 w-1/2 md:w-[unset] md:flex-1 pb-30 mt-20 md:mt-0"
+            >
+              <div className="flex flex-col gap-5">
+                {item.items?.map((link, index) => (
+                  <Link key={index} link={link} className={`btn-text`} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="grid-standard items-start mt-45 md:mt-100">

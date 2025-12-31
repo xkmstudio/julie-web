@@ -9,9 +9,7 @@ const MediaFeature = ({ data = {} }) => {
   const { media, title, link } = data
 
   if (!media) return null
-
-  console.log('link', link);
-
+  
   return (
     <section className={`mx-auto relative section-padding`}>
       <div className='w-full pb-[150%] md:pb-[50%] relative rounded-[1.5rem] overflow-hidden flex items-center justify-center'>

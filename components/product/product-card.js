@@ -4,12 +4,13 @@ import NextLink from 'next/link'
 import Media from '@components/media'
 import { ProductActions } from '@components/product'
 import { useAddItem } from '@lib/context'
+import { useIsInFrame } from '@lib/helpers'
 
-const ProductCard = ({ product, index, className, type = 'feature' }) => {
-  const addItem = useAddItem()
-
-  console.log('product',product);
-  
+const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkClick }) => {
+  const isInFrame = useIsInFrame()
+  const shouldHandleInFrame = isInFrame && onFrameLinkClick
+  const productHref = `/products/${product.slug}`
+  const addItem = useAddItem()  
 
   if(!product) return null
 
@@ -55,35 +56,79 @@ const ProductCard = ({ product, index, className, type = 'feature' }) => {
         className
       )}
     >
-      <NextLink href={`/products/${product.slug}`} className="w-full">
-        <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
-          {product?.title && (
-            <div className="w-full text-center title-2xl max-w-[50rem]">
-              {product?.title}
-            </div>
-          )}
-          <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
-            <div className="w-full h-full relative">
-              <Media
-                media={product.productThumbnail?.content}
-                width={1600}
-                srcSizes={[800, 1000, 1200, 1600]}
-                sizes="100%"
-                layout={'contain'}
-                className={'h-full w-full object-contain'}
-              />
+      {shouldHandleInFrame ? (
+        <a
+          href={productHref}
+          onClick={(e) => {
+            e.preventDefault()
+            onFrameLinkClick(productHref)
+          }}
+          className="w-full"
+        >
+          <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+            {product?.title && (
+              <div className="w-full text-center title-2xl max-w-[50rem]">
+                {product?.title}
+              </div>
+            )}
+            <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
+              <div className="w-full h-full relative">
+                <Media
+                  media={product.productThumbnail?.content}
+                  width={1600}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="100%"
+                  layout={'contain'}
+                  className={'h-full w-full object-contain'}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </NextLink>
+        </a>
+      ) : (
+        <NextLink href={productHref} className="w-full">
+          <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+            {product?.title && (
+              <div className="w-full text-center title-2xl max-w-[50rem]">
+                {product?.title}
+              </div>
+            )}
+            <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
+              <div className="w-full h-full relative">
+                <Media
+                  media={product.productThumbnail?.content}
+                  width={1600}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="100%"
+                  layout={'contain'}
+                  className={'h-full w-full object-contain'}
+                />
+              </div>
+            </div>
+          </div>
+        </NextLink>
+      )}
 
       <div className="flex flex-col md:flex-row gap-10" onClick={(e) => e.stopPropagation()}>
-        <NextLink
-          className="btn is-outline is-large flex-1"
-          href={`/products/${product.slug}`}
-        >
-          Learn More
-        </NextLink>
+        {shouldHandleInFrame ? (
+          <a
+            className="btn is-outline is-large flex-1"
+            href={productHref}
+            onClick={(e) => {
+              e.preventDefault()
+              onFrameLinkClick(productHref)
+            }}
+          >
+            Learn More
+          </a>
+        ) : (
+          <NextLink
+            className="btn is-outline is-large flex-1"
+            href={productHref}
+          >
+            Learn More
+          </NextLink>
+        )}
         <ProductActions
           product={product}
           type={'feature'}
@@ -100,35 +145,79 @@ const ProductCard = ({ product, index, className, type = 'feature' }) => {
         className
       )}
     >
-      <NextLink href={`/products/${product.slug}`} className="w-full">
-        <div className="w-full h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
-          {product?.title && (
-            <div className="w-full text-center title-2xl max-w-[50rem]">
-              {product?.title}
-            </div>
-          )}
-          <div className="flex-1 w-full min-h-0 relative py-40">
-            <div className="w-full h-full relative">
-              <Media
-                media={product.productThumbnail?.content}
-                width={1600}
-                srcSizes={[800, 1000, 1200, 1600]}
-                sizes="100%"
-                layout={'contain'}
-                className={'h-full w-full object-contain'}
-              />
+      {shouldHandleInFrame ? (
+        <a
+          href={productHref}
+          onClick={(e) => {
+            e.preventDefault()
+            onFrameLinkClick(productHref)
+          }}
+          className="w-full"
+        >
+          <div className="w-full h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+            {product?.title && (
+              <div className="w-full text-center title-2xl max-w-[50rem]">
+                {product?.title}
+              </div>
+            )}
+            <div className="flex-1 w-full min-h-0 relative py-40">
+              <div className="w-full h-full relative">
+                <Media
+                  media={product.productThumbnail?.content}
+                  width={1600}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="100%"
+                  layout={'contain'}
+                  className={'h-full w-full object-contain'}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </NextLink>
+        </a>
+      ) : (
+        <NextLink href={productHref} className="w-full">
+          <div className="w-full h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+            {product?.title && (
+              <div className="w-full text-center title-2xl max-w-[50rem]">
+                {product?.title}
+              </div>
+            )}
+            <div className="flex-1 w-full min-h-0 relative py-40">
+              <div className="w-full h-full relative">
+                <Media
+                  media={product.productThumbnail?.content}
+                  width={1600}
+                  srcSizes={[800, 1000, 1200, 1600]}
+                  sizes="100%"
+                  layout={'contain'}
+                  className={'h-full w-full object-contain'}
+                />
+              </div>
+            </div>
+          </div>
+        </NextLink>
+      )}
 
       <div className="flex gap-10" onClick={(e) => e.stopPropagation()}>
-        <NextLink
-          className="btn is-outline is-large flex-1"
-          href={`/products/${product.slug}`}
-        >
-          Learn More
-        </NextLink>
+        {shouldHandleInFrame ? (
+          <a
+            className="btn is-outline is-large flex-1"
+            href={productHref}
+            onClick={(e) => {
+              e.preventDefault()
+              onFrameLinkClick(productHref)
+            }}
+          >
+            Learn More
+          </a>
+        ) : (
+          <NextLink
+            className="btn is-outline is-large flex-1"
+            href={productHref}
+          >
+            Learn More
+          </NextLink>
+        )}
         <ProductActions
           product={product}
           type={'feature'}

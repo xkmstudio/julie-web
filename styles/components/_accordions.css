@@ -27,4 +27,19 @@
             }
         }
     }
+
+    &--inner {
+
+        @apply md:px-15 md:py-15;
+    }
+}
+
+/* Add horizontal padding to accordion children when in drawer - using more specific selector */
+.drawer--content .accordion--inner {
+  @apply md:px-0 md:py-0;
+
 } 
+
+.is-faqs .accordion--inner:not(.faqs-inner) {
+  @apply md:px-0 md:py-0;
+}

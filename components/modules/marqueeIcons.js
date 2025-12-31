@@ -47,7 +47,7 @@ const MarqueeIcons = ({ data = {} }) => {
   })
 
   return (
-    <section ref={marqueeRef} className="relative w-full overflow-hidden flex flex-col gap-50">
+    <section ref={marqueeRef} className="relative w-full flex flex-col gap-50">
       {title && <h2 className="title-2xl w-full text-center max-w-[78rem] mx-auto mb-25">{title}</h2>}
       {marquee ? (
         <div className="relative w-full marquee-section">

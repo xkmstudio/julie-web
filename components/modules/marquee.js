@@ -26,7 +26,7 @@ const Marquee = ({ data = {} }) => {
             </div>
           </div>
         )}
-        <div className="marquee-section relative w-full overflow-hidden">
+        <div className="marquee-section relative w-full">
           <Marqy
             speed={speed}
             direction={reverse ? 'right' : 'left'}

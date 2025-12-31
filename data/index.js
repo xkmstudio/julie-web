@@ -132,6 +132,8 @@ export async function getArticle(slug, preview) {
         'tag': tags[0]->{'slug': slug.current, title},
         summary[]{${queries.ptContent}},
         excerpt[]{${queries.ptContent}},
+        useGradient,
+        gradient{${queries.gradient}},
         authors[]->{
           title,
           'slug': slug.current,
@@ -159,6 +161,8 @@ export async function getArticle(slug, preview) {
           'slug': slug.current,
           excerpt[]{${queries.ptContent}},
           'image': image{${queries.assetMeta}},
+          gradient{${queries.gradient}},
+          useGradient,
           tags[0]->{'slug': slug.current, title},
           authors[]->{
             title,

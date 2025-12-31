@@ -55,9 +55,9 @@ const Gradient = ({ gradient }) => {
 
   return (
     <div
-      className="w-full"
+      className="w-full h-full"
       style={style}
-      aria-label={data.title ? `Gradient: ${data.title}` : 'Gradient background'}
+      aria-label={gradient.title ? `Gradient: ${gradient.title}` : 'Gradient background'}
     />
   )
 }

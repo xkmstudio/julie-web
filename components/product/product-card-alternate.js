@@ -2,12 +2,9 @@ import React, { useMemo } from 'react'
 import cx from 'classnames'
 import NextLink from 'next/link'
 import Media from '@components/media'
-import { ProductActions } from '@components/product'
-import { useAddItem } from '@lib/context'
+import { ProductPrice } from '@components/product'
 
 const ProductCardAlternate = ({ product, index, className }) => {
-  const addItem = useAddItem()
-
   if(!product) return null
 
   // Determine activeVariant - use first variant if available, otherwise create fallback from product data
@@ -31,16 +28,6 @@ const ProductCardAlternate = ({ product, index, className }) => {
     product.inStock,
     product.forceOutOfStock,
   ])
-
-  const handleAddToCart = async () => {
-    if (!activeVariant?.id) return
-
-    try {
-      await addItem(activeVariant.id, 1)
-    } catch (error) {
-      console.error('Error adding product to cart:', error)
-    }
-  }
 
   return (
     <div
@@ -74,15 +61,23 @@ const ProductCardAlternate = ({ product, index, className }) => {
         </NextLink>
       )}
 
-      {/* Product Actions */}
-      <div className="mt-20" onClick={(e) => e.stopPropagation()}>
-        <ProductActions
-          product={product}
-          type={'feature'}
-          activeVariant={activeVariant}
-          klaviyoAccountID={product.klaviyoAccountID}
-          onAddToCart={handleAddToCart}
-        />
+      {/* Shop Now Link */}
+      <div className="mt-20">
+        <NextLink 
+          href={`/products/${product.slug}`}
+          className="btn is-add is-block flex items-center gap-5 w-full justify-center"
+        >
+          <div className="flex items-center gap-5">
+            <span>Shop Now</span>
+            &mdash;
+            <ProductPrice
+              price={activeVariant?.price || product.price}
+              comparePrice={
+                activeVariant?.comparePrice || product.comparePrice
+              }
+            />
+          </div>
+        </NextLink>
       </div>
     </div>
   )

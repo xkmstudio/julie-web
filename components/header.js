@@ -20,6 +20,7 @@ import Link from '@components/link'
 import { useSiteContext, useToggleCart, useCartCount } from '@lib/context'
 
 import { useWindowSize } from '@lib/helpers'
+import EmaFixedInput from '@components/emaFixedInput'
 
 const Header = ({ data, work, pages }) => {
   if (!data) return
@@ -243,6 +244,9 @@ const Header = ({ data, work, pages }) => {
           </FocusTrap>
         )}
       </AnimatePresence>
+
+      {/* Ema Fixed Input - Appears after scrolling 500px */}
+      <EmaFixedInput />
     </>
   )
 }

@@ -21,7 +21,6 @@ export default {
           to: [{ type: 'article' }],
         }
       ],
-      validation: Rule => Rule.required().min(1)
     },
     {
       title: 'Use List',

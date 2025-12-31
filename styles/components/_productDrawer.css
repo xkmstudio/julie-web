@@ -40,6 +40,76 @@
   
     &--content {
       @apply flex-1 flex flex-col overflow-y-scroll p-10 md:p-15;
+
+      /* Add horizontal padding to accordion inner content when in drawer */
+      .accordion--inner {
+        /* Add padding to direct children, excluding nested accordions */
+        > *:not(.accordion):not(.accordion-group) {
+          padding-left: 1.5rem !important;
+          padding-right: 1.5rem !important;
+          
+          @media (min-width: 850px) {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+          }
+        }
+
+        /* Target .rc wrapper specifically (from BlockContent) */
+        > .rc {
+          padding-left: 1.5rem !important;
+          padding-right: 1.5rem !important;
+          
+          @media (min-width: 850px) {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+          }
+        }
+
+        /* Handle wrapper divs that might be added by contentClassName */
+        > div:not(.accordion):not(.accordion-group) {
+          padding-left: 1.5rem !important;
+          padding-right: 1.5rem !important;
+          
+          @media (min-width: 850px) {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+          }
+        }
+
+        /* For nested accordions, add padding to their text children only */
+        .accordion {
+          /* Remove padding from nested accordion wrapper itself */
+          margin-left: -1.5rem;
+          margin-right: -1.5rem;
+          
+          @media (min-width: 850px) {
+            margin-left: -2rem;
+            margin-right: -2rem;
+          }
+
+          &--inner {
+            > *:not(.accordion):not(.accordion-group) {
+              padding-left: 1.5rem !important;
+              padding-right: 1.5rem !important;
+              
+              @media (min-width: 850px) {
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+              }
+            }
+            
+            > .rc {
+              padding-left: 1.5rem !important;
+              padding-right: 1.5rem !important;
+              
+              @media (min-width: 850px) {
+                padding-left: 2rem !important;
+                padding-right: 2rem !important;
+              }
+            }
+          }
+        }
+      }
     }
 
     &--items{

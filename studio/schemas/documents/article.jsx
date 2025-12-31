@@ -31,7 +31,7 @@ export default {
     {
       name: 'gradient',
       title: 'Gradient',
-      type: 'asset',
+      type: 'gradient',
       hidden: ({ parent }) => !parent.useGradient,
     },
     {

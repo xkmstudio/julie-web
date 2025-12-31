@@ -4,7 +4,7 @@ import { PortableText } from "@portabletext/react";
 import CustomLink from "@components/link";
 import Photo from "@components/photo";
 
-const Marks = {
+const createMarks = (onFrameLinkClick = null) => ({
   strong: ({ children }) => <strong className="font-700">{children}</strong>,
   em: ({ children }) => <em className="">{children}</em>,
   center: ({ children }) => (
@@ -21,6 +21,7 @@ const Marks = {
             url: value.url,
             title: children,
           }}
+          onFrameLinkClick={onFrameLinkClick}
         />
       );
     }
@@ -37,6 +38,7 @@ const Marks = {
             },
             title: children,
           }}
+          onFrameLinkClick={onFrameLinkClick}
         />
       );
     }
@@ -50,12 +52,15 @@ const Marks = {
             url: value.url,
             title: children,
           }}
+          onFrameLinkClick={onFrameLinkClick}
         />
       );
     }
     return null;
   },
-};
+});
+
+const Marks = createMarks();
 
 export const portableTextInline = {
   block: {
@@ -195,4 +200,14 @@ export const portableRichText = {
     },
   },
   marks: Marks,
+};
+
+// Factory function to create serializers with frame link handler
+export const createPortableTextSerializers = (onFrameLinkClick = null) => {
+  const marksWithFrameHandler = createMarks(onFrameLinkClick);
+  
+  return {
+    ...portableRichText,
+    marks: marksWithFrameHandler,
+  };
 };

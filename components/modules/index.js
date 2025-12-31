@@ -30,7 +30,7 @@ const FeaturedArticles = dynamic(() => import('./featuredArticles'))
 const FeaturedProfiles = dynamic(() => import('./featuredProfiles'))
 const StoreLocator = dynamic(() => import('./storeLocator'))
 
-export const Module = ({ module, product, activeVariant, onVariantChange }) => {
+export const Module = ({ module, product, activeVariant, onVariantChange, onFrameLinkClick }) => {
   const type = module._type
 
   switch (type) {
@@ -41,7 +41,7 @@ export const Module = ({ module, product, activeVariant, onVariantChange }) => {
     case 'hero':
       return <Hero data={module} />
     case 'productFeature':
-      return <ProductFeature data={module} />
+      return <ProductFeature data={module} onFrameLinkClick={onFrameLinkClick} />
     case 'productShop':
       return <ProductShop data={module} product={product} activeVariant={activeVariant} onVariantChange={onVariantChange} />
     case 'textBlock':

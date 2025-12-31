@@ -129,7 +129,7 @@ const ProductShop = ({
         <div className="col-span-12 md:col-span-9 flex flex-col items-center md:items-start justify-center gap-20 md:gap-30 mt-20 md:mt-0">
           <div>
             {title && (
-              <h2 className="hidden md:block subtitle text-pink mb-20">
+              <h2 className="hidden md:block uppercase font-plaid text-14 text-pink mb-20">
                 {title}
               </h2>
             )}

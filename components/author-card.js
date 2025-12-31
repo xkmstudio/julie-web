@@ -3,13 +3,15 @@ import NextLink from 'next/link'
 
 import Photo from '@components/photo'
 import BlockContent from '@components/block-content'
+import { useIsInFrame } from '@lib/helpers'
 
-const AuthorCard = ({ person, className = 'flex-1' }) => {
-  return (
-    <NextLink
-      href={`/profiles/${person.slug}`}
-      className={`${className} block rounded-[1.5rem] border border-pink p-20`}
-    >
+const AuthorCard = ({ person, className = 'flex-1', onFrameLinkClick }) => {
+  const isInFrame = useIsInFrame()
+  const shouldHandleInFrame = isInFrame && onFrameLinkClick
+  const profileHref = `/profiles/${person.slug}`
+  
+  const cardContent = (
+    <>
       <div className="w-full flex gap-10">
         <div className="w-50 h-50 rounded-full overflow-hidden relative">
           <Photo
@@ -29,6 +31,30 @@ const AuthorCard = ({ person, className = 'flex-1' }) => {
       <div className="w-full text-14 mt-20">
         <BlockContent blocks={person.bio} />
       </div>
+    </>
+  )
+  
+  if (shouldHandleInFrame) {
+    return (
+      <a
+        href={profileHref}
+        onClick={(e) => {
+          e.preventDefault()
+          onFrameLinkClick(profileHref)
+        }}
+        className={`${className} block rounded-[1.5rem] border border-pink p-20`}
+      >
+        {cardContent}
+      </a>
+    )
+  }
+  
+  return (
+    <NextLink
+      href={profileHref}
+      className={`${className} block rounded-[1.5rem] border border-pink p-20`}
+    >
+      {cardContent}
     </NextLink>
   )
 }

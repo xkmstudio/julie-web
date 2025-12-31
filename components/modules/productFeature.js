@@ -7,7 +7,7 @@ import { useWindowSize, useIsInFrame } from '@lib/helpers'
 const MOBILE_BREAKPOINT = 950
 const DESKTOP_CAROUSEL_THRESHOLD = 3
 
-const ProductFeature = ({ data }) => {
+const ProductFeature = ({ data, onFrameLinkClick }) => {
   const { products } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
@@ -16,7 +16,7 @@ const ProductFeature = ({ data }) => {
   const isDesktop = width >= MOBILE_BREAKPOINT
   const productCount = products?.length || 0
 
-  // Show carousel on mobile, in frame, or on desktop if more than 3 products
+  // Show carousel on mobile, always in frame, or on desktop if more than 3 products
   const showCarousel = isClient && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
 
   useEffect(() => {
@@ -25,8 +25,10 @@ const ProductFeature = ({ data }) => {
 
   // Desktop: use carousel if more than 3 products, otherwise use flex
   // Mobile: always use carousel
+  // In frame: always use carousel
   if (showCarousel) {
-    const slideClassName = isMobile 
+    // Use mobile slide size when in frame or on mobile
+    const slideClassName = (isMobile || isInFrame)
       ? 'w-[83.333%] min-w-[83.333%] ml-10'
       : 'min-w-[30%] ml-10'
 
@@ -40,6 +42,7 @@ const ProductFeature = ({ data }) => {
               product={product}
               index={index}
               className="block w-full"
+              onFrameLinkClick={onFrameLinkClick}
             />
           )}
           slideClassName={slideClassName}
@@ -60,6 +63,7 @@ const ProductFeature = ({ data }) => {
             index={key}
             className="flex-1"
             product={product}
+            onFrameLinkClick={onFrameLinkClick}
           />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import { getPage, getArticle } from '@data'
+import { getPage, getArticle, getProduct, getProfile } from '@data'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -22,18 +22,33 @@ export default async function handler(req, res) {
     // Remove leading/trailing slashes
     pathname = pathname.replace(/^\/+|\/+$/g, '')
 
-    // Determine if it's a blog article or regular page
+    // Determine content type based on pathname
     const isArticle = pathname.startsWith('blog/')
-    const slug = isArticle ? pathname.replace('blog/', '') : pathname
-
+    const isProduct = pathname.startsWith('products/')
+    const isProfile = pathname.startsWith('profiles/')
+    
     let data = null
+    let contentType = 'page'
 
     if (isArticle) {
       // Fetch article
+      const slug = pathname.replace('blog/', '')
       data = await getArticle(slug, { active: false })
+      contentType = 'article'
+    } else if (isProduct) {
+      // Fetch product
+      const slug = pathname.replace('products/', '')
+      data = await getProduct(slug, { active: false })
+      contentType = 'product'
+    } else if (isProfile) {
+      // Fetch profile
+      const slug = pathname.replace('profiles/', '')
+      data = await getProfile(slug, { active: false })
+      contentType = 'profile'
     } else {
-      // Fetch page
+      // Fetch regular page
       data = await getPage(pathname || '/', { active: false })
+      contentType = 'page'
     }
 
     if (!data || !data.page) {
@@ -42,7 +57,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       data,
-      type: isArticle ? 'article' : 'page',
+      type: contentType,
     })
   } catch (error) {
     console.error('Error fetching content:', error)

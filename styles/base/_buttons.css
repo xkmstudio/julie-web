@@ -4,10 +4,10 @@ button{
 
 .btn{
 
-  @apply flex items-center justify-center text-center rounded-full border border-pink bg-pink text-white font-lb lowercase flex-shrink-0 px-20 py-10;
+  @apply flex items-center justify-center text-center rounded-full border border-pink bg-pink hover:bg-magenta hover:border-magenta transition-colors duration-300 text-white font-lb lowercase flex-shrink-0 px-20 py-10;
 
   &.is-outline{
-    @apply bg-transparent text-pink;
+    @apply bg-transparent text-pink hover:text-magenta;
   }
 
   &.is-variant{
@@ -19,7 +19,7 @@ button{
   }
   
   &-text{
-    @apply uppercase text-16 font-lb
+    @apply text-16 font-lb
   }
 
   &-gradient{

@@ -106,3 +106,12 @@
     gap: 1.5rem !important; /* Use mobile gap-15 value */
   }
 }
+
+/* Ema Widget Gradient Placeholder */
+.ema-gradient-placeholder::placeholder {
+  background: linear-gradient(to right, #ED0E61 0%, #FF3BAB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 1;
+}

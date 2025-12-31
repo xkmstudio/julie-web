@@ -27,8 +27,12 @@ export const gradient = `
   _type,
   _key,
   type,
-  colorStops,
+  direction,
   customAngle,
+  colorStops[]{
+    color,
+    position
+  },
   height,
   padding
 `
@@ -404,7 +408,7 @@ export const modules = `
       title,
       subtitle,
       image{${assetMeta}},
-      gradient{${assetMeta}},
+      gradient{${gradient}},
       useGradient,
       authors[]->{
         title,

@@ -21,6 +21,7 @@ import Layout from '@components/layout'
 import Icon from '@components/icon'
 import Photo from '@components/photo'
 import BlockContent from '@components/block-content'
+import Gradient from '@components/gradient'
 
 const Articles = ({ data }) => {
   const router = useRouter()
@@ -56,6 +57,12 @@ const Articles = ({ data }) => {
 
   const filteredItems = filterItems(regularArticles, tags, 100)
   const allFilteredItems = filterItems(articles, tags, 100)
+  
+  // Debug: check if gradients are preserved after filtering
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Filtered items sample:', filteredItems?.paginatedItems?.[0])
+    console.log('Original article with gradient:', articles.find(a => a.slug === 'article-10'))
+  }
 
   // Check if filters are active by looking at the filter state
   const hasActiveFilters = filteredItems?.activeFilters[0]?.values?.length > 0
@@ -243,6 +250,8 @@ const Articles = ({ data }) => {
           article: mappedResults[0].title,
           image: mappedResults[0].image,
           gradient: mappedResults[0].gradient,
+          gradientColorStops: mappedResults[0].gradient?.colorStops,
+          gradientColorStopsLength: mappedResults[0].gradient?.colorStops?.length,
           useGradient: mappedResults[0].useGradient,
           rawHitImage: hits[0]?.image,
           rawHitGradient: hits[0]?.gradient,
@@ -311,6 +320,8 @@ const Articles = ({ data }) => {
   }
 
   const featuredArticle = regularArticles[0]
+
+  console.log(articles)
 
   return (
     <Layout site={site} page={page}>
@@ -454,7 +465,7 @@ const Articles = ({ data }) => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search the journal..."
-                  className="w-full px-10 py-15 border border-pink rounded-[1rem] focus:outline-none focus:border-pink transition-colors"
+                  className="text-16 w-full px-10 py-15 border border-pink rounded-[1rem] focus:outline-none focus:border-pink transition-colors"
                 />
                 {searchQuery && (
                   <button
@@ -505,11 +516,6 @@ const Articles = ({ data }) => {
                 return (
                   <div className="w-full grid grid-cols-12 gap-x-20 gap-y-50">
                     {searchResults.map((article, key) => {
-                      // Image and gradient are objects with url, alt, lqip, etc.
-                      const articleImage = article.useGradient
-                        ? article.gradient
-                        : article.image
-
                       return (
                         <div key={key} className="col-span-12 md:col-span-4">
                           <Link
@@ -517,38 +523,66 @@ const Articles = ({ data }) => {
                             href={`/blog/${article.slug}`}
                           >
                             <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
-                              {articleImage && articleImage.url ? (
-                                <Image
-                                  src={articleImage.url}
-                                  alt={articleImage.alt || article.title || ''}
-                                  fill
-                                  className="w-full h-full object-cover absolute top-0 left-0"
-                                  placeholder={
-                                    articleImage.lqip ? 'blur' : 'empty'
-                                  }
-                                  blurDataURL={articleImage.lqip || undefined}
-                                  sizes="(max-width: 768px) 100vw, 33vw"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-ash/10 absolute top-0 left-0 flex items-center justify-center">
-                                  <span className="text-ash text-14">
-                                    No image
-                                  </span>
-                                </div>
-                              )}
+                              {(() => {
+                                // Check if gradient is valid (has colorStops with at least 2 items)
+                                const hasValidGradient = article.gradient && 
+                                  article.gradient.colorStops && 
+                                  Array.isArray(article.gradient.colorStops) && 
+                                  article.gradient.colorStops.length >= 2;
+                                
+                                // If useGradient is true or no image, prioritize gradient
+                                if ((article.useGradient || !article.image || !article.image.url) && hasValidGradient) {
+                                  return (
+                                    <div className="w-full h-full absolute top-0 left-0">
+                                      <Gradient gradient={article.gradient} />
+                                    </div>
+                                  );
+                                }
+                                
+                                // Otherwise, use image if available
+                                if (article.image && article.image.url) {
+                                  return (
+                                    <Image
+                                      src={article.image.url}
+                                      alt={article.image.alt || article.title || ''}
+                                      fill
+                                      className="w-full h-full object-cover absolute top-0 left-0"
+                                      placeholder={
+                                        article.image.lqip ? 'blur' : 'empty'
+                                      }
+                                      blurDataURL={article.image.lqip || undefined}
+                                      sizes="(max-width: 768px) 100vw, 33vw"
+                                    />
+                                  );
+                                }
+                                
+                                // Fallback to gradient if available (even if useGradient not set)
+                                if (hasValidGradient) {
+                                  return (
+                                    <div className="w-full h-full absolute top-0 left-0">
+                                      <Gradient gradient={article.gradient} />
+                                    </div>
+                                  );
+                                }
+                                
+                                // Final fallback to grey placeholder
+                                return (
+                                  <div className="w-full h-full bg-ash/10 absolute top-0 left-0" />
+                                );
+                              })()}
                               {article.tags?.[0] && (
                                 <div className="tag is-card absolute top-10 left-10">
                                   {article.tags[0]?.title}
                                 </div>
                               )}
                             </div>
-                            <div className="mt-10 p-10 flex flex-col gap-10 items-center text-center">
+                            <div className="mt-10 p-10 flex flex-col gap-10 items-center md:items-start text-center md:text-left">
                               <h2 className="w-full title-2xs max-w-[28rem]">
                                 {article.title}
                               </h2>
                               {article.authors?.length > 0 && (
-                                <div className="flex items-center flex-wrap gap-10 justify-center">
-                                  <div className="flex justify-center items-center gap-3">
+                                <div className="flex items-center flex-wrap gap-10 justify-center md:justify-start">
+                                  <div className="flex justify-center md:justify-start items-center gap-3">
                                     <div>by</div>
                                     <div>
                                       <span className="underline font-lb">
@@ -557,7 +591,7 @@ const Articles = ({ data }) => {
                                     </div>
                                   </div>
                                   {article.authors[0].role && (
-                                    <div className="flex text-pink justify-center items-center gap-10 tag-role">
+                                    <div className="flex text-pink justify-center md:justify-start items-center gap-10 tag-role">
                                       {article.authors[0].role}
                                     </div>
                                   )}
@@ -578,12 +612,6 @@ const Articles = ({ data }) => {
                 return (
                   <div className="w-full grid grid-cols-12 gap-x-20 gap-y-50">
                     {allArticles.map((article, key) => {
-                      // Image and gradient are now simple URL strings (from Sanity, not Algolia)
-                      // For filtered view, use Photo component which expects asset object structure
-                      const articleImage = article.useGradient
-                        ? article.gradient
-                        : article.image
-
                       return (
                         <div key={key} className="col-span-12 md:col-span-4">
                           <Link
@@ -591,37 +619,67 @@ const Articles = ({ data }) => {
                             href={`/blog/${article.slug}`}
                           >
                             <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
-                              {articleImage ? (
-                                <Photo
-                                  photo={articleImage}
-                                  width={1200}
-                                  srcSizes={[800, 1000, 1200, 1600]}
-                                  sizes="100%"
-                                  layout={'fill'}
-                                  className={
-                                    'w-full h-full object-cover absolute top-0 left-0'
-                                  }
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-ash/10 absolute top-0 left-0 flex items-center justify-center">
-                                  <span className="text-ash text-14">
-                                    No image
-                                  </span>
-                                </div>
-                              )}
+                              {(() => {
+                                console.log(article.gradient);
+                                
+                                // Check if gradient is valid (has colorStops with at least 2 items)
+                                const hasValidGradient = article.gradient && 
+                                  article.gradient.colorStops && 
+                                  Array.isArray(article.gradient.colorStops) && 
+                                  article.gradient.colorStops.length >= 2;
+                                
+                                // If useGradient is true or no image, prioritize gradient
+                                if ((article.useGradient || !article.image) && hasValidGradient) {
+                                  return (
+                                    <div className="w-full h-full absolute top-0 left-0">
+                                      <Gradient gradient={article.gradient} />
+                                    </div>
+                                  );
+                                }
+                                
+                                // Otherwise, use image if available
+                                if (article.image) {
+                                  return (
+                                    <Photo
+                                      photo={article.image}
+                                      width={1200}
+                                      srcSizes={[800, 1000, 1200, 1600]}
+                                      sizes="100%"
+                                      layout={'fill'}
+                                      className={
+                                        'w-full h-full object-cover absolute top-0 left-0'
+                                      }
+                                    />
+                                  );
+                                }
+                                
+                                // Fallback to gradient if available (even if useGradient not set)
+                                if (hasValidGradient) {
+                                  return (
+                                    <div className="w-full h-full absolute top-0 left-0">
+                                      <Gradient gradient={article.gradient} />
+                                    </div>
+                                  );
+                                }
+                                
+                                // Final fallback to grey placeholder
+                                return (
+                                  <div className="w-full h-full bg-ash/10 absolute top-0 left-0" />
+                                );
+                              })()}
                               {article.tags?.[0] && (
                                 <div className="tag is-card absolute top-10 left-10">
                                   {article.tags[0]?.title}
                                 </div>
                               )}
                             </div>
-                            <div className="mt-10 p-10 flex flex-col gap-10 items-center text-center">
+                            <div className="mt-10 p-10 flex flex-col gap-10 items-center md:items-start text-center md:text-left">
                               <h2 className="w-full title-2xs max-w-[28rem]">
                                 {article.title}
                               </h2>
                               {article.authors?.length > 0 && (
-                                <div className="flex items-center flex-wrap gap-10 justify-center">
-                                  <div className="flex justify-center items-center gap-3">
+                                <div className="flex items-center flex-wrap gap-10 justify-center md:justify-start">
+                                  <div className="flex justify-center md:justify-start items-center gap-3">
                                     <div>by</div>
                                     <div>
                                       <span className="underline font-lb">
@@ -630,7 +688,7 @@ const Articles = ({ data }) => {
                                     </div>
                                   </div>
                                   {article.authors[0].role && (
-                                    <div className="flex text-pink justify-center items-center gap-10 tag-role">
+                                    <div className="flex text-pink justify-center md:justify-start items-center gap-10 tag-role">
                                       {article.authors[0].role}
                                     </div>
                                   )}
@@ -647,17 +705,17 @@ const Articles = ({ data }) => {
 
               // Default layout when no filters are active
               const items = []
-              const articles = filteredItems?.paginatedItems || []
+              const articles = allFilteredItems?.paginatedItems || []
 
               for (let key = 0; key < articles.length; key++) {
                 const article = articles[key]
-                // Pattern: [1/2, 1/2] [1/3, 1/3, 1/3] [full] [1/3, 1/3, 1/3] [1/5, 1/5] [full]
-                // Cycle length: 12 articles
-                const cyclePosition = key % 12
+                // Pattern: [1/2, 1/2] [1/3, 1/3, 1/3] [full] [1/3, 1/3, 1/3] [full]
+                // Cycle length: 10 articles
+                const cyclePosition = key % 10
                 let colSpan = 'col-span-12'
                 let isFullWidth = false
                 let isOverlay = false
-                let isOneFifth = false
+                let isOneThird = false
 
                 if (cyclePosition < 2) {
                   // First two: 1/2 width
@@ -665,6 +723,7 @@ const Articles = ({ data }) => {
                 } else if (cyclePosition < 5) {
                   // Next three: 1/3 width
                   colSpan = 'col-span-12 md:col-span-4'
+                  isOneThird = true
                 } else if (cyclePosition === 5) {
                   // Next one: full width with overlay
                   colSpan = 'col-span-12'
@@ -673,129 +732,12 @@ const Articles = ({ data }) => {
                 } else if (cyclePosition < 9) {
                   // Next three: 1/3 width
                   colSpan = 'col-span-12 md:col-span-4'
-                } else if (cyclePosition < 11) {
-                  // Next two: 1/5 width
-                  isOneFifth = true
+                  isOneThird = true
                 } else {
                   // Next one: full width with overlay
                   colSpan = 'col-span-12'
                   isFullWidth = true
                   isOverlay = true
-                }
-
-                // Handle 1/5 width items with a flex container
-                if (isOneFifth && cyclePosition === 9) {
-                  // Start of 1/5 pair - create flex container that spans full width
-                  const nextArticle = articles[key + 1]
-                  items.push(
-                    <div
-                      key={key}
-                      className="col-span-12 w-full flex gap-x-20 gap-y-50"
-                    >
-                      {/* First 1/5 item */}
-                      <div className="w-full md:w-[20%]">
-                        <Link
-                          className="relative block"
-                          href={`/blog/${article.slug}`}
-                        >
-                          <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
-                            <Photo
-                              photo={article.image}
-                              width={1200}
-                              srcSizes={[800, 1000, 1200, 1600]}
-                              sizes="100%"
-                              layout={'fill'}
-                              className={
-                                'w-full h-full object-cover absolute top-0 left-0'
-                              }
-                            />
-                            {article.tags?.[0] && (
-                              <div className="tag is-card absolute top-10 left-10">
-                                {article.tags[0]?.title}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mt-10 p-10 flex flex-col gap-10 items-center text-center">
-                            <h2 className="w-full title-2xs max-w-[28rem]">
-                              {article.title}
-                            </h2>
-                            {article.authors?.length > 0 && (
-                              <div className="flex items-center flex-wrap gap-10 justify-center">
-                                <div className="flex justify-center items-center gap-3">
-                                  <div>by</div>
-                                  <div>
-                                    <span className="underline font-lb">
-                                      {article.authors[0].title}
-                                    </span>
-                                  </div>
-                                </div>
-                                {article.authors[0].role && (
-                                  <div className="flex text-pink justify-center items-center gap-10 tag-role">
-                                    {article.authors[0].role}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </Link>
-                      </div>
-                      {/* Second 1/5 item */}
-                      {nextArticle && (
-                        <div className="w-full md:w-[20%]">
-                          <Link
-                            className="relative block"
-                            href={`/blog/${nextArticle.slug}`}
-                          >
-                            <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
-                              <Photo
-                                photo={nextArticle.image}
-                                width={1200}
-                                srcSizes={[800, 1000, 1200, 1600]}
-                                sizes="100%"
-                                layout={'fill'}
-                                className={
-                                  'w-full h-full object-cover absolute top-0 left-0'
-                                }
-                              />
-                              {nextArticle.tags?.[0] && (
-                                <div className="tag is-card absolute top-10 left-10">
-                                  {nextArticle.tags[0]?.title}
-                                </div>
-                              )}
-                            </div>
-                            <div className="mt-10 p-10 flex flex-col gap-10 items-center text-center">
-                              <h2 className="w-full title-2xs max-w-[28rem]">
-                                {nextArticle.title}
-                              </h2>
-                              {nextArticle.authors?.length > 0 && (
-                                <div className="flex items-center flex-wrap gap-10 justify-center">
-                                  <div className="flex justify-center items-center gap-3">
-                                    <div>by</div>
-                                    <div>
-                                      <span className="underline font-lb">
-                                        {nextArticle.authors[0].title}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {nextArticle.authors[0].role && (
-                                    <div className="flex text-pink justify-center items-center gap-10 tag-role">
-                                      {nextArticle.authors[0].role}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  )
-                  // Skip the next item since we already rendered it
-                  key++
-                  continue
-                } else if (isOneFifth && cyclePosition === 10) {
-                  // Skip this item - it was already rendered in the previous iteration
-                  continue
                 }
 
                 if (isOverlay) {
@@ -805,16 +747,49 @@ const Articles = ({ data }) => {
                         className="block relative w-full h-[60rem] overflow-hidden rounded-[1rem]"
                         href={`/blog/${article.slug}`}
                       >
-                        <Photo
-                          photo={article.image}
-                          width={1200}
-                          srcSizes={[800, 1000, 1200, 1600]}
-                          sizes="100%"
-                          layout={'fill'}
-                          className={
-                            'w-full h-full object-cover absolute top-0 left-0'
+                        {(() => {
+                          // Check if gradient is valid (has colorStops with at least 2 items)
+                          const hasValidGradient = article.gradient && 
+                            article.gradient.colorStops && 
+                            Array.isArray(article.gradient.colorStops) && 
+                            article.gradient.colorStops.length >= 2;
+                          
+                          // If useGradient is true or no image, prioritize gradient
+                          if ((article.useGradient || !article.image) && hasValidGradient) {
+                            return (
+                              <div className="w-full h-full absolute top-0 left-0">
+                                <Gradient gradient={article.gradient} />
+                              </div>
+                            );
                           }
-                        />
+                          
+                          // Otherwise, use image if available
+                          if (article.image) {
+                            return (
+                              <Photo
+                                photo={article.image}
+                                width={1200}
+                                srcSizes={[800, 1000, 1200, 1600]}
+                                sizes="100%"
+                                layout={'fill'}
+                                className={
+                                  'w-full h-full object-cover absolute top-0 left-0'
+                                }
+                              />
+                            );
+                          }
+                          
+                          // Fallback to gradient if available (even if useGradient not set)
+                          if (hasValidGradient) {
+                            return (
+                              <div className="w-full h-full absolute top-0 left-0">
+                                <Gradient gradient={article.gradient} />
+                              </div>
+                            );
+                          }
+                          
+                          return null;
+                        })()}
                         <div className="absolute bottom-0 left-0 w-full text-white p-25 max-w-[80rem] flex flex-col gap-20">
                           <div className="flex items-center gap-10">
                             <div>by {article.authors[0]?.title}</div>
@@ -834,6 +809,14 @@ const Articles = ({ data }) => {
                 const aspectRatio =
                   cyclePosition < 2 ? 'pb-[120%] md:pb-[100%]' : 'pb-[120%] md:pb-[120%]'
 
+                // Set alignment classes based on card width
+                const alignmentClasses = isOneThird 
+                  ? 'items-center md:items-start text-center md:text-left'
+                  : 'items-center text-center'
+                const justifyClasses = isOneThird
+                  ? 'justify-center md:justify-start'
+                  : 'justify-center'
+
                 items.push(
                   <div key={key} className={colSpan}>
                     <Link
@@ -843,16 +826,49 @@ const Articles = ({ data }) => {
                       <div
                         className={`w-full ${aspectRatio} relative rounded-[1rem] overflow-hidden`}
                       >
-                        <Photo
-                          photo={article.image}
-                          width={1200}
-                          srcSizes={[800, 1000, 1200, 1600]}
-                          sizes="100%"
-                          layout={'fill'}
-                          className={
-                            'w-full h-full object-cover absolute top-0 left-0'
+                        {(() => {
+                          // Check if gradient is valid (has colorStops with at least 2 items)
+                          const hasValidGradient = article.gradient && 
+                            article.gradient.colorStops && 
+                            Array.isArray(article.gradient.colorStops) && 
+                            article.gradient.colorStops.length >= 2;
+                          
+                          // If useGradient is true or no image, prioritize gradient
+                          if ((article.useGradient || !article.image) && hasValidGradient) {
+                            return (
+                              <div className="w-full h-full absolute top-0 left-0">
+                                <Gradient gradient={article.gradient} />
+                              </div>
+                            );
                           }
-                        />
+                          
+                          // Otherwise, use image if available
+                          if (article.image) {
+                            return (
+                              <Photo
+                                photo={article.image}
+                                width={1200}
+                                srcSizes={[800, 1000, 1200, 1600]}
+                                sizes="100%"
+                                layout={'fill'}
+                                className={
+                                  'w-full h-full object-cover absolute top-0 left-0'
+                                }
+                              />
+                            );
+                          }
+                          
+                          // Fallback to gradient if available (even if useGradient not set)
+                          if (hasValidGradient) {
+                            return (
+                              <div className="w-full h-full absolute top-0 left-0">
+                                <Gradient gradient={article.gradient} />
+                              </div>
+                            );
+                          }
+                          
+                          return null;
+                        })()}
                         {article.tags?.[0] && (
                           <div className="tag is-card absolute top-10 left-10">
                             {typeof article.tags[0] === 'string'
@@ -861,13 +877,13 @@ const Articles = ({ data }) => {
                           </div>
                         )}
                       </div>
-                      <div className="mt-10 p-10 flex flex-col gap-10 items-center text-center">
+                      <div className={`mt-10 p-10 flex flex-col gap-10 ${alignmentClasses}`}>
                         <h2 className="w-full title-2xs max-w-[28rem]">
                           {article.title}
                         </h2>
                         {article.authors?.length > 0 && (
-                          <div className="flex items-center flex-wrap gap-10 justify-center">
-                            <div className="flex justify-center items-center gap-3">
+                          <div className={`flex items-center flex-wrap gap-10 ${justifyClasses}`}>
+                            <div className={`flex ${justifyClasses} items-center gap-3`}>
                               <div>by</div>
                               <div>
                                 <span className="underline font-lb">
@@ -876,7 +892,7 @@ const Articles = ({ data }) => {
                               </div>
                             </div>
                             {article.authors[0].role && (
-                              <div className="flex text-pink justify-center items-center gap-10 tag-role">
+                              <div className={`flex text-pink ${justifyClasses} items-center gap-10 tag-role`}>
                                 {article.authors[0].role}
                               </div>
                             )}
@@ -897,8 +913,8 @@ const Articles = ({ data }) => {
           </AnimatePresence>
         </div>
 
-        {/* Gradient Articles List - only show when no filters are active */}
-        {!hasActiveFilters && gradientArticles.length > 0 && (
+        {/* Gradient Articles List - only show when no filters are active and no search is active */}
+        {!hasActiveFilters && searchResults === null && gradientArticles.length > 0 && (
           <div className="w-full mt-90 section-padding">
             <div className="w-full mx-auto border-t-2 border-ash">
               <div className="w-full flex flex-col gap-0">
@@ -958,7 +974,7 @@ export async function getStaticProps({ preview, previewData }) {
         subtitle,
         date,
         image{${queries.assetMeta}},
-        gradient{${queries.assetMeta}},
+        gradient{${queries.gradient}},
         tags[]->{'slug': slug.current, title},
         useGradient
       },

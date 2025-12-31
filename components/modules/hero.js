@@ -10,7 +10,7 @@ const Hero = ({ data = {} }) => {
 
   return (
     <div
-      className={`hero-bleed w-full flex items-end relative mb-15${
+      className={`hero-bleed w-full flex items-center justify-center relative mb-15${
         mobileTag
           ? ' h-[calc(var(--vh,1vh)*100-6rem)] md:h-screen md:max-h-[60rem]'
           : ' min-h-[100vw] md:min-h-[60rem]'

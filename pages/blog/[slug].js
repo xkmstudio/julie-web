@@ -44,8 +44,10 @@ const Article = ({ data, sanityConfig }) => {
     authors,
     reviewers,
     modules,
+    useGradient,
+    gradient,
   } = page
-
+  
   return (
     <>
       {!router.isFallback && (

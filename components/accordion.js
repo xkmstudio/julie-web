@@ -71,9 +71,10 @@ const Accordion = ({
             <div
               className={cx(
                 'text-left leading-100',
-                titleClassName || (
-                  type === 'faqs' ? 'title-md md:title-lg' : ' font-lb uppercase text-12'
-                )
+                titleClassName ||
+                  (type === 'faqs'
+                    ? 'title-md md:title-lg'
+                    : ' font-lb uppercase text-12')
               )}
             >
               {title}
@@ -82,12 +83,15 @@ const Accordion = ({
             <div
               className={cx(
                 `flex items-center justify-center transition-[color,transform] duration-300`,
-                {'rotate-180': isOpen && iconName === 'Chevron Down'},
-                {'rotate-[45deg]': isOpen && iconName !== 'Chevron Down'},
-                {'w-[1.5rem] translate-y-5': type === 'faqs'},
-                {'w-[1.2rem] h-[1.2rem]': type !== 'faqs'},
-                {'text-pink': iconName === 'Chevron Down'},
-                {'text-ash group-hover:text-black': iconName !== 'Chevron Down'},
+                { 'rotate-180': isOpen && iconName === 'Chevron Down' },
+                { 'rotate-[45deg]': isOpen && iconName !== 'Chevron Down' },
+                { 'w-[1.5rem] translate-y-5': type === 'faqs' },
+                { 'w-[1.2rem] h-[1.2rem]': type !== 'faqs' },
+                { 'text-pink': iconName === 'Chevron Down' },
+                {
+                  'text-ash group-hover:text-black':
+                    iconName !== 'Chevron Down',
+                }
               )}
             >
               <Icon name={iconName} viewBox={iconViewBox} />
@@ -106,7 +110,9 @@ const Accordion = ({
         onAnimationComplete={(v) => setHasFocus(v === 'open')}
       >
         <div
-          className="accordion--inner border-t border-[#E8E8E8] text-14"
+          className={cx('accordion--inner border-t border-[#E8E8E8] text-14', {
+            'faqs-inner': iconName !== 'Chevron Down',
+          })}
           hidden={!isOpen && !hasFocus}
         >
           {children}

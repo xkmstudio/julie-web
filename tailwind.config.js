@@ -89,6 +89,7 @@ module.exports = {
       stone: '#E8E8E8',
       ash: '#CFCFCF',
       pink: '#ED0E6A',
+      magenta: '#E31479',
       primary: '#fff',
       secondary: '#000',
       slate: '#777777'
