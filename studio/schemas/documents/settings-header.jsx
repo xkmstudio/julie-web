@@ -19,12 +19,31 @@ export default {
       type: 'array',
       of: [{ type: 'link' }]
     },
-    // {
-    //   name: 'marquee',
-    //   title: 'Marquee',
-    //   type: 'marquee'
-    // },
-
+    {
+      name: 'enableBanner',
+      title: 'Enable Banner',
+      type: 'boolean',
+      initialValue: false
+    },
+    {
+      name: 'banner',
+      title: 'Banner',
+      type: 'object',
+      fields: [
+        {
+          name: 'text',
+          title: 'Text',
+          type: 'string'
+        },
+        {
+          name: 'link',
+          title: 'Link',
+          type: 'url',
+          description: '(Optional)'
+        },
+      ],
+      hidden: ({ parent }) => !parent.enableBanner
+    },
   ],
   preview: {
     select: {

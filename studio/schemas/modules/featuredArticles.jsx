@@ -37,12 +37,12 @@ export default {
         {
           title: 'Logo',
           name: 'logo',
-          type: 'asset',  
+          type: 'asset',
         },
         {
           title: 'Media',
           name: 'media',
-          type: 'media',  
+          type: 'media',
         },
         {
           title: 'Title',
@@ -72,15 +72,15 @@ export default {
   preview: {
     select: {
       articles: 'articles',
-      useList: 'useList'
+      useList: 'useList',
+      card: 'featuredCard.media.0.image'
     },
-    prepare({ articles, useList }) {
+    prepare({ articles, useList, card }) {
       return {
-        title: 'Featured Articles',
-        subtitle: `${articles?.length || 0} ${
-          articles?.length === 1 ? 'Article' : 'Articles'
-        } • ${useList ? 'List' : 'Carousel'}`,
-        media: () => <Article />
+        title: !articles ? `Featured Article Card` : `Featured Articles`,
+        subtitle: !articles ? `No articles selected` : `${articles?.length || 0} ${articles?.length === 1 ? 'Article' : 'Articles'
+          } • ${useList ? 'List' : 'Carousel'}`,
+        media: articles?.length >= 1 ? <Article /> : (card || <Article />)
       }
     }
   }

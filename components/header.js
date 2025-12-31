@@ -3,17 +3,13 @@ import { useRouter } from 'next/router'
 import cx from 'classnames'
 
 import NextLink from 'next/link'
+import { Marqy } from 'marqy'
 
 import FocusTrap from 'focus-trap-react'
 import { m } from 'framer-motion'
 import { AnimatePresence } from 'framer-motion'
 import { backgroundAnim, menuAnim } from '@lib/animate'
 
-import gsap from 'gsap'
-import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
-gsap.registerPlugin(ScrollToPlugin)
-
-import Marquee from '@components/modules/marquee'
 import Icon from '@components/icon'
 import Link from '@components/link'
 
@@ -27,14 +23,17 @@ const Header = ({ data, work, pages }) => {
 
   const { width } = useWindowSize()
 
-  const { nav, navSecondary } = data
+  const { nav, navSecondary, enableBanner, banner } = data
   const menuPages = pages || work?.pages || []
   const router = useRouter()
   const headerRef = useRef()
   const burgerRef = useRef()
+  const bannerRef = useRef()
   const [menuOpen, setMenuOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
+  const [bannerVisible, setBannerVisible] = useState(false)
   const [isTransparent, setIsTransparent] = useState(false)
+  const [bannerHeight, setBannerHeight] = useState(0)
 
   useEffect(() => {
     document.body.style.setProperty(
@@ -42,6 +41,14 @@ const Header = ({ data, work, pages }) => {
       `${headerRef?.current?.offsetHeight}px`
     )
   }, [width])
+
+  // Measure banner height for header content transform
+  useEffect(() => {
+    if (enableBanner && bannerRef.current) {
+      const height = bannerRef.current.offsetHeight
+      setBannerHeight(height)
+    }
+  }, [enableBanner, width, bannerVisible])
 
   //handle menu state on navigation
   useEffect(() => {
@@ -84,6 +91,41 @@ const Header = ({ data, work, pages }) => {
     }
   }, [router])
 
+  // Setup Banner
+  useEffect(() => {
+    const checkBanner = () => {
+      const scrollY = window.scrollY || window.pageYOffset
+
+      if (router.pathname === '/' && scrollY < 100) {
+        setBannerVisible(true)
+      } else {
+        setBannerVisible(false)
+      }
+    }
+
+    // Check on mount and route changes
+    checkBanner()
+
+    // Add scroll listener
+    window.addEventListener('scroll', checkBanner, {
+      passive: true,
+    })
+
+    // Re-check when route changes (after a short delay to allow DOM to update)
+    const handleRouteChange = () => {
+      setTimeout(() => {
+        checkBanner()
+      }, 100)
+    }
+
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    return () => {
+      window.removeEventListener('scroll', checkBanner)
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [router])
+
   return (
     <>
       <a href="#content" className="skip-link">
@@ -93,85 +135,128 @@ const Header = ({ data, work, pages }) => {
       <header
         ref={headerRef}
         className={cx(
-          'fixed z-[91] flex top-0 left-0 justify-between w-full px-15 md:px-25 pt-20 text-white'
+          'fixed z-[91] top-0 left-0 justify-between w-full text-white'
         )}
       >
-        <div
-          className={cx(
-            `header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
-            { 'is-transparent': isTransparent && !menuOpen }
-          )}
-        >
-          <div className="hidden md:flex gap-15 items-center font-lxb">
-            {nav?.map((item, index) => (
-              <div key={index} className={`flex`}>
-                <Link key={index} link={item} className={``} />
-              </div>
-            ))}
-          </div>
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="flex justify-start">
-              <NextLink className="h-35" href={`/`}>
-                <Icon name="Logo" viewBox="0 0 543 265" />
-              </NextLink>
-            </div>
-          </div>
-          <div className="flex w-full md:w-[unset]">
-            <div className="flex justify-between w-full gap-15">
-              <button
-                onClick={() => {
-                  setMenuOpen(!menuOpen)
-                }}
-                className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink"
-              >
-                <div
-                  ref={burgerRef}
-                  aria-label={menuOpen ? 'close menu' : 'open menu'}
-                  className={cx('w-[1.8rem] nav-toggle px-0 mb-1')}
+        {enableBanner && (
+          <div
+            ref={bannerRef}
+            className={cx(
+              `w-full py-5 bg-pink text-white border-b border-pink transition-transform duration-300 ${bannerVisible ? ' -translate-y-0' : '-translate-y-full'}`,
+            )}
+          >
+            <Marqy
+              speed={0.5}
+              direction="left"
+              pauseOnHover={banner.link ? true : false}
+              className="marquee"
+            >
+              {banner.link ? (
+                <a
+                  href={banner.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="marquee--item"
                 >
-                  <svg
-                    className={cx('menu_svg', { 'is-open': menuOpen })}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 12 10"
-                    fill="none"
-                  >
-                    <path
-                      className="menu_line menu_line_one"
-                      d="M1 1H11"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      className="menu_line menu_line_two"
-                      d="M1 5H11"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      className="menu_line menu_line_three"
-                      d="M1 9H11"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </button>
-              <div className="hidden md:flex gap-15 items-center font-lxb">
-                {navSecondary?.map((item, index) => (
-                  <div key={index} className={`flex`}>
-                    <Link key={index} link={item} className={``} />
+                  <div className="marquee--text-small font-lxb">
+                    {banner.text}
                   </div>
-                ))}
+                </a>
+              ) : (
+                <div className="marquee--item">
+                  <div className="marquee--text">{banner.text}</div>
+                </div>
+              )}
+            </Marqy>
+          </div>
+        )}
+        <div 
+          className={cx(
+            "w-full px-15 md:px-25 pt-20 transition-transform duration-300"
+          )}
+          style={{
+            transform: !bannerVisible && enableBanner && bannerHeight > 0 
+              ? `translateY(-${bannerHeight}px)` 
+              : 'translateY(0)'
+          }}
+        >
+          <div
+            className={cx(
+              `header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
+              { 'is-transparent': isTransparent && !menuOpen }
+            )}
+          >
+            <div className="hidden md:flex gap-15 items-center font-lxb">
+              {nav?.map((item, index) => (
+                <div key={index} className={`flex`}>
+                  <Link key={index} link={item} className={``} />
+                </div>
+              ))}
+            </div>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="flex justify-start">
+                <NextLink className="h-35" href={`/`}>
+                  <Icon name="Logo" viewBox="0 0 543 265" />
+                </NextLink>
               </div>
-              <CartToggle />
+            </div>
+            <div className="flex w-full md:w-[unset]">
+              <div className="flex justify-between w-full gap-15">
+                <button
+                  onClick={() => {
+                    setMenuOpen(!menuOpen)
+                  }}
+                  className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink"
+                >
+                  <div
+                    ref={burgerRef}
+                    aria-label={menuOpen ? 'close menu' : 'open menu'}
+                    className={cx('w-[1.8rem] nav-toggle px-0 mb-1')}
+                  >
+                    <svg
+                      className={cx('menu_svg', { 'is-open': menuOpen })}
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 12 10"
+                      fill="none"
+                    >
+                      <path
+                        className="menu_line menu_line_one"
+                        d="M1 1H11"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        className="menu_line menu_line_two"
+                        d="M1 5H11"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        className="menu_line menu_line_three"
+                        d="M1 9H11"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </button>
+                <div className="hidden md:flex gap-15 items-center font-lxb">
+                  {navSecondary?.map((item, index) => (
+                    <div key={index} className={`flex`}>
+                      <Link key={index} link={item} className={``} />
+                    </div>
+                  ))}
+                </div>
+                <CartToggle />
+              </div>
             </div>
           </div>
         </div>

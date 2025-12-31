@@ -6,13 +6,19 @@ import { ProductActions } from '@components/product'
 import { useAddItem } from '@lib/context'
 import { useIsInFrame } from '@lib/helpers'
 
-const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkClick }) => {
+const ProductCard = ({
+  product,
+  index,
+  className,
+  type = 'feature',
+  onFrameLinkClick,
+}) => {
   const isInFrame = useIsInFrame()
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
   const productHref = `/products/${product.slug}`
-  const addItem = useAddItem()  
+  const addItem = useAddItem()
 
-  if(!product) return null
+  if (!product) return null
 
   // Determine activeVariant - use first variant if available, otherwise create fallback from product data
   const activeVariant = useMemo(() => {
@@ -49,10 +55,15 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
     }
   }
 
+  // Hide ProductActions if product has more than 1 variant
+  const hasMultipleVariants = product.variants && product.variants.length > 1
+
   return type == 'feature' ? (
     <div
       className={cx(
-        'flex flex-col bg-cement p-15 md:p-25 rounded-[1.5rem] overflow-hidden',
+        'flex flex-col bg-cement rounded-[1.5rem] overflow-hidden relative',
+        product.productType == 'alternate' ? 'text-white' : '',
+        product.productType == 'alternate' ? '' : '',
         className
       )}
     >
@@ -67,19 +78,26 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
         >
           <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
             {product?.title && (
-              <div className="w-full text-center title-2xl max-w-[50rem]">
+              <div className="w-full text-center title-2xl max-w-[50rem] relative z-2 p-15 md:p-25 pb-0">
                 {product?.title}
               </div>
             )}
-            <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
+            <div className={cx(`flex-1 w-full min-h-0 relative py-20 md:py-40`, {
+              'absolute top-0 left-0': product.productType == 'alternate',
+            })}>
               <div className="w-full h-full relative">
                 <Media
                   media={product.productThumbnail?.content}
                   width={1600}
                   srcSizes={[800, 1000, 1200, 1600]}
                   sizes="100%"
-                  layout={'contain'}
-                  className={'h-full w-full object-contain'}
+                  layout={
+                    product.productType == 'alternate' ? 'fill' : 'contain'
+                  }
+                  className={cx('h-full w-full', {
+                    ' object-cover': product.productType == 'alternate',
+                    ' object-contain': product.productType == 'primary',
+                  })}
                 />
               </div>
             </div>
@@ -89,19 +107,25 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
         <NextLink href={productHref} className="w-full">
           <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
             {product?.title && (
-              <div className="w-full text-center title-2xl max-w-[50rem]">
+              <div className="relative z-2 w-full text-center title-2xl max-w-[50rem] p-15 md:p-25 pb-0">
                 {product?.title}
               </div>
             )}
-            <div className="flex-1 w-full min-h-0 relative py-20 md:py-40">
+            <div className={cx(`flex-1 w-full min-h-0`, {
+              'absolute top-0 left-0 w-full h-full': product.productType == 'alternate',
+              'relative py-20 md:py-40': product.productType == 'primary',
+            })}>
               <div className="w-full h-full relative">
                 <Media
                   media={product.productThumbnail?.content}
                   width={1600}
                   srcSizes={[800, 1000, 1200, 1600]}
                   sizes="100%"
-                  layout={'contain'}
-                  className={'h-full w-full object-contain'}
+                  layout={product.productType == 'alternate' ? 'fill' : 'contain'}
+                  className={cx('h-full w-full', {
+                    ' object-cover': product.productType == 'alternate',
+                    ' object-contain': product.productType == 'primary',
+                  })}
                 />
               </div>
             </div>
@@ -109,10 +133,17 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
         </NextLink>
       )}
 
-      <div className="flex flex-col md:flex-row gap-10" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={cx(`flex flex-col md:flex-row gap-10 p-15 md:p-25`, {
+          'absolute bottom-0 left-0 w-full': product.productType == 'alternate',
+        })}
+        onClick={(e) => e.stopPropagation()}
+      >
         {shouldHandleInFrame ? (
           <a
-            className="btn is-outline is-large flex-1"
+            className={cx("btn is-outline is-large flex-1", {
+              'is-white': product.productType == 'alternate',
+            })}
             href={productHref}
             onClick={(e) => {
               e.preventDefault()
@@ -123,19 +154,23 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
           </a>
         ) : (
           <NextLink
-            className="btn is-outline is-large flex-1"
+            className={cx("btn is-outline is-large flex-1", {
+              'is-white': product.productType == 'alternate',
+            })}
             href={productHref}
           >
             Learn More
           </NextLink>
         )}
-        <ProductActions
-          product={product}
-          type={'feature'}
-          activeVariant={activeVariant}
-          klaviyoAccountID={product.klaviyoAccountID}
-          onAddToCart={handleAddToCart}
-        />
+        {!hasMultipleVariants && (
+          <ProductActions
+            product={product}
+            type={'feature'}
+            activeVariant={activeVariant}
+            klaviyoAccountID={product.klaviyoAccountID}
+            onAddToCart={handleAddToCart}
+          />
+        )}
       </div>
     </div>
   ) : (
@@ -218,13 +253,15 @@ const ProductCard = ({ product, index, className, type = 'feature', onFrameLinkC
             Learn More
           </NextLink>
         )}
-        <ProductActions
-          product={product}
-          type={'feature'}
-          activeVariant={activeVariant}
-          klaviyoAccountID={product.klaviyoAccountID}
-          onAddToCart={handleAddToCart}
-        />
+        {!hasMultipleVariants && (
+          <ProductActions
+            product={product}
+            type={'feature'}
+            activeVariant={activeVariant}
+            klaviyoAccountID={product.klaviyoAccountID}
+            onAddToCart={handleAddToCart}
+          />
+        )}
       </div>
     </div>
   )

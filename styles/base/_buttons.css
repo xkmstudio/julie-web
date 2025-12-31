@@ -8,6 +8,10 @@ button{
 
   &.is-outline{
     @apply bg-transparent text-pink hover:text-magenta;
+
+    &.is-white{
+      @apply text-white hover:text-[#FFACCB] border-white hover:border-[#FFACCB];
+    }
   }
 
   &.is-variant{
@@ -19,7 +23,7 @@ button{
   }
   
   &-text{
-    @apply text-16 font-lb
+    @apply text-16 hover:opacity-80 transition-opacity duration-300;
   }
 
   &-gradient{

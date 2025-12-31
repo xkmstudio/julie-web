@@ -47,12 +47,14 @@ main{
   }
 }
 
+.shop-feature:not(.background-media){
+  @apply mt-0 md:mt-60;
+}
+
 section{
   @apply my-[6rem] md:my-[9rem] bg-white relative z-2 w-full;
 
-  &.shop-feature{
-    @apply mt-0 md:mt-60;
-  }
+  
 
   &.drawer-container{
     &.is-standard{

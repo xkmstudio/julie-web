@@ -169,6 +169,7 @@ export const blocks = `
 export const product = `
     forceOutOfStock,
     preOrder,
+    productType,
     limitedEdition,
     soldOut,
     noteShipping,
@@ -290,17 +291,29 @@ export const modules = `
     _type,
     _key,
     products[]->{
+      productType,
       title,
       subtitle,
       productThumbnail{${mediaContent}},
       'slug': slug.current,
+      'id': productID,
       price,
+      "variants": *[_type == "productVariant" && productID == ^.productID && wasDeleted != true && isDraft != true]{
+        "id": variantID,
+        title,
+        price,
+        comparePrice,
+        inStock,
+        lowStock,
+        forceOutOfStock,
+      },
     }
   },
   _type == 'productShop' => {
     _type,
     _key,
     mobileTag,
+    backgroundMedia{${mediaContent}},
     product->{
       ${product}
     },
@@ -572,6 +585,11 @@ export const site = `
       "count": count(products)
     },
     "header": *[_type == "headerSettings"][0]{
+      enableBanner,
+      banner{
+        text,
+        link
+      },
       nav[]{
         ${link}
       },

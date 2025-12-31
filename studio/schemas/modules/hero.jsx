@@ -36,11 +36,17 @@ export default {
   ],
   preview: {
     select: {
-      title: 'title',
+      title: 'title.0.children[0].text',
+      subtitle: 'subtitle.0.children[0].text',
+      mobileTag: 'mobileTag',
+      backgroundMedia: 'backgroundMedia.media[0].image',
+      hasEma: 'hasEma',
     },
-    prepare({ title }) {
+    prepare({ title, subtitle, mobileTag, backgroundMedia, hasEma }) {
       return {
         title: title,
+        subtitle: `${hasEma ? 'Includes Ema Chat' : 'Does not include Ema Chat'}`,
+        media: backgroundMedia,
       }
     }
   }

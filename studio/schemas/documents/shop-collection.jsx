@@ -93,7 +93,7 @@ export default {
       imageSecondary: 'sections.0.products.0.thumbnailSecondary.image'
     },
     prepare({ title = 'Untitled', slug = {}, imageFeature, imageSecondary }) {
-      const path = `/shop/${slug.current}`
+      const path = `/collections/${slug.current}`
       return {
         title,
         subtitle: slug.current ? path : '(missing slug)',

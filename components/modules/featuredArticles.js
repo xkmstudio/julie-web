@@ -146,7 +146,7 @@ const FeaturedArticles = ({ data = {} }) => {
                 )}
                 <div
                   className={cx(`w-full flex flex-col h-full gap-10 flex-1`, {
-                    'p-40 py-60 justify-end':
+                    'p-40 py-60 justify-between':
                       !articles || articles.length === 0,
                     'p-15 md:p-20 justify-between':
                       articles && articles.length > 0,

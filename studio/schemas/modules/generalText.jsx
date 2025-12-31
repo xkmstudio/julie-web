@@ -17,11 +17,6 @@ export default {
       type: 'string'
     },
     {
-      title: 'Icon',
-      name: 'icon',
-      type: 'string'
-    },
-    {
       title: 'Body',
       name: 'content',
       type: 'complexPortableText'

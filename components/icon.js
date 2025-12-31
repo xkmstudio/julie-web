@@ -175,7 +175,7 @@ const getIcon = (name, color) => {
       return (
         <path
           d="M0.707031 4.70703L5.70703 9.70703L14.707 0.707031"
-          stroke="black"
+          stroke="currentColor"
           strokeWidth="2"
           fill="none"
         />

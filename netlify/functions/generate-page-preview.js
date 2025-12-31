@@ -118,9 +118,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ message: 'Collection requires slug', documentId, documentType }),
         }
       }
-      pageUrl = `${baseUrl}/shop/${slug}`
-    } else if (documentType === 'tutorialsPage') {
-      pageUrl = `${baseUrl}/tutorials`
+      pageUrl = `${baseUrl}/collections/${slug}`
     } else if (documentType === 'page') {
       pageUrl = slug ? `${baseUrl}/pages/${slug}` : baseUrl
     } else {
@@ -129,7 +127,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ 
           message: 'Unsupported document type',
           documentType,
-          supportedTypes: ['page', 'product', 'collection', 'tutorialsPage'],
+          supportedTypes: ['page', 'product', 'collection'],
         }),
       }
     }

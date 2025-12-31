@@ -205,6 +205,8 @@ export async function getProfile(slug, preview) {
           subtitle,
           'slug': slug.current,
           date,
+          useGradient,
+          gradient{${queries.gradient}},
           image{${queries.assetMeta}},
           'tag': tags[0]->{'slug': slug.current, title},
           excerpt[]{${queries.ptContent}},

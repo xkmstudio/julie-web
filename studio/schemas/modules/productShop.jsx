@@ -39,6 +39,12 @@ export default {
             name: 'logos',
             type: 'array',
             of: [{ type: 'asset' }],
+        },
+        {
+            title: 'Background Media',
+            name: 'backgroundMedia',
+            type: 'media',
+            description: '(optional)'
         }
     ],
     preview: {

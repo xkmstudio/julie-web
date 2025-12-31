@@ -31,6 +31,22 @@ export default {
   icon: () => <Gift />,
   fields: [
     {
+      title: 'Product Type',
+      name: 'productType',
+      type: 'string',
+      group: 'settings',
+      options: {
+        list: [
+          { title: 'Primary', value: 'primary' },
+          { title: 'Alternate', value: 'alternate' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      initialValue: 'primary',
+      description: 'This determines how the product is displayed in places like featured products and product cards'
+    },
+    {
       title: 'Pre-Order',
       name: 'preOrder',
       type: 'boolean',

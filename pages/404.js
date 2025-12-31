@@ -17,15 +17,15 @@ const NotFoundPage = ({ data }) => {
     <>
       {!router.isFallback && (
         <Layout site={site} page={{ title: null }}>
-          <div className="fixed w-screen h-screen z-9 bg-white left-0 top-0 flex flex-col gap-20 items-center justify-center">
-            <div className="font-voy text-80 md:text-100 uppercase p-30 shadow-primaryInner bg-acid">
+          <div className="w-full section-padding max-w-[80rem] mx-auto flex flex-col gap-20 items-center justify-center text-center pt-160">
+            <div className="font-plaid text-16 md:text-18 uppercase tracking-[-.02em] leading-100">
               Error
             </div>
-            <div className=" font-mono text-12">
+            <h1 className="title-2xl">
               We couldn't find the page you're looking for.
-            </div>
-            <Link href="/" className="bg-offwhite border border-fog px-20 py-10 uppercase">
-              Go home
+            </h1>
+            <Link href="/" className="btn">
+              Back to home
             </Link>
           </div>
         </Layout>

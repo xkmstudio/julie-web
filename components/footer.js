@@ -45,6 +45,7 @@ const Footer = ({ data }) => {
               href={`https://xkm.studio`}
               target="_blank"
               rel="noopener noreferrer"
+              className="btn-text"
             >
               Site Credit
             </a>

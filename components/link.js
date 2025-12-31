@@ -23,7 +23,7 @@ const getPageUrl = (page) => {
     case 'product':
       return `/products/${slug}`
     case 'collection':
-      return `/shop/${slug}`
+      return `/collections/${slug}`
     case 'article':
       return `/blog/${slug}`
     case 'profile':

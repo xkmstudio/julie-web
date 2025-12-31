@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import NextLink from 'next/link'
+import cx from 'classnames'
 
 import Media from '@components/media'
 import Icon from '@components/icon'
@@ -21,6 +22,7 @@ const ProductShop = ({
     values,
     logos,
     mobileTag,
+    backgroundMedia,
   } = data
   const addItem = useAddItem()
 
@@ -84,8 +86,26 @@ const ProductShop = ({
     product.heroImage
 
   return (
-    <section className="px-10 md:px-15 shop-feature">
-      <div className="grid-standard">
+    <div
+      className={cx(`px-10 md:px-15 shop-feature relative w-full`, {
+        ' text-white min-h-[100vw] md:min-h-[60rem] flex items-center justify-center pt-[calc(var(--headerHeight)+2.5rem)] md:pt-[calc(var(--headerHeight)+2rem)] pb-30':
+          backgroundMedia?.content,
+        'background-media': backgroundMedia?.content,
+      })}
+    >
+      {backgroundMedia?.content && (
+        <div className="w-full h-full absolute top-0 left-0 z-1">
+          <Media
+            media={backgroundMedia.content}
+            width={1600}
+            srcSizes={[800, 1000, 1200, 1600]}
+            sizes="100%"
+            layout="contain"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <div className="grid-standard relative z-2">
         {mobileTag && (
           <div className="text-pink items-center justify-center md:hidden col-span-12 flex mb-15">
             <div className="tag-glass">
@@ -98,6 +118,7 @@ const ProductShop = ({
             </div>
           </div>
         )}
+
         <div className="col-span-12 md:col-span-3 pr-20">
           {productImage && (
             <div className="relative w-full pb-[100%]">
@@ -129,7 +150,12 @@ const ProductShop = ({
         <div className="col-span-12 md:col-span-9 flex flex-col items-center md:items-start justify-center gap-20 md:gap-30 mt-20 md:mt-0">
           <div>
             {title && (
-              <h2 className="hidden md:block uppercase font-plaid text-14 text-pink mb-20">
+              <h2
+                className={cx(
+                  `hidden md:block uppercase font-plaid text-14 text-pink mb-20`,
+                  { 'text-white': backgroundMedia?.content }
+                )}
+              >
                 {title}
               </h2>
             )}
@@ -177,7 +203,7 @@ const ProductShop = ({
               <div className="hidden md:flex gap-35">
                 {logos.map((logo, index) =>
                   logo?.asset ? (
-                    <div className="h-[2.5rem] md:h-[3rem]">
+                    <div key={index} className="h-[2.5rem] md:h-[3rem]">
                       <Photo
                         width={500}
                         srcSizes={[800, 1000, 1200, 1600]}
@@ -194,7 +220,7 @@ const ProductShop = ({
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 

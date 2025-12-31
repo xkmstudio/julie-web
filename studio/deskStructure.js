@@ -8,6 +8,10 @@ import {
   ShoppingCart,
   Book,
   SmileyBlank,
+  Tag,
+  Notebook,
+  Article,
+  Browsers,
 } from 'phosphor-react'
 
 export default (S) =>
@@ -24,7 +28,7 @@ export default (S) =>
             .items([
               S.listItem()
                 .title('Blog')
-                .icon(Book)
+                .icon(Notebook)
                 .child(
                   S.editor()
                     .title('Blog')
@@ -34,7 +38,7 @@ export default (S) =>
               S.divider(),
               S.listItem()
                 .title('Articles')
-                .icon(Bag)
+                .icon(Article)
                 .child(
                   S.documentTypeList('article')
                     .title('Articles')
@@ -45,7 +49,7 @@ export default (S) =>
               S.divider(),
               S.listItem()
                 .title('Tags')
-                .icon(Bag)
+                .icon(Tag)
                 .child(
                   S.documentTypeList('tag')
                     .title('Tags')
@@ -180,7 +184,7 @@ export default (S) =>
               S.divider(),
               S.listItem()
                 .title('Pages')
-                .icon(Bag)
+                .icon(Browsers)
                 .child(
                   S.documentTypeList('page')
                     .title('Page')

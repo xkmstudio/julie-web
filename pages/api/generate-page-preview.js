@@ -152,10 +152,7 @@ export default async function handler(req, res) {
         console.error(`[${requestId}] Collection requires slug`)
         return res.status(400).json({ message: 'Collection requires slug', documentId, documentType })
       }
-      pageUrl = `${baseUrl}/shop/${slug}`
-    } else if (documentType === 'tutorialsPage') {
-      // tutorialsPage doesn't need a slug - URL is hardcoded
-      pageUrl = `${baseUrl}/tutorials`
+      pageUrl = `${baseUrl}/collections/${slug}`
     } else if (documentType === 'page') {
       pageUrl = slug ? `${baseUrl}/pages/${slug}` : baseUrl
     } else {

@@ -9,31 +9,21 @@ const GeneralText = ({ data = {} }) => {
   const { title, subtitle, content, cta } = data
 
   return (
-    <section className={`mx-auto px-15`}>
-      <div className="w-full h-full">
+    <section className={`mx-auto section-padding`}>
+      <div className="w-full h-full max-w-[80rem] mx-auto">
         {(title || subtitle) && (
-          <div className="grid-standard border-b border-cement">
-            {title && (
-              <div className="col-span-6 bg-cement px-10 h-[3rem] text-center flex items-center justify-center">
-                <h2 className="title-normal">{title}</h2>
-              </div>
-            )}
+          <div className="w-full flex flex-col gap-20 mb-60">
             {subtitle && (
-              <div className="col-span-6 flex items-center justify-end">
-                {subtitle && <h3 className="tutle-normal text-ash">{subtitle}</h3>}
-              </div>
+              <div className="font-plaid text-16 md:text-18 uppercase tracking-[-.02em] leading-100 text-center">{subtitle}</div>
             )}
+            {title && <h1 className="title-xl text-center">{title}</h1>}
           </div>
         )}
-        <div className="p-15 flex flex-col gap-60">
-          {content && (
-            <div className="grid-standard">
-              <div className="col-span-6 pr-15">
-                <BlockContent blocks={content} />
-              </div>
-            </div>
-          )}
-        </div>
+        {content && (
+          <div className="w-full">
+            <BlockContent blocks={content} />
+          </div>
+        )}
       </div>
     </section>
   )
