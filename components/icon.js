@@ -67,8 +67,8 @@ const getIcon = (name, color) => {
               y2="9.40739"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#ED0E61" />
-              <stop offset="1" stop-color="#FF3BAB" />
+              <stop stopColor="#ED0E61" />
+              <stop offset="1" stopColor="#FF3BAB" />
             </linearGradient>
           </defs>
         </>

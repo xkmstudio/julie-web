@@ -124,10 +124,10 @@ const FeaturedArticles = ({ data = {} }) => {
           )}
           {featuredCard?.media?.content && (
             <div className="w-full md:flex-1">
-              <div className="w-full h-full bg-[#FF3BAB] rounded-[1.5rem] flex">
+              <div className="w-full h-full bg-[#FF3BAB] rounded-[1.5rem] flex flex-col md:flex-row">
                 {(!articles || articles.length === 0) && (
-                  <div className="w-[66.6667%] flex p-20 pr-0 relative">
-                    <div className="w-full relative min-h-[60rem]">
+                  <div className="w-full md:w-[66.6667%] flex p-15 md:p-20 md:pr-0 relative">
+                    <div className="w-full relative min-h-[calc(100vw-6rem)] md:min-h-[60rem]">
                       <div className="w-full relative rounded-[1rem] overflow-hidden h-full">
                         <Media
                           media={featuredCard.media.content}
@@ -146,7 +146,7 @@ const FeaturedArticles = ({ data = {} }) => {
                 )}
                 <div
                   className={cx(`w-full flex flex-col h-full gap-10 flex-1`, {
-                    'p-40 py-60 justify-between':
+                    'p-20 md:p-40 py-20 md:py-60 justify-between':
                       !articles || articles.length === 0,
                     'p-15 md:p-20 justify-between':
                       articles && articles.length > 0,

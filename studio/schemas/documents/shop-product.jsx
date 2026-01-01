@@ -139,9 +139,23 @@ export default {
               type: 'url',
               description: '(optional)'
             }
-          ]
+          ],
+          preview: {
+            select: {
+              icon: 'icon.image',
+              title: 'icon.alt',
+              link: 'link'
+            },
+            prepare({ icon, link, title }) {
+              return {
+                title: title || 'Icon',
+                media: icon
+              }
+            }
+          },
         }
       ],
+      
       group: 'content',
     },
 
@@ -152,6 +166,7 @@ export default {
       name: 'productBadge',
       type: 'asset',
       group: 'details',
+      hidden: true,
     },
     {
       title: 'Product Thumbnail',
@@ -159,7 +174,7 @@ export default {
         'This will be shown as the thumbnail for product cards.',
       name: 'productThumbnail',
       type: 'media',
-      group: 'details',
+      group: 'photos',
     },
     {
       title: 'Default Gallery Images',

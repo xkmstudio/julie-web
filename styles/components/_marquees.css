@@ -97,21 +97,21 @@
 
     &::before{
       content: '';
-      @apply absolute z-5 bg-gradient-to-r from-white to-transparent h-[calc(100%+6rem)] w-[10rem] md:w-[30rem] top-0 left-0;
+      @apply  pointer-events-none absolute top-1/2 -translate-y-1/2 left-0 z-5 bg-gradient-to-r from-white to-transparent h-[calc(100%+6rem)] w-[10rem] md:w-[30rem];
     }
 
     &::after{
       content: '';
-      @apply absolute z-5 bg-gradient-to-l from-white to-transparent h-[calc(100%+6rem)] w-[10rem] md:w-[30rem] top-0 right-0;
+      @apply pointer-events-none absolute top-1/2 -translate-y-1/2 right-0 z-5 bg-gradient-to-l from-white to-transparent h-[calc(100%+6rem)] w-[10rem] md:w-[30rem];
     }
   }
 
   &-link {
-    @apply md:absolute p-20 text-white text-20 font-lb w-[20rem] bg-white top-0 left-0 z-7 h-full flex items-center justify-center text-pink;
+    @apply md:absolute md:p-20 text-white text-[1.6rem] w-[20rem] bg-white md:top-1/2 md:-translate-y-1/2 left-0 z-7 h-full md:h-[calc(100%+8rem)] text-center font-plaid uppercase flex items-center justify-center;
 
     &::before{
       content: '';
-      @apply absolute z-5 bg-gradient-to-r from-white to-transparent h-[calc(100%+6rem)] w-[30rem] top-0 right-0 translate-x-full;
+      @apply hidden md:block absolute z-5 bg-gradient-to-r from-white to-transparent h-full md:h-[calc(100%+6rem)] w-[30rem] top-0 right-0 translate-x-full;
     }
   }
 }

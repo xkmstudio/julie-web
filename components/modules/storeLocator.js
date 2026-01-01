@@ -1,20 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
 import { LuckyIdScripts } from '@components/LuckyLocal/Scripts'
 
 export default function FindJulieInStores() {
   const wrapperRef = useRef(null)
-  const router = useRouter()
-  
-  // Track cleanup functions and timeouts
-  const cleanupRef = useRef({
-    script: null,
-    errorHandler: null,
-    unhandledRejectionHandler: null,
-    checkInterval: null,
-    timeouts: [],
-    rafIds: [],
-  })
 
   useEffect(() => {
     // Ensure the initial configuration script has loaded before loading the store locator
@@ -118,10 +106,6 @@ export default function FindJulieInStores() {
       window.addEventListener('error', errorHandler, true)
       window.addEventListener('unhandledrejection', unhandledRejectionHandler)
       
-      // Store handlers for cleanup
-      cleanupRef.current.errorHandler = errorHandler
-      cleanupRef.current.unhandledRejectionHandler = unhandledRejectionHandler
-      
       script.onerror = (error) => {
         console.error('❌ Failed to load LuckyLabs store locator script:', error)
         window.removeEventListener('error', errorHandler, true)
@@ -157,8 +141,7 @@ export default function FindJulieInStores() {
           
           if (checkCount < maxChecks) {
             // Continue checking
-            const timeoutId = setTimeout(checkInitialization, 500)
-            cleanupRef.current.timeouts.push(timeoutId)
+            setTimeout(checkInitialization, 500)
           } else {
             // Final check - widget didn't initialize
             console.error('❌ Widget failed to initialize after', maxChecks * 500, 'ms')
@@ -187,15 +170,11 @@ export default function FindJulieInStores() {
         }
         
         // Start checking after a short delay
-        const initialTimeoutId = setTimeout(checkInitialization, 500)
-        cleanupRef.current.timeouts.push(initialTimeoutId)
+        setTimeout(checkInitialization, 500)
       }
       
       // Append to head (module scripts typically go in head)
       document.head.appendChild(script)
-      
-      // Store script reference for cleanup
-      cleanupRef.current.script = script
     }
 
     // Add custom styles
@@ -225,70 +204,15 @@ export default function FindJulieInStores() {
       // Double RAF to ensure React has finished rendering
       rafId2 = requestAnimationFrame(() => {
         timeoutId = setTimeout(loadStoreLocator, 100)
-        cleanupRef.current.timeouts.push(timeoutId)
       })
-      cleanupRef.current.rafIds.push(rafId2)
     })
-    cleanupRef.current.rafIds.push(rafId1)
 
-    // Cleanup function
-    const cleanup = () => {
-      // Clear all timeouts
-      cleanupRef.current.timeouts.forEach(timeoutId => {
-        if (timeoutId) clearTimeout(timeoutId)
-      })
-      cleanupRef.current.timeouts = []
-      
-      // Cancel all animation frames
-      cleanupRef.current.rafIds.forEach(rafId => {
-        if (rafId) cancelAnimationFrame(rafId)
-      })
-      cleanupRef.current.rafIds = []
-      
-      // Remove event listeners
-      if (cleanupRef.current.errorHandler) {
-        window.removeEventListener('error', cleanupRef.current.errorHandler, true)
-      }
-      if (cleanupRef.current.unhandledRejectionHandler) {
-        window.removeEventListener('unhandledrejection', cleanupRef.current.unhandledRejectionHandler)
-      }
-      
-      // Remove script element
-      if (cleanupRef.current.script && cleanupRef.current.script.parentNode) {
-        cleanupRef.current.script.parentNode.removeChild(cleanupRef.current.script)
-      }
-      
-      // Clear wrapper content (widget should handle its own cleanup, but we'll clear the container)
-      const wrapper = document.getElementById('lucky-wrapper-store-locator')
-      if (wrapper) {
-        wrapper.innerHTML = ''
-      }
-      
-      // Reset cleanup ref
-      cleanupRef.current = {
-        script: null,
-        errorHandler: null,
-        unhandledRejectionHandler: null,
-        checkInterval: null,
-        timeouts: [],
-        rafIds: [],
-      }
-    }
-
-    // Handle route changes
-    const handleRouteChange = (url) => {
-      cleanup()
-    }
-
-    // Listen for route changes
-    router.events.on('routeChangeStart', handleRouteChange)
-
-    // Return cleanup function
     return () => {
-      router.events.off('routeChangeStart', handleRouteChange)
-      cleanup()
+      if (rafId1) cancelAnimationFrame(rafId1)
+      if (rafId2) cancelAnimationFrame(rafId2)
+      if (timeoutId) clearTimeout(timeoutId)
     }
-  }, [router])
+  }, [])
 
   return (
     <section

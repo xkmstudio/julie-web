@@ -9,14 +9,14 @@ import { useToggleEmail, useToggleEmaChat } from '@lib/context'
 import { useIsInFrame } from '@lib/helpers'
 
 // Helper function to build URL for different page types
-const getPageUrl = (page) => {
+export const getPageUrl = (page) => {
   if (!page) return '/'
   
   const isHome = page.isHome
   if (isHome) return '/'
 
   const pageType = page.type
-  const slug = page.slug
+  const slug = page.slug || page.url
 
   // Map page types to their route prefixes
   switch (pageType) {

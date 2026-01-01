@@ -1,5 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
+import NextLink from 'next/link'
 
 import Link from '@components/link'
 import Newsletter from '@components/newsletter'
@@ -12,18 +13,18 @@ const Footer = ({ data }) => {
     <footer className="w-full flex flex-col justify-between relative bg-pink text-white px-15 md:px-25 py-40">
       <div className="grid-standard gap-y-20 md:gap-y-0">
         <div className="col-span-5">
-          <div className="w-[16rem] md:w-[28rem]">
+          <NextLink href="/" className="block w-[16rem] md:w-[28rem]">
             <Icon name="Logo" viewBox="0 0 543 265" />
-          </div>
+          </NextLink>
         </div>
         <div className="block md:hidden col-span-12 mt-20">
           <Newsletter newsletter={newsletter} />
         </div>
-        <div className="col-span-7 flex gap-25">
+        <div className="col-span-12 md:col-span-7 grid md:flex grid-cols-2 gap-x-25">
           {menus?.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col gap-10 w-1/2 md:w-[unset] md:flex-1 pb-30 mt-20 md:mt-0"
+              className="flex flex-col gap-10 col-span-1 md:w-[unset] md:flex-1 pb-30 mt-20 md:mt-0"
             >
               <div className="flex flex-col gap-5">
                 {item.items?.map((link, index) => (

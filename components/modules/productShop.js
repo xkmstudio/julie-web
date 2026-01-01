@@ -130,7 +130,7 @@ const ProductShop = ({
                 layout="contain"
                 className="absolute top-0 left-0 w-full h-full object-contain"
               />
-              {product.productBadge && (
+              {/* {product.productBadge && (
                 <div className="absolute top-0 right-0 z-2">
                   <div className="w-[10rem]">
                     <Photo
@@ -142,7 +142,7 @@ const ProductShop = ({
                     />
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           )}
         </div>
