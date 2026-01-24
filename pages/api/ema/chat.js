@@ -1,18 +1,51 @@
 export default async function handler(req, res) {
+  // Disable caching for API routes to ensure fresh data
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { action, userId, message, context } = req.body
-
-  // Check for Ema API credentials
+  // Check for Ema API credentials first
   const EMA_API_KEY = process.env.EMA_API_KEY
   const EMA_TENANT = process.env.EMA_TENANT
 
   if (!EMA_API_KEY || !EMA_TENANT) {
+    console.error('EMA API credentials missing:', {
+      hasApiKey: !!EMA_API_KEY,
+      hasTenant: !!EMA_TENANT,
+      envKeys: Object.keys(process.env).filter(key => key.includes('EMA')),
+      nodeEnv: process.env.NODE_ENV,
+      context: process.env.CONTEXT,
+    })
     return res.status(500).json({
       error: 'Ema API credentials not configured',
       message: 'Please set EMA_API_KEY and EMA_TENANT in your environment variables',
+      debug: process.env.NODE_ENV === 'development' ? {
+        hasApiKey: !!EMA_API_KEY,
+        hasTenant: !!EMA_TENANT,
+      } : undefined,
+    })
+  }
+
+  // Parse request body
+  let body
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
+  } catch (e) {
+    return res.status(400).json({
+      error: 'Invalid JSON in request body',
+      message: e.message,
+    })
+  }
+
+  const { action, userId, message, context } = body
+
+  // Validate request body
+  if (!action) {
+    return res.status(400).json({
+      error: 'Missing required field: action',
+      message: 'Request must include an "action" field (either "createUser" or "sendMessage")',
     })
   }
 

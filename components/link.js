@@ -48,8 +48,6 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
   
   // Check if we should handle link in frame
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
-
-  console.log('linkType', linkType);
   
 
   // External Link (navLink)
