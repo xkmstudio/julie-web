@@ -70,7 +70,7 @@ export default {
       preview: {
         select: {
           title: 'title',
-          subtitle: 'subtitle',
+          subtitle: 'subtitle.0.children[0].text',
           description: 'description.0.children[0].text',
           link: 'link',
           image: 'media.media[0].image',
@@ -81,7 +81,7 @@ export default {
         prepare({ title, subtitle, description, link, image, video, logo, logoAlt }) {
           const displayTitle = title || logoAlt || 'Featured Card'
           const subtitleParts = [
-            subtitle && subtitle.0?.children?.[0]?.text,
+            subtitle,
             description && `"${description.substring(0, 30)}${description.length > 30 ? '...' : ''}"`,
             link && link
           ].filter(Boolean)
