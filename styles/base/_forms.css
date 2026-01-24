@@ -30,6 +30,7 @@
     @apply bg-transparent font-normal w-full p-15 text-16 text-white;
 
     outline: none;
+    font-size: 16px;
 
     &.is-small {
       @apply p-10;
@@ -53,6 +54,7 @@
       @apply bg-transparent font-normal font-vm w-full p-0 text-13 ;
 
       outline: none;
+      font-size: 16px;
 
       &.is-small {
         @apply p-10;

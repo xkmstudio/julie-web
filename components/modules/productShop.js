@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import NextLink from 'next/link'
 import cx from 'classnames'
+import { Marqy } from 'marqy'
 
 import Media from '@components/media'
 import Icon from '@components/icon'
@@ -120,7 +121,7 @@ const ProductShop = ({
           </div>
         )}
 
-        <div className="col-span-12 md:col-span-3 pr-20 flex items-center justify-center">
+        <div className="col-span-12 md:col-span-3 pr-20 flex items-center justify-center p-20 md:p-0">
           {productImage && (
             <div className="relative w-full pb-[100%]">
               <Media
@@ -167,10 +168,10 @@ const ProductShop = ({
             </ul>
           )}
 
-          <div className="flex gap-30 items-center w-full">
-            <div className="flex flex-col md:flex-row gap-10 items-center flex-shrink-0">
+          <div className="flex flex-col md:flex-row gap-30 items-center w-full">
+            <div className="flex flex-col md:flex-row gap-10 flex-shrink-0 mx-auto md:mx-0">
               <NextLink
-                className="btn is-outline is-large flex-shrink-0"
+                className="btn is-outline is-large flex-shrink-0 w-full md:w-[unset]"
                 href={`/products/${product.slug}`}
               >
                 Learn More
@@ -188,67 +189,124 @@ const ProductShop = ({
               )}
             </div>
             {logos && logos.length > 0 && (
-              <div className="hidden md:flex gap-35 flex-1 min-w-0">
-                {logos.map((logoItem, index) => {
-                  // logoItem structure: { url: "...", asset: { alt, asset, url, id, type, ... } }
-                  // Support both old (direct assetMeta) and new (object with asset and url) structure
-                  const assetData = logoItem?.asset || logoItem
-                  if (!assetData) return null
+              <>
+                {/* Mobile Marquee */}
+                <div className="md:hidden w-full">
+                  <Marqy
+                    speed={.5}
+                    direction="left"
+                    pauseOnHover={true}
+                    className="marquee"
+                  >
+                    <div className="marquee--item flex gap-30">
+                      {logos.map((logoItem, index) => {
+                        const assetData = logoItem?.asset || logoItem
+                        if (!assetData) return null
 
-                  // Get the actual image asset reference from assetMeta structure
-                  const imageAsset = assetData?.asset || assetData
-                  
-                  // Check if it's an SVG by checking mimeType
-                  const mimeType = assetData?.type || imageAsset?.mimeType
-                  const isSVG = mimeType?.includes('svg') || mimeType === 'image/svg+xml'
+                        const mimeType = assetData?.type || assetData?.asset?.mimeType
+                        const isSVG = mimeType?.includes('svg') || mimeType === 'image/svg+xml'
 
-                  // Get the URL - for SVGs use direct URL from assetData, for others use Photo component
-                  const logoUrl = isSVG && assetData?.url 
-                    ? assetData.url
-                    : null
+                        const logoUrl = isSVG && assetData?.url 
+                          ? assetData.url
+                          : null
 
-                  // Get external URL if present
-                  const externalUrl = logoItem?.url
+                        const externalUrl = logoItem?.url
 
-                  const logoContent = isSVG ? (
-                    <img
-                      src={logoUrl}
-                      alt={assetData?.alt || ''}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <Photo
-                      width={500}
-                      srcSizes={[800, 1000, 1200, 1600]}
-                      sizes="100%"
-                      layout={'intrinsic'}
-                      className={'w-full h-full object-contain'}
-                      photo={assetData}
-                    />
-                  )
+                        const logoContent = isSVG ? (
+                          <img
+                            src={logoUrl}
+                            alt={assetData?.alt || ''}
+                            className="w-auto h-full object-contain"
+                          />
+                        ) : (
+                          <Photo
+                            width={500}
+                            srcSizes={[800, 1000, 1200, 1600]}
+                            sizes="100%"
+                            layout={'intrinsic'}
+                            className={'w-auto h-full object-contain'}
+                            photo={assetData}
+                          />
+                        )
 
-                  // Wrap in link if URL is present
-                  if (externalUrl) {
-                    return (
-                      <a
-                        key={index}
-                        href={externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0"
-                      >
-                        {logoContent}
-                      </a>
-                    )
-                  }
+                        if (externalUrl) {
+                          return (
+                            <a
+                              key={index}
+                              href={externalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="h-[2.5rem] flex items-center justify-center flex-shrink-0"
+                            >
+                              {logoContent}
+                            </a>
+                          )
+                        }
 
-                  return (
-                    <div key={index} className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0">
-                      {logoContent}
+                        return (
+                          <div key={index} className="h-[2.5rem] flex items-center justify-center flex-shrink-0">
+                            {logoContent}
+                          </div>
+                        )
+                      })}
                     </div>
-                  )
-                })}
-              </div>
+                  </Marqy>
+                </div>
+
+                {/* Desktop Flex */}
+                <div className="hidden md:flex gap-35 flex-1 min-w-0">
+                  {logos.map((logoItem, index) => {
+                    const assetData = logoItem?.asset || logoItem
+                    if (!assetData) return null
+
+                    const mimeType = assetData?.type || assetData?.asset?.mimeType
+                    const isSVG = mimeType?.includes('svg') || mimeType === 'image/svg+xml'
+
+                    const logoUrl = isSVG && assetData?.url 
+                      ? assetData.url
+                      : null
+
+                    const externalUrl = logoItem?.url
+
+                    const logoContent = isSVG ? (
+                      <img
+                        src={logoUrl}
+                        alt={assetData?.alt || ''}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <Photo
+                        width={500}
+                        srcSizes={[800, 1000, 1200, 1600]}
+                        sizes="100%"
+                        layout={'intrinsic'}
+                        className={'w-full h-full object-contain'}
+                        photo={assetData}
+                      />
+                    )
+
+                    if (externalUrl) {
+                      return (
+                        <a
+                          key={index}
+                          href={externalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0"
+                        >
+                          {logoContent}
+                        </a>
+                      )
+                    }
+
+                    return (
+                      <div key={index} className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0">
+                        {logoContent}
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>

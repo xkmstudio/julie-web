@@ -24,7 +24,7 @@ export default {
       type: 'reference',
       to: [{type: 'collection'}],
       validation: Rule => Rule.required(),
-      description: 'Set the collection that shows on the primary /shop page.'
+      description: 'Set the collection that shows on the primary /collections page.'
     },
     {
       title: 'SEO / Share Settings',

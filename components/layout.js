@@ -33,7 +33,7 @@ const variants = {
 
 const Layout = ({ site = {}, page = {}, schema, children }) => {
   // set window height var
-  const { height: windowHeight } = useWindowSize()
+  const { height: windowHeight, width } = useWindowSize()
 
   //setup ga4 events
 
@@ -69,7 +69,7 @@ const Layout = ({ site = {}, page = {}, schema, children }) => {
     if (isBrowser) {
       document.body.style.setProperty('--vh', `${windowHeight * 0.01}px`)
     }
-  }, [windowHeight])
+  }, [width])
 
   return (
     <>

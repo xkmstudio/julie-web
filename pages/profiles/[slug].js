@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 
-import { getProfile, getAllDocSlugs } from '@data'
+import { getProfile } from '@data'
 
 import NotFoundPage from '@pages/404'
 
@@ -86,11 +86,25 @@ const Profile = ({ data, sanityConfig }) => {
   )
 }
 
-export async function getStaticProps({ params, preview, previewData }) {
+export async function getServerSideProps({ params, res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const eventData = await getProfile(params.slug, {
     active: preview,
     token: previewData?.token,
   })
+
+  // Return 404 if profile not found
+  if (!eventData || !eventData.page) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {
@@ -100,22 +114,6 @@ export async function getStaticProps({ params, preview, previewData }) {
         dataset: process.env.SANITY_PROJECT_DATASET,
       },
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const allProfiles = await getAllDocSlugs('profile')
-
-  return {
-    paths:
-      allProfiles?.map((profile) => {
-        return {
-          params: {
-            slug: profile.slug,
-          },
-        }
-      }) || [],
-    fallback: false,
   }
 }
 

@@ -57,13 +57,14 @@ const ProductIcon = ({ item, index, className }) => {
       rel="noopener noreferrer"
       target="_blank"
       key={index}
+      className="flex-1 min-w-0 flex items-center justify-center"
     >
       {iconContent}
     </NextLink>
   ) : (
-    <React.Fragment key={index}>
+    <div key={index} className="flex-1 min-w-0 flex items-center justify-center">
       {iconContent}
-    </React.Fragment>
+    </div>
   )
 }
 
@@ -118,10 +119,10 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
                   </div>
                 )}
                 {product.icons && product.icons.length > 0 && (
-                  <div className="my-10 flex gap-30">
+                  <div className="my-10 w-full flex gap-15 md:gap-30 items-center justify-center">
                     {product.icons.map((icon, key) => (
                       <ProductIcon
-                        className="h-[2rem]"
+                        className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain"
                         item={icon}
                         index={key}
                       />

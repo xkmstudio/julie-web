@@ -1,11 +1,12 @@
 import React from 'react'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import cx from 'classnames'
 
 import Icon from '@components/icon'
 
 import { getStaticRoute, getDynamicRoute } from '@lib/routes'
-import { useToggleEmail, useToggleEmaChat } from '@lib/context'
+import { useToggleEmail } from '@lib/context'
 import { useIsInFrame } from '@lib/helpers'
 
 // Helper function to build URL for different page types
@@ -39,14 +40,17 @@ export const getPageUrl = (page) => {
 const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) => {
   if (!link) return null
 
+  const router = useRouter()
   const linkType = link.linkType || (link.url ? 'navLink' : 'navPage')
   const isAnchor = link.anchor != null || link.anchor != undefined
   const toggleEmail = useToggleEmail()
-  const toggleEmaChat = useToggleEmaChat()
   const isInFrame = useIsInFrame()
   
   // Check if we should handle link in frame
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
+
+  console.log('linkType', linkType);
+  
 
   // External Link (navLink)
   if (linkType === 'navLink') {
@@ -75,13 +79,43 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
     )
   }
 
-  // Ask Julie - render as button that opens Ema chat
+  // Ask Julie - navigate to chat page
   if (linkType === 'askJulie') {
+    console.log('is ask');
+    
+    // Extract onClick from rest to merge handlers
+    const { onClick: restOnClick, ...restProps } = rest
+    
     const handleClick = (e) => {
       e.preventDefault()
-      toggleEmaChat(true)
-      if (rest.onClick) {
-        rest.onClick(e)
+      e.stopPropagation()
+      
+      console.log('Ask Julie link clicked, navigating to chat page')
+      
+      // Save current scroll position for restoration on back
+      const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
+      }
+      
+      // Build the URL with query params
+      const currentPath = router.asPath || (typeof window !== 'undefined' ? window.location.pathname : '/')
+      const chatUrl = `/ema-chat?from=${encodeURIComponent(currentPath)}`
+      
+      console.log('Navigating to:', chatUrl)
+      
+      // Navigate immediately - use window.location as primary method for reliability
+      if (typeof window !== 'undefined') {
+        window.location.href = chatUrl
+      } else {
+        router.push(chatUrl).catch((error) => {
+          console.error('Error navigating to chat page:', error)
+        })
+      }
+      
+      // Call any passed onClick handler after navigation starts (e.g., to close menu)
+      if (restOnClick) {
+        restOnClick(e)
       }
     }
 
@@ -89,11 +123,11 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
       <button
         type="button"
         onClick={handleClick}
-        className={cx('btn', link.styles?.style, {
+        className={cx('btn askJulie', link.styles?.style, {
           'is-large': link.styles?.isLarge,
           'is-block': link.styles?.isBlock,
         })}
-        {...rest}
+        {...restProps}
       >
         <span>{link.title || children}</span>
         {hasArrow && (
@@ -105,13 +139,41 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
     )
   }
 
-  // Nav Julie - render as button that opens Ema chat
+  // Nav Julie - navigate to chat page
   if (linkType === 'navJulie') {
+    // Extract onClick from rest to merge handlers
+    const { onClick: restOnClick, ...restProps } = rest
+    
     const handleClick = (e) => {
       e.preventDefault()
-      toggleEmaChat(true)
-      if (rest.onClick) {
-        rest.onClick(e)
+      e.stopPropagation()
+      
+      console.log('Nav Julie link clicked, navigating to chat page')
+      
+      // Save current scroll position for restoration on back
+      const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
+      }
+      
+      // Build the URL with query params
+      const currentPath = router.asPath || (typeof window !== 'undefined' ? window.location.pathname : '/')
+      const chatUrl = `/ema-chat?from=${encodeURIComponent(currentPath)}`
+      
+      console.log('Navigating to:', chatUrl)
+      
+      // Navigate immediately - use window.location as primary method for reliability
+      if (typeof window !== 'undefined') {
+        window.location.href = chatUrl
+      } else {
+        router.push(chatUrl).catch((error) => {
+          console.error('Error navigating to chat page:', error)
+        })
+      }
+      
+      // Call any passed onClick handler after navigation starts (e.g., to close menu)
+      if (restOnClick) {
+        restOnClick(e)
       }
     }
 
@@ -119,11 +181,11 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
       <button
         type="button"
         onClick={handleClick}
-        className={cx('btn', link.styles?.style, {
+        className={cx('btn askJulie', link.styles?.style, {
           'is-large': link.styles?.isLarge,
           'is-block': link.styles?.isBlock,
         })}
-        {...rest}
+        {...restProps}
       >
         <span>{link.title || children}</span>
         {hasArrow && (

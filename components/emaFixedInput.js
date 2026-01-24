@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/router'
 import Icon from '@components/icon'
 import cx from 'classnames'
 import { useEmaChat } from '@lib/context'
 
 const EmaFixedInput = () => {
+  const router = useRouter()
   const [showFixedInput, setShowFixedInput] = useState(false)
   const [fixedInputText, setFixedInputText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -86,44 +88,19 @@ const EmaFixedInput = () => {
 
     setIsSubmitting(true)
 
-    let searchResults = []
-
     try {
-      // 1. Always search Algolia for relevant articles
-      try {
-        const searchResponse = await fetch('/api/ema/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: question }),
-        })
+      // Save current scroll position to sessionStorage for restoration on back
+      const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
+      sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
 
-        if (searchResponse.ok) {
-          const searchData = await searchResponse.json()
-          searchResults = searchData.hits || []
-        } else {
-          console.warn('Algolia search returned non-OK status:', searchResponse.status)
-        }
-      } catch (searchError) {
-        console.error('Error searching Algolia:', searchError)
-        // Continue even if search fails - searchResults will be empty array
-      }
-
-      // 2. Store the initial search query and trigger chat open
-      const truncatedQuery =
-        question.length > 50 ? question.substring(0, 50) + '...' : question
-
-      // Dispatch event to open Ema chat with the question and search results
-      window.dispatchEvent(
-        new CustomEvent('ema-open-chat', {
-          detail: {
-            question,
-            searchQuery: truncatedQuery,
-            searchResults, // Always include searchResults, even if empty
-          },
-        })
-      )
+      // Navigate to the chat page with the question as a query parameter
+      await router.push({
+        pathname: '/ema-chat',
+        query: {
+          q: question,
+          from: router.asPath, // Save current route for back navigation
+        },
+      })
 
       setFixedInputText('')
       // Reset textarea height
@@ -131,23 +108,7 @@ const EmaFixedInput = () => {
         fixedInputRef.current.style.height = 'auto'
       }
     } catch (error) {
-      console.error('Error submitting question:', error)
-      // Even on error, try to open chat with empty search results
-      const truncatedQuery =
-        question.length > 50 ? question.substring(0, 50) + '...' : question
-      window.dispatchEvent(
-        new CustomEvent('ema-open-chat', {
-          detail: {
-            question,
-            searchQuery: truncatedQuery,
-            searchResults: [], // Empty results on error
-          },
-        })
-      )
-      setFixedInputText('')
-      if (fixedInputRef.current) {
-        fixedInputRef.current.style.height = 'auto'
-      }
+      console.error('Error navigating to chat:', error)
     } finally {
       setIsSubmitting(false)
     }

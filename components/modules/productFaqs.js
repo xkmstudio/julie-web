@@ -3,11 +3,12 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { useInView } from 'react-intersection-observer'
 import AccordionList from '@components/accordion-list'
 import { buildGradientStyle, useWindowSize, useIsInFrame } from '@lib/helpers'
+import Link from '@components/link'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 const ProductFaqs = ({ data = {} }) => {
-  const { title, backgroundGradient, sections } = data
+  const { title, backgroundGradient, sections, cta } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
   const isInFrame = useIsInFrame()
@@ -69,7 +70,7 @@ const ProductFaqs = ({ data = {} }) => {
   }, [isMobile, emblaApi, scrollToSection])
 
   // Build gradient background style if gradient is present
-  const sectionStyle = backgroundGradient 
+  const sectionStyle = backgroundGradient
     ? buildGradientStyle(backgroundGradient)
     : {}
 
@@ -79,6 +80,9 @@ const ProductFaqs = ({ data = {} }) => {
 
   const activeSection = sections[activeSectionIndex]
   const hasMultipleSections = sections.length > 1
+
+  console.log('cta', cta);
+
 
   return (
     <section
@@ -101,11 +105,10 @@ const ProductFaqs = ({ data = {} }) => {
                           <button
                             key={index}
                             onClick={() => handleSectionClick(index)}
-                            className={`flex-shrink-0 px-20 py-10 rounded-full text-14 md:text-16 font-lb lowercase whitespace-nowrap transition-colors duration-300 ${
-                              isActive
-                                ? 'bg-pink text-white'
-                                : 'bg-cement text-black'
-                            }`}
+                            className={`flex-shrink-0 px-20 py-10 rounded-full text-14 md:text-16 font-lb lowercase whitespace-nowrap transition-colors duration-300 ${isActive
+                              ? 'bg-pink text-white'
+                              : 'bg-cement text-black'
+                              }`}
                           >
                             {section.title || `Section ${index + 1}`}
                           </button>
@@ -123,11 +126,10 @@ const ProductFaqs = ({ data = {} }) => {
                       <button
                         key={index}
                         onClick={() => handleSectionClick(index)}
-                        className={`px-20 py-10 rounded-full text-14 md:text-16 font-lb lowercase whitespace-nowrap transition-colors duration-300 ${
-                          isActive
-                            ? 'bg-pink text-white'
-                            : 'bg-cement text-black'
-                        }`}
+                        className={`px-20 py-10 rounded-full text-14 md:text-16 font-lb lowercase whitespace-nowrap transition-colors duration-300 ${isActive
+                          ? 'bg-pink text-white'
+                          : 'bg-cement text-black'
+                          }`}
                       >
                         {section.title || `Section ${index + 1}`}
                       </button>
@@ -152,7 +154,20 @@ const ProductFaqs = ({ data = {} }) => {
             </div>
           )}
         </div>
+
       </div>
+      {(cta?.title || cta?.link?.title) && (
+        <div className="w-full flex flex-col gap-50 justify-center mt-60 text-center px-15 md:px-25">
+          <div>
+            <h2 className="title-2xl">{cta?.title}</h2>
+          </div>
+          {cta?.link?.title && (
+            <div className="w-full flex justify-center">
+              <Link link={cta.link} className="btn is-large" />
+            </div>
+          )}
+        </div>
+      )}
     </section>
   )
 }

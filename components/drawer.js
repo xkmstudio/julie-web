@@ -20,7 +20,7 @@ const Drawer = ({
   const [hasFocus, setHasFocus] = useState(false)
 
   // Mobile carousel for drawer detail images (front, back, right, left)
-  const MOBILE_BREAKPOINT = 950
+  const MOBILE_BREAKPOINT = 850
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
   const isInFrame = useIsInFrame()

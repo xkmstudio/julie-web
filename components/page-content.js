@@ -12,7 +12,7 @@ import ProductCarousel from '@components/product-carousel'
 import ProductHero from '@components/modules/productHero'
 import Gradient from '@components/gradient'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 /**
  * Reusable component to render page or article content

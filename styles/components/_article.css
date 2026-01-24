@@ -24,18 +24,19 @@
         @apply rounded-[1.5rem];
         transition: border-radius 200ms linear 0ms;
     }
-    
-    &:hover{
-        @apply rounded-[20vw];
-        
-        &::before{
-            @apply opacity-100 rounded-[20vw];
-        }
-        
-        img{
+    @media screen and (min-width: 949px){
+        &:hover{
             @apply rounded-[20vw];
-        }        
-    }    
+            
+            &::before{
+                @apply opacity-100 rounded-[20vw];
+            }
+            
+            img{
+                @apply rounded-[20vw];
+            }        
+        }    
+    }
 }
 
 .article-card-container{

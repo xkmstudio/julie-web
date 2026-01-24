@@ -21,7 +21,14 @@ const Home = ({ data }) => {
   )
 }
 
-export async function getStaticProps({ preview, previewData }) {
+export async function getServerSideProps({ res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const pageData = await getStaticPage(
     `
     *[_type == "home"][0]{

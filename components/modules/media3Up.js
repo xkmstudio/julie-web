@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
+import Autoplay from 'embla-carousel-autoplay'
 import { useInView } from 'react-intersection-observer'
 import Media from '@components/media'
 import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 const Media3Up = ({ data = {} }) => {
   const { items, title, subtitle, background } = data
@@ -13,13 +14,17 @@ const Media3Up = ({ data = {} }) => {
   const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const showCarousel = isClient && (isMobile || isInFrame)
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'center',
-    containScroll: 'trimSnaps',
-    dragFree: false,
-    skipSnaps: false,
-    loop: true,
-  })
+  const autoplayRef = React.useRef(null)
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      align: 'center',
+      containScroll: 'trimSnaps',
+      dragFree: false,
+      skipSnaps: false,
+      loop: true,
+    },
+    [Autoplay({ delay: 4000, stopOnInteraction: true }, autoplayRef)]
+  )
 
   const [triggerRef, triggerInView] = useInView({
     threshold: 0,
@@ -33,8 +38,15 @@ const Media3Up = ({ data = {} }) => {
   useEffect(() => {
     if (showCarousel && triggerInView) {
       emblaApi?.reInit()
+      autoplayRef.current?.play()
     }
   }, [emblaApi, showCarousel, triggerInView, items?.length])
+
+  useEffect(() => {
+    if (!showCarousel && autoplayRef.current) {
+      autoplayRef.current?.stop()
+    }
+  }, [showCarousel])
 
   if (!items?.length) return null
 

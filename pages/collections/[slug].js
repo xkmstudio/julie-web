@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { getCollection, getAllDocSlugs } from '@data'
+import { getCollection } from '@data'
 
 import Layout from '@components/layout'
 import Photo from '@components/photo'
@@ -63,32 +63,30 @@ const CollectionPage = ({ data }) => {
   )
 }
 
-export async function getStaticProps({ params, preview, previewData }) {
+export async function getServerSideProps({ params, res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const collectionData = await getCollection(params.slug, {
     active: preview,
     token: previewData?.token,
   })
 
+  // Return 404 if collection not found
+  if (!collectionData || !collectionData.page) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       data: collectionData,
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const allCollections = await getAllDocSlugs('collection')
-
-  return {
-    paths:
-      allCollections?.map((collection) => {
-        return {
-          params: {
-            slug: collection.slug,
-          },
-        }
-      }) || [],
-    fallback: false,
   }
 }
 

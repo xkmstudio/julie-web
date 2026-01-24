@@ -1,17 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
-import FocusTrap from 'focus-trap-react'
 import { useRouter } from 'next/router'
 import Icon from '@components/icon'
-import NextLink from 'next/link'
 import Image from 'next/image'
-import { InPortal, useWindowSize } from '@lib/helpers'
+import { useWindowSize } from '@lib/helpers'
 import PageContent from '@components/page-content'
 import cx from 'classnames'
-import { useEmaChat } from '@lib/context'
 import Gradient from '@components/gradient'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 const frameTransition = {
   duration: 0.6,
@@ -25,10 +22,7 @@ const isInternalLink = (url) => {
   try {
     if (typeof window !== 'undefined') {
       const urlObj = new URL(url, window.location.origin)
-      return (
-        urlObj.hostname === 'juliecare.co' ||
-        urlObj.hostname === window.location.hostname
-      )
+      return urlObj.hostname === 'juliecare.co' || urlObj.hostname === window.location.hostname
     }
     const urlObj = new URL(url, 'https://juliecare.co')
     return urlObj.hostname === 'juliecare.co'
@@ -37,7 +31,38 @@ const isInternalLink = (url) => {
   }
 }
 
-// Helper function to process text and convert markdown to React elements
+// Bold processing
+const processBold = (text, startKey = 0) => {
+  if (!text || typeof text !== 'string') return text
+
+  const parts = []
+  const boldRegex = /\*\*([^*]+)\*\*/g
+  let lastIndex = 0
+  let match
+  let key = startKey
+
+  while ((match = boldRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      const beforeText = text.substring(lastIndex, match.index)
+      if (beforeText) parts.push(beforeText)
+    }
+    parts.push(
+      <strong key={`bold-${key++}`} className="font-bold">
+        {match[1]}
+      </strong>
+    )
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < text.length) {
+    const remaining = text.substring(lastIndex)
+    if (remaining) parts.push(remaining)
+  }
+
+  return parts.length > 0 ? parts : [text]
+}
+
+// Convert markdown links + bare urls into clickable elements
 const processMessageLinks = (text, onOpenFrame) => {
   if (!text || typeof text !== 'string') return [text]
 
@@ -61,12 +86,10 @@ const processMessageLinks = (text, onOpenFrame) => {
 
   const urlRegex = /(https?:\/\/[^\s\)]+)/g
   const plainUrls = []
-
   urlRegex.lastIndex = 0
+
   while ((match = urlRegex.exec(text)) !== null) {
-    const isInLink = links.some(
-      (link) => match.index >= link.start && match.index < link.end
-    )
+    const isInLink = links.some((link) => match.index >= link.start && match.index < link.end)
     if (!isInLink) {
       plainUrls.push({
         start: match.index,
@@ -107,6 +130,7 @@ const processMessageLinks = (text, onOpenFrame) => {
               onOpenFrame(url)
             }}
             className="underline hover:no-underline text-current cursor-pointer bg-transparent border-none p-0"
+            type="button"
           >
             {linkTextBold}
           </button>
@@ -134,6 +158,7 @@ const processMessageLinks = (text, onOpenFrame) => {
               onOpenFrame(url)
             }}
             className="underline hover:no-underline text-current cursor-pointer bg-transparent border-none p-0"
+            type="button"
           >
             {url}
           </button>
@@ -159,11 +184,8 @@ const processMessageLinks = (text, onOpenFrame) => {
   if (currentIndex < text.length) {
     const remaining = text.substring(currentIndex)
     const boldProcessed = processBold(remaining, elementKey)
-    if (Array.isArray(boldProcessed)) {
-      elements.push(...boldProcessed)
-    } else {
-      elements.push(boldProcessed)
-    }
+    if (Array.isArray(boldProcessed)) elements.push(...boldProcessed)
+    else elements.push(boldProcessed)
   }
 
   if (allLinks.length === 0) {
@@ -174,125 +196,287 @@ const processMessageLinks = (text, onOpenFrame) => {
   return elements.length > 0 ? elements : [text]
 }
 
-const processBold = (text, startKey = 0) => {
-  if (!text || typeof text !== 'string') return text
+/**
+ * iOS-safe scroll lock:
+ * - prevents the "page pushes up" effect
+ * - preserves/restores scroll position
+ */
+const lockDocumentScroll = () => {
+  const docEl = document.documentElement
+  const body = document.body
 
-  const parts = []
-  const boldRegex = /\*\*([^*]+)\*\*/g
-  let lastIndex = 0
-  let match
-  let key = startKey
+  const scrollY = window.scrollY || window.pageYOffset || 0
 
-  while ((match = boldRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      const beforeText = text.substring(lastIndex, match.index)
-      if (beforeText) {
-        parts.push(beforeText)
-      }
-    }
-    parts.push(
-      <strong key={`bold-${key++}`} className="font-bold">
-        {match[1]}
-      </strong>
-    )
-    lastIndex = match.index + match[0].length
+  const prev = {
+    docOverflow: docEl.style.overflow,
+    docHeight: docEl.style.height,
+    docOverscroll: docEl.style.overscrollBehavior,
+    bodyPosition: body.style.position,
+    bodyTop: body.style.top,
+    bodyLeft: body.style.left,
+    bodyRight: body.style.right,
+    bodyWidth: body.style.width,
+    bodyOverflow: body.style.overflow,
+    bodyHeight: body.style.height,
+    bodyOverscroll: body.style.overscrollBehavior,
+    bodyTouchAction: body.style.touchAction,
   }
 
-  if (lastIndex < text.length) {
-    const remaining = text.substring(lastIndex)
-    if (remaining) {
-      parts.push(remaining)
-    }
-  }
+  // Lock
+  docEl.style.overflow = 'hidden'
+  docEl.style.height = '100%'
+  docEl.style.overscrollBehavior = 'none'
 
-  return parts.length > 0 ? parts : [text]
+  body.style.position = 'fixed'
+  body.style.top = `-${scrollY}px`
+  body.style.left = '0'
+  body.style.right = '0'
+  body.style.width = '100%'
+  body.style.overflow = 'hidden'
+  body.style.height = '100%'
+  body.style.overscrollBehavior = 'none'
+  body.style.touchAction = 'none'
+
+  return () => {
+    // Restore
+    docEl.style.overflow = prev.docOverflow
+    docEl.style.height = prev.docHeight
+    docEl.style.overscrollBehavior = prev.docOverscroll
+
+    body.style.position = prev.bodyPosition
+    body.style.top = prev.bodyTop
+    body.style.left = prev.bodyLeft
+    body.style.right = prev.bodyRight
+    body.style.width = prev.bodyWidth
+    body.style.overflow = prev.bodyOverflow
+    body.style.height = prev.bodyHeight
+    body.style.overscrollBehavior = prev.bodyOverscroll
+    body.style.touchAction = prev.bodyTouchAction
+
+    // Jump back to previous scroll position
+    const top = prev.bodyTop ? parseInt(prev.bodyTop, 10) : 0
+    // when locked, bodyTop is negative scrollY; we restore scrollY from it
+    window.scrollTo(0, scrollY)
+
+    // (top var unused; keep logic simple and deterministic)
+    void top
+  }
 }
 
-const EmaChat = () => {
-  const emaChatData = useEmaChat()
-  const {
-    emaChatOpen,
-    emaChatMessages,
-    emaUserId,
-    emaSearchResults,
-    emaInitialSearchQuery,
-    toggleEmaChat,
-    setEmaChatMessages,
-    setEmaUserId,
-    setEmaSearchResults,
-    setEmaInitialSearchQuery,
-  } = emaChatData
+/**
+ * Keyboard tracking:
+ * sets --kbd on overlay element so ONLY the composer moves.
+ */
+const setupKeyboardTracking = (overlayEl) => {
+  const vv = window.visualViewport
+  if (!vv || !overlayEl) return () => {}
 
-  // Ensure emaChatMessages is always an array
-  const messages = Array.isArray(emaChatMessages) ? emaChatMessages : []
+  const update = () => {
+    // Portion covered by keyboard
+    const cover = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
 
+    // Move composer UP by cover
+    overlayEl.style.setProperty('--kbd', `${-cover}px`)
+
+    // Keep overlay pinned visually to viewport
+    // Also update a dvh-like var that follows visualViewport height
+    overlayEl.style.setProperty('--vvh', `${vv.height}px`)
+  }
+
+  vv.addEventListener('resize', update)
+  vv.addEventListener('scroll', update)
+  window.addEventListener('orientationchange', update)
+
+  update()
+
+  return () => {
+    vv.removeEventListener('resize', update)
+    vv.removeEventListener('scroll', update)
+    window.removeEventListener('orientationchange', update)
+  }
+}
+
+/**
+ * iOS sometimes tries to scroll on focus. With scroll lock it *shouldn't*,
+ * but this adds an extra safety snap-back.
+ */
+const preventIosFocusScrollJump = () => {
+  let lastY = 0
+
+  const onFocusIn = () => {
+    lastY = window.scrollY
+    requestAnimationFrame(() => window.scrollTo(0, lastY))
+    setTimeout(() => window.scrollTo(0, lastY), 0)
+    setTimeout(() => window.scrollTo(0, lastY), 50)
+  }
+
+  window.addEventListener('focusin', onFocusIn)
+  return () => window.removeEventListener('focusin', onFocusIn)
+}
+
+const EmaChat = ({ onClose = null }) => {
+  // Local state for chat - not using context since this is a dedicated page
+  // Initialize with empty state to avoid hydration mismatches
+  const [messages, setMessages] = useState([])
+  const [emaUserId, setEmaUserId] = useState(null)
+  const [initialSearchQuery, setInitialSearchQuery] = useState('')
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Load persisted state from localStorage after hydration
+  useEffect(() => {
+    setIsHydrated(true)
+    
+    try {
+      const savedMessages = localStorage.getItem('emaChatMessages')
+      const savedUserId = localStorage.getItem('emaChatUserId')
+      const savedQuery = localStorage.getItem('emaChatInitialQuery')
+      
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages))
+      }
+      if (savedUserId) {
+        setEmaUserId(savedUserId)
+      }
+      if (savedQuery) {
+        setInitialSearchQuery(savedQuery)
+      }
+    } catch (error) {
+      console.error('Error loading persisted chat state:', error)
+    }
+  }, [])
   const [isStreaming, setIsStreaming] = useState(false)
   const [isThinking, setIsThinking] = useState(false)
-  const [hasFocus, setHasFocus] = useState(false)
   const [shouldAnimateTitle, setShouldAnimateTitle] = useState(false)
   const [frameOpen, setFrameOpen] = useState(false)
   const [frameUrl, setFrameUrl] = useState(null)
   const [frameContent, setFrameContent] = useState(null)
   const [frameLoading, setFrameLoading] = useState(false)
   const [chatInputText, setChatInputText] = useState('')
+  const [searchResults, setSearchResults] = useState([])
 
   const { width } = useWindowSize()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const router = useRouter()
 
+  // Persist messages to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem('emaChatMessages', JSON.stringify(messages))
+    } catch (error) {
+      console.error('Error saving messages to localStorage:', error)
+    }
+  }, [messages])
+
+  // Persist userId to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window === 'undefined' || !emaUserId) return
+    try {
+      localStorage.setItem('emaChatUserId', emaUserId)
+    } catch (error) {
+      console.error('Error saving userId to localStorage:', error)
+    }
+  }, [emaUserId])
+
+  // Persist initial search query to localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined' || !initialSearchQuery) return
+    try {
+      localStorage.setItem('emaChatInitialQuery', initialSearchQuery)
+    } catch (error) {
+      console.error('Error saving initial query to localStorage:', error)
+    }
+  }, [initialSearchQuery])
+
+  // Update title when query parameter changes (even if we don't send it)
+  useEffect(() => {
+    if (!router.isReady) return
+    const { q } = router.query
+    if (q && typeof q === 'string') {
+      const truncatedQuery = q.length > 50 ? q.substring(0, 50) + '...' : q
+      setInitialSearchQuery(truncatedQuery)
+    }
+  }, [router.isReady, router.query])
+
+  // Auto-send question from query parameter (even if messages exist - continuous thread)
+  useEffect(() => {
+    if (!router.isReady || !isHydrated) return
+    const { q } = router.query
+    
+    // Only send if we have a query and it's different from the last one we sent
+    if (q && typeof q === 'string' && q !== lastSentQueryRef.current && emaUserId) {
+      // Mark this query as sent to avoid duplicates
+      lastSentQueryRef.current = q
+      
+      // Fetch Algolia search results
+      const fetchSearchResults = async () => {
+        try {
+          const searchResponse = await fetch('/api/ema/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: q }),
+          })
+          if (searchResponse.ok) {
+            const searchData = await searchResponse.json()
+            setSearchResults(searchData.hits || [])
+          }
+        } catch (error) {
+          console.error('Error fetching search results:', error)
+        }
+      }
+      fetchSearchResults()
+      
+      // Send the message - this will add to the existing conversation thread
+      sendMessage(q)
+    }
+  }, [router.isReady, router.query, emaUserId, isHydrated])
+
   const chatContainerRef = useRef(null)
   const overlayRef = useRef(null)
   const chatInputRef = useRef(null)
+  const composerRef = useRef(null)
   const titleRef = useRef(null)
   const titleContainerRef = useRef(null)
+  const lastSentQueryRef = useRef(null) // Track last sent query to avoid duplicates
 
-  // Handler to open frame with URL
+  // -------- Frame open/close ----------
   const handleOpenFrame = async (url, updateUrl = true) => {
     setFrameLoading(true)
     setFrameOpen(true)
 
-    // Normalize URL - extract pathname if it's a full URL
     let pathname = url
     if (url.startsWith('http')) {
       try {
         const urlObj = new URL(url)
         pathname = urlObj.pathname
       } catch (e) {
-        // Invalid URL, use as-is
         pathname = url
       }
     }
 
-    // Store the original URL for display
     const normalizedUrl = url.startsWith('/')
       ? typeof window !== 'undefined'
         ? `${window.location.origin}${url}`
         : url
       : url
+
     setFrameUrl(normalizedUrl)
 
-    // Update query parameters for tracking (without navigation)
     if (updateUrl && typeof window !== 'undefined') {
       const currentQuery = { ...router.query }
       currentQuery.emaFrame = pathname
 
       router.replace(
-        {
-          pathname: router.pathname,
-          query: currentQuery,
-        },
+        { pathname: router.pathname, query: currentQuery },
         undefined,
         { shallow: true, scroll: false }
       )
     }
 
     try {
-      // Fetch content from API - API expects the full URL or pathname
       const response = await fetch('/api/ema/content', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: normalizedUrl }),
       })
 
@@ -317,16 +501,12 @@ const EmaChat = () => {
     setFrameUrl(null)
     setFrameContent(null)
 
-    // Remove frame query parameter
     if (updateUrl && typeof window !== 'undefined') {
       const currentQuery = { ...router.query }
       delete currentQuery.emaFrame
 
       router.replace(
-        {
-          pathname: router.pathname,
-          query: currentQuery,
-        },
+        { pathname: router.pathname, query: currentQuery },
         undefined,
         { shallow: true, scroll: false }
       )
@@ -336,91 +516,47 @@ const EmaChat = () => {
   // Sync frame state with query parameters on mount
   useEffect(() => {
     if (typeof window === 'undefined') return
-
     const { emaFrame } = router.query
     if (emaFrame && typeof emaFrame === 'string' && !frameOpen) {
-      // Frame URL is in query params, open frame with that content
-      handleOpenFrame(emaFrame, false) // false = don't update URL (we're reading from it)
+      handleOpenFrame(emaFrame, false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run on mount
+  }, [])
 
-  // Update URL when chat opens/closes
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const currentQuery = { ...router.query }
-
-    if (emaChatOpen && currentQuery.emaChat !== 'true') {
-      currentQuery.emaChat = 'true'
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: currentQuery,
-        },
-        undefined,
-        { shallow: true, scroll: false }
-      )
-    } else if (!emaChatOpen && currentQuery.emaChat === 'true') {
-      delete currentQuery.emaChat
-      // Also remove frame if chat is closing
-      delete currentQuery.emaFrame
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: currentQuery,
-        },
-        undefined,
-        { shallow: true, scroll: false }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emaChatOpen])
-
-  // Initialize user session on mount or when chat opens
+  // Initialize user session
   useEffect(() => {
     const initializeUser = async () => {
       try {
         const response = await fetch('/api/ema/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'createUser',
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'createUser' }),
         })
 
         if (response.ok) {
           const userData = await response.json()
-          // Try different possible field names from Ema API
           const userId = userData.userId || userData._id || userData.id
-          if (userId) {
-            setEmaUserId(userId)
-          } else {
-            console.error('No userId found in response:', userData)
-          }
+          if (userId) setEmaUserId(userId)
+          else console.error('No userId found in response:', userData)
         }
       } catch (error) {
         console.error('Error initializing user:', error)
       }
     }
 
-    if (emaChatOpen && !emaUserId) {
-      initializeUser()
-    }
-  }, [emaChatOpen, emaUserId, setEmaUserId])
+    if (!emaUserId) initializeUser()
+  }, [emaUserId, setEmaUserId])
 
   // Scroll chat to bottom when new messages arrive
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-    }
-  }, [messages])
+    const el = chatContainerRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [messages, isThinking, isStreaming])
 
   // Auto-resize chat input
   useEffect(() => {
-    if (!emaChatOpen || !chatInputRef.current) return
+    if (!chatInputRef.current) return
 
     const textarea = chatInputRef.current
     const adjustHeight = () => {
@@ -439,260 +575,74 @@ const EmaChat = () => {
     textarea.addEventListener('input', adjustHeight)
     adjustHeight()
 
-    return () => {
-      textarea.removeEventListener('input', adjustHeight)
-    }
-  }, [emaChatOpen, chatInputRef])
+    return () => textarea.removeEventListener('input', adjustHeight)
+  }, [])
 
   // Auto-focus input when chat opens
   useEffect(() => {
-    if (emaChatOpen && chatInputRef.current) {
-      // Small delay to ensure the DOM is ready and animations have started
-      const focusTimer = setTimeout(() => {
-        if (chatInputRef.current) {
-          chatInputRef.current.focus()
-        }
-      }, 300) // Delay to allow animation to start
-
-      return () => clearTimeout(focusTimer)
-    }
-  }, [emaChatOpen])
+    if (!chatInputRef.current) return
+    const t = setTimeout(() => {
+      chatInputRef.current?.focus()
+    }, 300)
+    return () => clearTimeout(t)
+  }, [])
 
   // Check if title overflows and needs animation
   useEffect(() => {
-    if (emaChatOpen && titleRef.current && titleContainerRef.current) {
+    if (!titleRef.current || !titleContainerRef.current) return
+
       const checkOverflow = () => {
-        if (titleRef.current && titleContainerRef.current) {
-          const titleWidth = titleRef.current.scrollWidth
-          const containerWidth = titleContainerRef.current.offsetWidth
+      const titleWidth = titleRef.current?.scrollWidth || 0
+      const containerWidth = titleContainerRef.current?.offsetWidth || 0
           const needsAnimation = titleWidth > containerWidth
           setShouldAnimateTitle(needsAnimation)
 
           if (needsAnimation && titleRef.current) {
-            titleRef.current.style.setProperty(
-              '--marquee-container-width',
-              `${containerWidth}px`
-            )
-          }
-        }
+        titleRef.current.style.setProperty('--marquee-container-width', `${containerWidth}px`)
       }
+    }
 
-      setTimeout(checkOverflow, 100)
+    const r = setTimeout(checkOverflow, 100)
       window.addEventListener('resize', checkOverflow)
-      return () => window.removeEventListener('resize', checkOverflow)
-    }
-  }, [emaChatOpen, emaInitialSearchQuery])
-
-  // Listen for chat open event from fixed input - MUST be before the early return
-  useEffect(() => {
-    const handleOpenChat = async (e) => {
-      const { question, searchQuery, searchResults } = e.detail
-      if (!question) {
-        // console.log('No question provided')
-        return
-      }
-
-      setEmaInitialSearchQuery(searchQuery)
-      setEmaSearchResults(searchResults || [])
-      toggleEmaChat(true)
-
-      // Update query parameters for tracking
-      if (typeof window !== 'undefined') {
-        const currentQuery = { ...router.query }
-        currentQuery.emaChat = 'true'
-        if (searchQuery) {
-          currentQuery.emaSearch = encodeURIComponent(searchQuery)
-        }
-
-        router.replace(
-          {
-            pathname: router.pathname,
-            query: currentQuery,
-          },
-          undefined,
-          { shallow: true, scroll: false }
-        )
-      }
-
-      // Initialize user if needed, then send message
-      const sendMessageAfterInit = async () => {
-        let currentUserId = emaUserId
-
-        // If no userId, initialize it
-        if (!currentUserId) {
-          try {
-            const response = await fetch('/api/ema/chat', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                action: 'createUser',
-              }),
-            })
-
-            if (response.ok) {
-              const userData = await response.json()
-              // Try different possible field names
-              currentUserId = userData.userId || userData._id || userData.id
-              if (currentUserId) {
-                setEmaUserId(currentUserId)
-              } else {
-                console.error('No userId found in response:', userData)
-                return
-              }
-            } else {
-              console.error('Failed to create user:', response.status)
-              return
-            }
-          } catch (error) {
-            console.error('Error initializing user:', error)
-            return
-          }
-        }
-
-        // Wait a bit for state to update, then send message
-        setTimeout(async () => {
-          const finalUserId = currentUserId || emaUserId
-          if (finalUserId && question) {
-            // Send message directly with the userId
-            const userMessage = {
-              id: Date.now(),
-              sender: 'user',
-              message: question.trim(),
-              timestamp: new Date().toISOString(),
-            }
-            setEmaChatMessages((prev) => {
-              const prevArray = Array.isArray(prev) ? prev : []
-              return [...prevArray, userMessage]
-            })
-
-            try {
-              setIsThinking(true)
-              const emaResponse = await fetch('/api/ema/chat', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  action: 'sendMessage',
-                  userId: finalUserId,
-                  message: question.trim(),
-                }),
-              })
-
-              if (emaResponse.ok && emaResponse.body) {
-                setIsThinking(false)
-                setIsStreaming(true)
-                const reader = emaResponse.body.getReader()
-                const decoder = new TextDecoder()
-                let assistantMessage = {
-                  id: Date.now() + 1,
-                  sender: 'assistant',
-                  message: '',
-                  timestamp: new Date().toISOString(),
-                }
-
-                setEmaChatMessages((prev) => {
-                  const prevArray = Array.isArray(prev) ? prev : []
-                  return [...prevArray, assistantMessage]
-                })
-
-                while (true) {
-                  const { done, value } = await reader.read()
-                  if (done) break
-
-                  const chunk = decoder.decode(value)
-                  const lines = chunk.split('\n')
-
-                  for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                      const data = line.slice(6).trim()
-                      if (data === '[DONE]') {
-                        setIsStreaming(false)
-                        break
-                      }
-
-                      try {
-                        const parsed = JSON.parse(data)
-                        if (parsed.error) {
-                          console.error('Ema API error:', parsed)
-                          setIsStreaming(false)
-                          break
-                        }
-
-                        if (parsed.content && Array.isArray(parsed.content)) {
-                          const textContent = parsed.content
-                            .map((item) => item.text?.value || '')
-                            .join('')
-
-                          if (textContent) {
-                            setEmaChatMessages((prev) => {
-                              const prevArray = Array.isArray(prev) ? prev : []
-                              const updated = [...prevArray]
-                              const lastMessage = updated[updated.length - 1]
-                              if (
-                                lastMessage &&
-                                lastMessage.sender === 'assistant'
-                              ) {
-                                lastMessage.message += textContent
-                              }
-                              return updated
-                            })
-                          }
-                        }
-
-                        if (parsed.messageId) {
-                          setIsStreaming(false)
-                        }
-                      } catch (e) {
-                        // Skip invalid JSON
-                      }
-                    }
-                  }
-                }
-              }
-            } catch (error) {
-              console.error('Error sending message:', error)
-              setIsThinking(false)
-              setIsStreaming(false)
-            }
-          }
-        }, 300)
-      }
-
-      sendMessageAfterInit()
-    }
-
-    window.addEventListener('ema-open-chat', handleOpenChat)
     return () => {
-      window.removeEventListener('ema-open-chat', handleOpenChat)
+      clearTimeout(r)
+      window.removeEventListener('resize', checkOverflow)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [initialSearchQuery])
 
   const sendMessage = async (message) => {
     if (!message?.trim() || !emaUserId) return
 
-    const userMessage = {
-      id: Date.now(),
-      sender: 'user',
+            const userMessage = {
+              id: Date.now(),
+              sender: 'user',
       message: message.trim(),
-      timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString(),
+            }
+
+    setMessages((prev) => [...prev, userMessage])
+
+    // Fetch Algolia search results for this query
+            try {
+      const searchResponse = await fetch('/api/ema/search', {
+                method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: message.trim() }),
+      })
+      if (searchResponse.ok) {
+        const searchData = await searchResponse.json()
+        setSearchResults(searchData.hits || [])
+              }
+            } catch (error) {
+      console.error('Error fetching search results:', error)
     }
-    setEmaChatMessages((prev) => {
-      const prevArray = Array.isArray(prev) ? prev : []
-      return [...prevArray, userMessage]
-    })
 
     setIsThinking(true)
 
     try {
       const emaResponse = await fetch('/api/ema/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'sendMessage',
           userId: emaUserId,
@@ -703,8 +653,10 @@ const EmaChat = () => {
       if (emaResponse.ok && emaResponse.body) {
         setIsThinking(false)
         setIsStreaming(true)
+
         const reader = emaResponse.body.getReader()
         const decoder = new TextDecoder()
+
         let assistantMessage = {
           id: Date.now() + 1,
           sender: 'assistant',
@@ -712,10 +664,7 @@ const EmaChat = () => {
           timestamp: new Date().toISOString(),
         }
 
-        setEmaChatMessages((prev) => {
-          const prevArray = Array.isArray(prev) ? prev : []
-          return [...prevArray, assistantMessage]
-        })
+        setMessages((prev) => [...prev, assistantMessage])
 
         while (true) {
           const { done, value } = await reader.read()
@@ -725,8 +674,9 @@ const EmaChat = () => {
           const lines = chunk.split('\n')
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
+            if (!line.startsWith('data: ')) continue
               const data = line.slice(6).trim()
+
               if (data === '[DONE]') {
                 setIsStreaming(false)
                 break
@@ -741,14 +691,11 @@ const EmaChat = () => {
                 }
 
                 if (parsed.content && Array.isArray(parsed.content)) {
-                  const textContent = parsed.content
-                    .map((item) => item.text?.value || '')
-                    .join('')
+                const textContent = parsed.content.map((item) => item.text?.value || '').join('')
 
                   if (textContent) {
-                    setEmaChatMessages((prev) => {
-                      const prevArray = Array.isArray(prev) ? prev : []
-                      const updated = [...prevArray]
+                  setMessages((prev) => {
+                    const updated = [...prev]
                       const lastMessage = updated[updated.length - 1]
                       if (lastMessage && lastMessage.sender === 'assistant') {
                         lastMessage.message += textContent
@@ -758,12 +705,9 @@ const EmaChat = () => {
                   }
                 }
 
-                if (parsed.messageId) {
-                  setIsStreaming(false)
-                }
+              if (parsed.messageId) setIsStreaming(false)
               } catch (e) {
-                // Skip invalid JSON
-              }
+              // ignore
             }
           }
         }
@@ -775,66 +719,60 @@ const EmaChat = () => {
     }
   }
 
-  // Dispatch chat state changes
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent('ema-chat-state-change', {
-        detail: { isOpen: emaChatOpen },
-      })
-    )
-  }, [emaChatOpen])
-
   const gradientStyle = {
     background:
       'linear-gradient(to bottom, #019AD7 0%, #ADF4FF 45%, #FEFFD8 74%, #FFFFFF 100%)',
   }
 
-  // Always render the portal so event listeners are active
-  // But only show content when chat is open
+  // Inline styles to avoid needing external CSS edits
+  const overlayStyle = {
+    ...gradientStyle,
+    position: 'fixed',
+    inset: 0,
+    width: '100%',
+    // Use visualViewport height if available, fallback to dvh
+    height: 'var(--vvh, 100dvh)',
+    overflow: 'hidden',
+    // default keyboard translate var
+    // NOTE: --kbd and --composer-h are set on the element at runtime
+  }
+
+  const messagesStyle = {
+    flex: '1 1 auto',
+    overflowY: 'auto',
+    WebkitOverflowScrolling: 'touch',
+    // Reserve space for the composer + safe area + keyboard translation doesn’t affect layout
+    paddingBottom: 'calc(16px + var(--composer-h, 72px) + env(safe-area-inset-bottom))',
+  }
+
+  const composerStyle = {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    transform: 'translate3d(0, var(--kbd, 0px), 0)',
+    willChange: 'transform',
+    // prevent composer from shrinking
+    flexShrink: 0,
+    background: 'transparent',
+  }
+
   return (
-    <InPortal id="ema-chat">
-      <AnimatePresence>
-        {emaChatOpen && (
-          <FocusTrap
-            active={emaChatOpen && hasFocus}
-            focusTrapOptions={{
-              allowOutsideClick: true,
-              preventScroll: true,
-            }}
-          >
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Full-page chat experience */}
             <m.div
-              ref={overlayRef}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onAnimationComplete={(v) => setHasFocus(v === 'show')}
-              className="fixed inset-0 z-[1000] flex"
-              style={gradientStyle}
-              role="dialog"
-              aria-modal="true"
+        className="ema-chat-overlay"
+        style={overlayStyle}
+        role="main"
               aria-labelledby="ema-chat-title"
-              onClick={(e) => {
-                if (frameOpen && e.target === e.currentTarget) {
-                  handleCloseFrame()
-                }
-              }}
             >
               {/* Chat Container */}
-              <m.div
-                initial={{ scale: 0.95, opacity: 0, width: '100%' }}
-                animate={{
-                  scale: 1,
-                  opacity: 1,
-                  width: frameOpen && !isMobile ? '50%' : '100%',
-                }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                transition={frameTransition}
-                className="relative h-full flex flex-col overflow-hidden"
+              <div
+                className="relative w-full h-full flex flex-col overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className="absolute top-0 left-0 w-full flex items-center justify-between p-15 md:p-30 pl-15 md:pl-0 pr-15 flex-shrink-0">
+                <div className="absolute z-3 top-0 left-0 w-full flex items-center justify-between p-15 md:p-30 pl-15 md:pl-0 pr-15 flex-shrink-0">
                   <div className="flex items-center gap-10 flex-1 min-w-0 bg-pink md:bg-transparent rounded-full py-20 md:py-0 px-10 md:px-0">
                     <div
                       ref={titleContainerRef}
@@ -853,21 +791,25 @@ const EmaChat = () => {
                           shouldAnimateTitle ? 'animate-marquee' : ''
                         }`}
                       >
-                        {emaInitialSearchQuery &&
-                          `new chat for: ${emaInitialSearchQuery.toUpperCase()}`}
+                        {initialSearchQuery &&
+                          `new chat for: ${initialSearchQuery.toUpperCase()}`}
                       </h2>
                     </div>
                   </div>
+
                   {!frameOpen && (
                     <m.button
                       initial={{ opacity: 1 }}
-                      animate={{
-                        opacity: frameOpen ? 'opacity-0' : 'opacity-100',
-                      }}
+                      animate={{ opacity: frameOpen ? 0 : 1 }}
                       exit={{ opacity: 0 }}
-                      onClick={() => toggleEmaChat(false)}
+                      onClick={() => {
+                        if (onClose) {
+                          onClose()
+                        }
+                      }}
                       className="absolute top-18 md:top-25 right-15 md:right-25 z-10 w-[4.5rem] md:w-[6rem] h-[4.5rem] md:h-[6rem] rounded-full bg-pink text-white flex items-center justify-center hover:bg-pink transition-colors focus:outline-none"
                       aria-label="Close chat"
+                      type="button"
                     >
                       <Icon
                         name="Close"
@@ -878,16 +820,18 @@ const EmaChat = () => {
                   )}
                 </div>
 
-                {/* Messages */}
+                {/* Messages (only scrollable region) */}
                 <div
                   ref={chatContainerRef}
-                  className="flex-1 overflow-y-auto no-bar space-y-20 pt-80 md:pt-25 px-15 md:px-0"
+                  className="ema-chat-messages space-y-20 pt-80 md:pt-25 px-15 md:px-0"
+                  style={messagesStyle}
                 >
                   {messages.length === 0 && (
                     <div className="max-w-[50rem] mx-auto">
                       Start a conversation with Julie AI...
                     </div>
                   )}
+
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
@@ -897,7 +841,7 @@ const EmaChat = () => {
                     >
                       <div
                         className={cx(
-                          'max-w-[100%]md:max-w-[80%] p-15 md:p-20 rounded-[1rem] rc',
+                          'max-w-[100%] md:max-w-[80%] p-15 md:p-20 rounded-[1rem] rc',
                           {
                             'bg-white text-black': msg.sender === 'user',
                             'bg-transparent': msg.sender === 'assistant',
@@ -907,6 +851,7 @@ const EmaChat = () => {
                         <div className="text-14 md:text-16 whitespace-pre-wrap leading-relaxed">
                           {processMessageLinks(msg.message, handleOpenFrame)}
                         </div>
+
                         {isStreaming &&
                           msg.sender === 'assistant' &&
                           msg.id === messages[messages.length - 1]?.id && (
@@ -915,6 +860,7 @@ const EmaChat = () => {
                       </div>
                     </div>
                   ))}
+
                   {isThinking && (
                     <div className="flex max-w-[50rem] mx-auto justify-start">
                       <div className="max-w-[100%]md:max-w-[80%] p-15 md:p-20 rounded-[1rem] bg-transparent">
@@ -937,8 +883,18 @@ const EmaChat = () => {
                   )}
                 </div>
 
-                {/* Chat Input - Bottom */}
-                <div className="flex-shrink-0 w-full max-w-[50rem] mx-auto pb-25 px-15 md:px-0">
+                {/* Composer */}
+                <div
+                  ref={composerRef}
+                  className="ema-chat-composer px-15 md:px-0 pb-15"
+                  style={composerStyle}
+                >
+                  <div
+                    className="max-w-[50rem] mx-auto w-full"
+                    style={{
+                      paddingBottom: 'env(safe-area-inset-bottom)',
+                    }}
+                  >
                   <form
                     onSubmit={async (e) => {
                       e.preventDefault()
@@ -951,13 +907,11 @@ const EmaChat = () => {
                       setChatInputText('')
                       await sendMessage(question)
                     }}
-                    className="flex gap-10 relative items-end"
+                      className="flex gap-10 relative items-end w-full"
                   >
                     <m.div
                       initial={{ opacity: 1 }}
-                      animate={{
-                        opacity: chatInputText.trim().length > 0 ? 0 : 1,
-                      }}
+                        animate={{ opacity: chatInputText.trim().length > 0 ? 0 : 1 }}
                       transition={{ duration: 0.2 }}
                       className="absolute left-15 top-[1.5rem] w-[1.5rem] h-[1.5rem] flex-shrink-0 pointer-events-none"
                     >
@@ -967,6 +921,7 @@ const EmaChat = () => {
                         className="w-full h-full text-pink"
                       />
                     </m.div>
+
                     <textarea
                       ref={chatInputRef}
                       placeholder="How can Julie help?"
@@ -974,20 +929,32 @@ const EmaChat = () => {
                       value={chatInputText}
                       onChange={(e) => setChatInputText(e.target.value)}
                       className={cx(
-                        'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-14 md:text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder',
+                          'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-14 md:text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
                         {
                           'pl-35': chatInputText.trim().length === 0,
                           'pl-15': chatInputText.trim().length > 0,
                         }
                       )}
                       aria-label="Chat message input"
+                        inputMode="text"
+                        // Important: do NOT add touchmove preventDefault here.
+                        // It often breaks scrolling and can trigger iOS weirdness.
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault()
-                          e.target.form?.requestSubmit()
-                        }
-                      }}
-                    />
+                            e.currentTarget.form?.requestSubmit()
+                          }
+                        }}
+                        onFocus={() => {
+                          // Keep messages pinned to bottom when keyboard appears
+                          const el = chatContainerRef.current
+                          if (!el) return
+                          requestAnimationFrame(() => {
+                            el.scrollTop = el.scrollHeight
+                          })
+                        }}
+                      />
+
                     <button
                       type="submit"
                       disabled={isStreaming}
@@ -1001,16 +968,15 @@ const EmaChat = () => {
                       />
                     </button>
                   </form>
+                  </div>
                 </div>
 
                 {/* Search Results */}
-                {emaSearchResults && emaSearchResults.length > 0 && (
+                {searchResults && searchResults.length > 0 && (
                   <m.div
-                    animate={{
-                      opacity: frameOpen ? 0 : 1,
-                    }}
+                    animate={{ opacity: frameOpen ? 0 : 1 }}
                     transition={frameTransition}
-                    className="block md:block absolute bottom-0 right-0 w-full md:w-[25rem] h-screen pb-25 pt-[10rem] overflow-y-auto flex-shrink-0 pointer-events-none"
+                    className="hidden md:block absolute bottom-0 right-0 w-full md:w-[25rem] h-screen pb-25 pt-[10rem] overflow-y-auto flex-shrink-0 pointer-events-none"
                     style={{
                       maskImage:
                         'linear-gradient(to bottom, transparent 0px, black 100px, black 100%)',
@@ -1020,20 +986,15 @@ const EmaChat = () => {
                     }}
                   >
                     <div className="w-full max-w-[50rem] mx-auto px-15 md:px-25">
-                      {/* <div className="text-14 md:text-16 font-medium text-white mb-15">
-                        Suggested Articles
-                      </div> */}
                       <div className="space-y-10">
-                        {emaSearchResults.map((article, index) => (
+                        {searchResults.map((article, index) => (
                           <button
                             key={index}
-                            onClick={() =>
-                              handleOpenFrame(`/blog/${article.slug}`)
-                            }
+                            onClick={() => handleOpenFrame(`/blog/${article.slug}`)}
                             className="block group w-full text-left"
+                            type="button"
                           >
                             <div className="overflow-hidden relative w-full h-[28rem] rounded-[1.5rem]">
-                              {/* Article Image */}
                               {article.image ? (
                                 <div className="w-full h-full relative">
                                   <Image
@@ -1042,9 +1003,7 @@ const EmaChat = () => {
                                     fill
                                     className="object-cover"
                                     sizes="(max-width: 768px) 100vw, 400px"
-                                    placeholder={
-                                      article.image.lqip ? 'blur' : undefined
-                                    }
+                                    placeholder={article.image.lqip ? 'blur' : undefined}
                                     blurDataURL={article.image.lqip}
                                   />
                                 </div>
@@ -1053,22 +1012,15 @@ const EmaChat = () => {
                                   <Gradient gradient={article.gradient} />
                                 </div>
                               ) : null}
-                              {/* Article Content */}
+
                               <div
-                                className={cx(
-                                  `p-15 absolute bottom-0 left-0 w-full text-white`,
-                                  {
-                                    'bg-gradient-to-t from-black to-transparent':
-                                      !article.gradient,
-                                  }
-                                )}
+                                className={cx('p-15 absolute bottom-0 left-0 w-full text-white', {
+                                  'bg-gradient-to-t from-black to-transparent': !article.gradient,
+                                })}
                               >
-                                {article.authors &&
-                                  article.authors.length > 0 && (
+                                {article.authors && article.authors.length > 0 && (
                                     <div className="text-12 text-gray-300 mb-5">
-                                      by{' '}
-                                      {article.authors[0]?.title ||
-                                        article.authors[0]?.name}
+                                    by {article.authors[0]?.title || article.authors[0]?.name}
                                     </div>
                                   )}
                                 <h4 className="text-16 font-lb text-white line-clamp-2">
@@ -1082,7 +1034,7 @@ const EmaChat = () => {
                     </div>
                   </m.div>
                 )}
-              </m.div>
+              </div>
 
               {/* Page Frame Popup */}
               <AnimatePresence>
@@ -1095,26 +1047,25 @@ const EmaChat = () => {
                     className={cx(
                       'absolute right-0 top-0 h-full z-[1002] flex flex-col flex-shrink-0',
                       {
-                        'w-full': isMobile, // Full width overlay on mobile
-                        'w-1/2 p-25': !isMobile, // Split screen on desktop
+                        'w-full': isMobile,
+                        'w-1/2 p-25': !isMobile,
                       }
                     )}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Frame Header - commented out in original */}
                     <div className="absolute z-[9999] top-0 left-0 w-full px-15 md:px-0 pt-15 md:pt-0">
                       <div className="flex items-center justify-between p-20 rounded-full text-white bg-pink flex-shrink-0">
                         <button
-                          onClick={handleCloseFrame}
+                          onClick={() => handleCloseFrame(true)}
                           className="rounded-full flex md:hidden items-center justify-center flex-shrink-0 rotate-180"
                           aria-label="Close frame"
+                          type="button"
                         >
                           <Icon
                             name={'Arrow'}
                             viewBox={'0 0 14 14'}
                             className={cx({
-                              'w-[1.6rem] flex items-center justify-center':
-                                isMobile,
+                              'w-[1.6rem] flex items-center justify-center': isMobile,
                             })}
                           />
                         </button>
@@ -1126,16 +1077,16 @@ const EmaChat = () => {
                     </div>
 
                     <button
-                      onClick={handleCloseFrame}
+                      onClick={() => handleCloseFrame(true)}
                       className={cx(
                         'absolute bg-pink rounded-full text-white hidden md:flex items-center justify-center hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0',
                         {
-                          'top-15 right-15 w-[4.5rem] h-[4.5rem]': isMobile, // Top right on mobile
-                          'left-0 -translate-x-full w-[6rem] h-[6rem]':
-                            !isMobile, // Left side on desktop
+                          'top-15 right-15 w-[4.5rem] h-[4.5rem]': isMobile,
+                          'left-0 -translate-x-full w-[6rem] h-[6rem]': !isMobile,
                         }
                       )}
                       aria-label="Close frame"
+                      type="button"
                     >
                       <Icon
                         name={isMobile ? 'Close' : 'Arrow'}
@@ -1147,26 +1098,19 @@ const EmaChat = () => {
                       />
                     </button>
 
-                    {/* Frame Content */}
                     <div className="relative w-full flex-1 overflow-y-auto no-bar bg-white md:border border-pink md:rounded-[1.5rem] pt-90 md:pt-0 py-20 md:py-0">
                       {frameLoading ? (
                         <div className="flex items-center justify-center h-full">
-                          <div className="text-16 text-gray-500">
-                            Loading...
+                          <div className="text-16 text-gray-500">Loading...</div>
                           </div>
-                        </div>
-                      ) : frameContent &&
-                        frameContent.data &&
-                        frameContent.data.page ? (
+                      ) : frameContent && frameContent.data && frameContent.data.page ? (
                         <div className="ema-frame-mobile">
                           <PageContent
                             page={frameContent.data.page}
                             type={frameContent.type}
                             sanityConfig={{
-                              projectId:
-                                process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-                              dataset:
-                                process.env.NEXT_PUBLIC_SANITY_PROJECT_DATASET,
+                              projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+                              dataset: process.env.NEXT_PUBLIC_SANITY_PROJECT_DATASET,
                             }}
                             isInFrame={true}
                             onFrameLinkClick={handleOpenFrame}
@@ -1174,9 +1118,7 @@ const EmaChat = () => {
                         </div>
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <div className="text-16 text-gray-500">
-                            Content not found
-                          </div>
+                          <div className="text-16 text-gray-500">Content not found</div>
                         </div>
                       )}
                     </div>
@@ -1184,10 +1126,7 @@ const EmaChat = () => {
                 )}
               </AnimatePresence>
             </m.div>
-          </FocusTrap>
-        )}
-      </AnimatePresence>
-    </InPortal>
+    </div>
   )
 }
 

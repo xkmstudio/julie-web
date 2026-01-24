@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo } from 'react'
 import Router from 'next/router'
 import Head from 'next/head'
 import {
@@ -11,7 +11,6 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import Header from '@components/header'
 import Footer from '@components/footer'
 import Cart from '@components/cart'
-import EmaChat from '@components/emaChat'
 
 
 import '../styles/tailwind.css'
@@ -100,6 +99,33 @@ const Site = ({ Component, pageProps, router }) => {
   // Handle scroll position on history change
   useScrollRestoration(router, pageTransitionSpeed)
 
+  // Restore scroll position immediately if coming back from chat (before page renders)
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const restoreScroll = sessionStorage.getItem('emaChatRestoreScroll')
+    const restoreRoute = sessionStorage.getItem('emaChatRestoreRoute')
+    
+    // Check if we should restore scroll for current route
+    if (restoreScroll && restoreRoute) {
+      // Check if current path matches the restore route (handle query params)
+      const currentPath = router.asPath.split('?')[0]
+      const restorePath = restoreRoute.split('?')[0]
+      
+      if (currentPath === restorePath) {
+        const scrollY = parseInt(restoreScroll, 10)
+        
+        // Restore immediately, synchronously before React paints
+        window.scrollTo(0, scrollY)
+        document.documentElement.scrollTop = scrollY
+        document.body.scrollTop = scrollY
+        
+        // Don't clear flags here - let useScrollRestoration handle it
+        // so it doesn't scroll to 0
+      }
+    }
+  }, [router.asPath])
+
   // Trigger our loading class
   // useEffect(() => {
   //   if (isBrowser) {
@@ -154,12 +180,14 @@ const Site = ({ Component, pageProps, router }) => {
         </Head>
       )}
       <div className={`${inter.variable} ${jetbrainsMono.variable}`}>
-        <Header
-          key="header"
-          data={data?.site.header}
-          footer={data?.site.footer}
-          pages={combineAllPages(data?.site)}
-        />
+        {router.pathname !== '/ema-chat' && (
+          <Header
+            key="header"
+            data={data?.site.header}
+            footer={data?.site.footer}
+            pages={combineAllPages(data?.site)}
+          />
+        )}
         {/* <Scene key="scene" /> */}
         <AnimatePresence
           mode="wait"
@@ -170,11 +198,12 @@ const Site = ({ Component, pageProps, router }) => {
           <Component key={pageID} {...pageProps} />
         </AnimatePresence>
         <Cart data={{ ...data?.site }} />
-        <EmaChat />
-        <Footer
-          key="footer"
-          data={data?.site.footer}
-        />
+        {router.pathname !== '/ema-chat' && (
+          <Footer
+            key="footer"
+            data={data?.site.footer}
+          />
+        )}
       </div>
     </LazyMotion>
   )

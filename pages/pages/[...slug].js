@@ -2,7 +2,7 @@ import React from 'react'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
 
-import { getPage, getAllDocSlugs } from '@data'
+import { getPage } from '@data'
 
 import NotFoundPage from '@pages/404'
 
@@ -31,34 +31,31 @@ const Page = ({ data }) => {
   )
 } 
 
-export async function getStaticProps({ params, preview, previewData }) {
+export async function getServerSideProps({ params, res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const pageSlug = params.slug.join('/')
   const pageData = await getPage(pageSlug, {
     active: preview,
     token: previewData?.token,
   })
 
+  // Return 404 if page not found
+  if (!pageData || !pageData.page) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       data: pageData, 
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const allPages = await getAllDocSlugs('page')
-
-  return {
-    paths:
-      allPages?.map((page) => {
-        let slugs = page.slug.split('/').filter((e) => e)
-        return {
-          params: {
-            slug: slugs,
-          },
-        }
-      }) || [],
-    fallback: false,
   }
 }
 

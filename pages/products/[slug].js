@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import useSWR from 'swr'
 
-import { getProduct, getAllDocSlugs } from '@data'
+import { getProduct } from '@data'
 
 import { useParams, usePrevious, centsToPrice, hasObject } from '@lib/helpers'
 
@@ -180,32 +180,30 @@ function getProductSchema(product, activeVariantID, site) {
   }
 }
 
-export async function getStaticProps({ params, preview, previewData }) {
+export async function getServerSideProps({ params, res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const productData = await getProduct(params.slug, {
     active: preview,
     token: previewData?.token,
   })
 
+  // Return 404 if product not found
+  if (!productData || !productData.page) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       data: productData,
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const allProducts = await getAllDocSlugs('product')
-
-  return {
-    paths:
-      allProducts?.map((page) => {
-        return {
-          params: {
-            slug: page.slug,
-          },
-        }
-      }) || [],
-    fallback: false,
   }
 }
 

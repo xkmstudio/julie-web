@@ -450,6 +450,10 @@ export const modules = `
     _type,
     _key,
     title,
+    cta{
+      title,
+      link{${link}}
+    },
     backgroundGradient{${gradient}},
     sections[]{
       _type,

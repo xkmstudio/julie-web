@@ -141,7 +141,7 @@ const ProductCard = ({
       >
         {shouldHandleInFrame ? (
           <a
-            className={cx("btn is-outline is-large flex-1", {
+            className={cx("btn is-outline is-large flex-[1_1_0%] min-w-0", {
               'is-white': product.productType == 'alternate',
             })}
             href={productHref}
@@ -154,7 +154,7 @@ const ProductCard = ({
           </a>
         ) : (
           <NextLink
-            className={cx("btn is-outline is-large flex-1", {
+            className={cx("btn is-outline is-large flex-[1_1_0%] min-w-0", {
               'is-white': product.productType == 'alternate',
             })}
             href={productHref}
@@ -236,7 +236,7 @@ const ProductCard = ({
       <div className="flex gap-10" onClick={(e) => e.stopPropagation()}>
         {shouldHandleInFrame ? (
           <a
-            className="btn is-outline is-large flex-1"
+            className="btn is-outline is-large flex-[1_1_0%] min-w-0"
             href={productHref}
             onClick={(e) => {
               e.preventDefault()
@@ -247,7 +247,7 @@ const ProductCard = ({
           </a>
         ) : (
           <NextLink
-            className="btn is-outline is-large flex-1"
+            className="btn is-outline is-large flex-[1_1_0%] min-w-0"
             href={productHref}
           >
             Learn More

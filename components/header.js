@@ -295,7 +295,6 @@ const Header = ({ data, work, pages }) => {
                     return (
                       <Link
                         onClick={() => {
-                          setModalActive(link._key)
                           setMenuOpen(false)
                         }}
                         className={
@@ -311,7 +310,6 @@ const Header = ({ data, work, pages }) => {
                     return (
                       <Link
                         onClick={() => {
-                          setModalActive(link._key)
                           setMenuOpen(false)
                         }}
                         className={

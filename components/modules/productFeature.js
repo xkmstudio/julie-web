@@ -4,7 +4,7 @@ import ProductCard from '@components/product/product-card'
 import ProductCarousel from '@components/product-carousel'
 import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 const DESKTOP_CAROUSEL_THRESHOLD = 3
 
 const ProductFeature = ({ data, onFrameLinkClick }) => {

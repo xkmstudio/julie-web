@@ -6,7 +6,7 @@ import NextLink from 'next/link'
 import Photo from '@components/photo'
 import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 const ProfileCard = ({ profile }) => {
   return (

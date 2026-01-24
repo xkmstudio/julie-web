@@ -38,6 +38,7 @@ const MarqueeIcon = ({ item, index, className }) => {
   return item.link ? (
     <NextLink
       href={item.link}
+      className="flex items-center justify-center"
       rel="noopener noreferrer"
       target="_blank"
       key={index}

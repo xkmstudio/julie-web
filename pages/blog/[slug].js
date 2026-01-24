@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 
-import { getArticle, getAllDocSlugs } from '@data'
+import { getArticle } from '@data'
 import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
 import NotFoundPage from '@pages/404'
@@ -13,7 +13,7 @@ import ArticleCard from '@components/related-card'
 import AuthorCard from '@components/author-card'
 import ProductCarousel from '@components/product-carousel'
 
-const MOBILE_BREAKPOINT = 950
+const MOBILE_BREAKPOINT = 850
 
 const Article = ({ data, sanityConfig }) => {
   const router = useRouter()
@@ -135,11 +135,25 @@ const Article = ({ data, sanityConfig }) => {
   )
 }
 
-export async function getStaticProps({ params, preview, previewData }) {
+export async function getServerSideProps({ params, res, preview, previewData }) {
+  // Set cache headers for performance while allowing dynamic content
+  // Cache for 60 seconds, but allow revalidation
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  )
+
   const eventData = await getArticle(params.slug, {
     active: preview,
     token: previewData?.token,
   })
+
+  // Return 404 if article not found
+  if (!eventData || !eventData.page) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {
@@ -149,23 +163,6 @@ export async function getStaticProps({ params, preview, previewData }) {
         dataset: process.env.SANITY_PROJECT_DATASET,
       },
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const allArticles = await getAllDocSlugs('article')
-
-  return {
-    paths:
-      allArticles?.map((article) => {
-        return {
-          params: {
-            slug: article.slug,
-            id: article._id,
-          },
-        }
-      }) || [],
-    fallback: false,
   }
 }
 

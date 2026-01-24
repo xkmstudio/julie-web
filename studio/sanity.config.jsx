@@ -7,7 +7,7 @@ import deskStructure from './deskStructure'
 import { dashboardTool } from '@sanity/dashboard'
 import { netlifyWidget } from 'sanity-plugin-dashboard-widget-netlify'
 
-import {colorInput} from '@sanity/color-input'
+import { colorInput } from '@sanity/color-input'
 
 
 import { Eye } from 'phosphor-react'
@@ -98,14 +98,13 @@ export default defineConfig({
               )
 
             const typeSlug =
-              context.schemaType == 'capability' ? 'capabilities/' : ''
+              context.schemaType == 'product' ? 'products/' : context.schemaType == 'collection' ? 'collections/' : context.schemaType == 'page' ? 'pages/' : context.schemaType == 'article' ? 'blog/' : context.schemaType == 'profile' ? 'profiles/' : context.schemaType == 'shopHome' ? 'collections/' : ''
 
             const frontendURL =
               window.location.hostname === 'localhost' ? localURL : remoteURL
 
             window.open(
-              `${frontendURL}/api/preview?token=PREV&type=${
-                context.schemaType
+              `${frontendURL}/api/preview?token=PREV&type=${context.schemaType
               }&slug=${typeSlug}${docSlug == '/' ? '' : docSlug || ''}`
             )
           }

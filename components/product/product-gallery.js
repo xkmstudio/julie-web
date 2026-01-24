@@ -112,7 +112,7 @@ const ProductGallery = ({
               onClick={() => scrollTo(index)}
               aria-label={`Go to image ${index + 1}`}
               className={cx(
-                'bg-pink w-[1.5rem] h-[1.5rem] relative overflow-hidden rounded-[1rem]',
+                'w-[1.5rem] h-[1.5rem] relative overflow-hidden rounded-[1rem]',
                 'transition-colors duration-300',
                 'hover:bg-pink',
                 {

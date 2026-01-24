@@ -113,7 +113,7 @@
     }
 
     &--items{
-      @apply flex flex-col gap-20
+      @apply flex flex-col gap-20;
     }
   
     &--footer {
@@ -139,30 +139,30 @@
     }
   }
   
-  .drawer-item {
-    @apply flex relative;
-  
-    &--details {
-      @apply flex flex-col flex-grow;
-    }
-  
-    &--header {
-      @apply flex pt-10;
-  
-      .price {
-        @apply ml-auto;
-      }
-    }
-  
-    &--link {
-      @apply block text-current;
-    }
-  
-    &--title {
-      @apply flex-1 m-0;
-    }
-  
-    &--tools {
-      @apply flex justify-between items-baseline relative z-1 mt-auto;
+.drawer-item {
+  @apply flex relative;
+
+  &--details {
+    @apply flex flex-col flex-grow;
+  }
+
+  &--header {
+    @apply flex pt-10;
+
+    .price {
+      @apply ml-auto;
     }
   }
+
+  &--link {
+    @apply block text-current;
+  }
+
+  &--title {
+    @apply flex-1 m-0;
+  }
+
+  &--tools {
+    @apply flex justify-between items-baseline relative z-1 mt-auto;
+  }
+}

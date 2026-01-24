@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { m } from 'framer-motion'
 import Icon from '@components/icon'
 import cx from 'classnames'
 
 const EmaWidget = () => {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [initialInputText, setInitialInputText] = useState('')
 
@@ -46,33 +48,20 @@ const EmaWidget = () => {
         // Continue even if search fails - searchResults will be empty array
       }
 
-      // 2. Store the initial search query and trigger chat open
-      const truncatedQuery =
-        question.length > 50 ? question.substring(0, 50) + '...' : question
+      // Save current scroll position to sessionStorage for restoration on back
+      const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
+      sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
 
-      // Dispatch event to open Ema chat with the question and search results
-      const event = new CustomEvent('ema-open-chat', {
-        detail: {
-          question,
-          searchQuery: truncatedQuery,
-          searchResults, // Always include searchResults, even if empty
+      // Navigate to the chat page with the question as a query parameter
+      await router.push({
+        pathname: '/ema-chat',
+        query: {
+          q: question,
+          from: router.asPath, // Save current route for back navigation
         },
       })
-      window.dispatchEvent(event)
     } catch (error) {
-      console.error('Error submitting question:', error)
-      // Even on error, try to open chat with empty search results
-      const truncatedQuery =
-        question.length > 50 ? question.substring(0, 50) + '...' : question
-      window.dispatchEvent(
-        new CustomEvent('ema-open-chat', {
-          detail: {
-            question,
-            searchQuery: truncatedQuery,
-            searchResults: [], // Empty results on error
-          },
-        })
-      )
+      console.error('Error navigating to chat:', error)
     } finally {
       setIsSubmitting(false)
       setInitialInputText('')

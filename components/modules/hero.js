@@ -14,7 +14,7 @@ const Hero = ({ data = {} }) => {
         !backgroundMedia?.content
           ? ' text-black justify-center'
           : mobileTag
-          ? ' h-[calc(var(--vh,1vh)*100-6rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center text-white'
+          ? ' h-[calc(var(--vh,1vh)*100-6.5rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center text-white'
           : ' min-h-[100vw] md:min-h-[60rem] text-white justify-center py-20'
       }`}
     >
