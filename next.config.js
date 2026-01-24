@@ -1,8 +1,16 @@
 const {createClient} = require('@sanity/client')
+
+// Determine if we're in production (not staging/preview)
+// Netlify sets CONTEXT to 'production' for production deploys
+// For staging/preview, we want fresh data without CDN caching
+const isProduction = 
+  process.env.NODE_ENV === 'production' && 
+  process.env.CONTEXT === 'production'
+
 const client = createClient({
   dataset: process.env.SANITY_PROJECT_DATASET,
   projectId: process.env.SANITY_PROJECT_ID,
-  useCdn: process.env.NODE_ENV === 'production',
+  useCdn: isProduction, // Only use CDN in production, not staging/preview
   apiVersion: '2021-03-25',
 })
 
