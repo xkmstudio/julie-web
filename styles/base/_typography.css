@@ -44,9 +44,9 @@
     }
   }
 
-  @media screen and (min-width: 1899px){
+  @media screen and (min-width: 1750px){
     html{
-      font-size: .5vw;
+      font-size: .6vw;
     }
   }
 

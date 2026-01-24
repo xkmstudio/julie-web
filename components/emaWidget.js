@@ -51,7 +51,6 @@ const EmaWidget = () => {
         question.length > 50 ? question.substring(0, 50) + '...' : question
 
       // Dispatch event to open Ema chat with the question and search results
-      console.log('Dispatching ema-open-chat event:', { question, searchQuery: truncatedQuery, searchResults })
       const event = new CustomEvent('ema-open-chat', {
         detail: {
           question,
@@ -60,7 +59,6 @@ const EmaWidget = () => {
         },
       })
       window.dispatchEvent(event)
-      console.log('Event dispatched')
     } catch (error) {
       console.error('Error submitting question:', error)
       // Even on error, try to open chat with empty search results

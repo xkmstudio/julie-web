@@ -21,12 +21,15 @@ export default {
   preview: {
     select: {
       title: 'alt',
-      image: 'image'
+      image: 'image',
+      filename: 'image.asset.originalFilename'
     },
-    prepare({ title, image }) {
+    prepare({ title, image, filename }) {
+      const displayTitle = title || filename || 'Asset'
+      
       return {
-        title: title,
-        media: image
+        title: displayTitle,
+        media: image || Camera
       }
     }
   }

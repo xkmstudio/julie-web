@@ -9,21 +9,29 @@ export default {
     {
       title: 'Title',
       name: 'title',
-      type: 'string'
+      type: 'string',
+      description: 'Main heading for the store locator section'
     },
     {
       title: 'Subtitle',
       name: 'subtitle',
-      type: 'string'
+      type: 'string',
+      description: 'Supporting text or description (optional)'
     },
   ],
   preview: {
     select: {
       title: 'title',
+      subtitle: 'subtitle',
     },
-    prepare({ title }) {
+    prepare({ title, subtitle }) {
+      const displayTitle = title || 'Store Locator'
+      const displaySubtitle = subtitle ? `"${subtitle}"` : 'Store Locator'
+      
       return {
-        title: title,
+        title: displayTitle,
+        subtitle: displaySubtitle,
+        media: MapPin
       }
     }
   }

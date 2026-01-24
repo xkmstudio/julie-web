@@ -103,7 +103,8 @@ export default {
 
       return {
         title: title || 'Untitled Link',
-        subtitle: subtitle || 'No link configured'
+        subtitle: subtitle || 'No link configured',
+        media: LinkSimple
       }
     }
   }

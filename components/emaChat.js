@@ -227,6 +227,7 @@ const EmaChat = () => {
   const messages = Array.isArray(emaChatMessages) ? emaChatMessages : []
 
   const [isStreaming, setIsStreaming] = useState(false)
+  const [isThinking, setIsThinking] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
   const [shouldAnimateTitle, setShouldAnimateTitle] = useState(false)
   const [frameOpen, setFrameOpen] = useState(false)
@@ -297,7 +298,6 @@ const EmaChat = () => {
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Frame content fetched:', result)
         setFrameContent(result)
       } else {
         const errorData = await response.json().catch(() => ({}))
@@ -486,17 +486,14 @@ const EmaChat = () => {
   // Listen for chat open event from fixed input - MUST be before the early return
   useEffect(() => {
     const handleOpenChat = async (e) => {
-      console.log('ema-open-chat event received:', e.detail)
       const { question, searchQuery, searchResults } = e.detail
       if (!question) {
-        console.log('No question provided')
+        // console.log('No question provided')
         return
       }
 
-      console.log('Setting search query and results, opening chat...')
       setEmaInitialSearchQuery(searchQuery)
       setEmaSearchResults(searchResults || [])
-      console.log('Before toggleEmaChat, emaChatOpen:', emaChatOpen)
       toggleEmaChat(true)
 
       // Update query parameters for tracking
@@ -516,11 +513,6 @@ const EmaChat = () => {
           { shallow: true, scroll: false }
         )
       }
-      console.log('After toggleEmaChat(true), checking state...')
-      // Check state after a brief delay
-      setTimeout(() => {
-        console.log('State after toggle:', emaChatOpen)
-      }, 100)
 
       // Initialize user if needed, then send message
       const sendMessageAfterInit = async () => {
@@ -576,6 +568,7 @@ const EmaChat = () => {
             })
 
             try {
+              setIsThinking(true)
               const emaResponse = await fetch('/api/ema/chat', {
                 method: 'POST',
                 headers: {
@@ -589,6 +582,7 @@ const EmaChat = () => {
               })
 
               if (emaResponse.ok && emaResponse.body) {
+                setIsThinking(false)
                 setIsStreaming(true)
                 const reader = emaResponse.body.getReader()
                 const decoder = new TextDecoder()
@@ -660,6 +654,7 @@ const EmaChat = () => {
               }
             } catch (error) {
               console.error('Error sending message:', error)
+              setIsThinking(false)
               setIsStreaming(false)
             }
           }
@@ -690,6 +685,8 @@ const EmaChat = () => {
       return [...prevArray, userMessage]
     })
 
+    setIsThinking(true)
+
     try {
       const emaResponse = await fetch('/api/ema/chat', {
         method: 'POST',
@@ -704,6 +701,7 @@ const EmaChat = () => {
       })
 
       if (emaResponse.ok && emaResponse.body) {
+        setIsThinking(false)
         setIsStreaming(true)
         const reader = emaResponse.body.getReader()
         const decoder = new TextDecoder()
@@ -772,6 +770,7 @@ const EmaChat = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error)
+      setIsThinking(false)
       setIsStreaming(false)
     }
   }
@@ -916,6 +915,26 @@ const EmaChat = () => {
                       </div>
                     </div>
                   ))}
+                  {isThinking && (
+                    <div className="flex max-w-[50rem] mx-auto justify-start">
+                      <div className="max-w-[100%]md:max-w-[80%] p-15 md:p-20 rounded-[1rem] bg-transparent">
+                        <div className="flex items-center gap-5">
+                          <span
+                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            style={{ animationDelay: '0ms' }}
+                          />
+                          <span
+                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            style={{ animationDelay: '200ms' }}
+                          />
+                          <span
+                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            style={{ animationDelay: '400ms' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Chat Input - Bottom */}

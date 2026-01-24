@@ -74,20 +74,20 @@
 
     div{
       &:first-child{
-        @apply absolute z-1 blur-[10px] text-pink;
+        @apply absolute z-1 blur-[10px] text-current;
       }
       &:nth-child(2){
-        @apply absolute z-2 blur-[10px] text-pink;
+        @apply absolute z-2 blur-[10px] text-current;
       }
       &:nth-child(3){
-        @apply absolute z-3 blur-[10px] text-pink;
+        @apply absolute z-3 blur-[10px] text-current;
       }
       &:last-child{
         @apply relative z-4 text-white;
 
         -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: #ED0F6A;
-        -webkit-text-stroke: 1px #ED0F6A;
+        -webkit-text-stroke-color: currentColor;
+        -webkit-text-stroke: 1px currentColor;
       }
     }
   }

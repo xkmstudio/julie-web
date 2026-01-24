@@ -25,10 +25,20 @@ export default {
   preview: {
     select: {
       title: 'title',
+      subtitle: 'subtitle',
+      content: 'content.0.children[0].text',
     },
-    prepare({ title }) {
+    prepare({ title, subtitle, content }) {
+      const displayTitle = title || 'General Text'
+      const subtitleParts = [
+        subtitle && `"${subtitle}"`,
+        content && `"${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`
+      ].filter(Boolean)
+      
       return {
-        title: title,
+        title: displayTitle,
+        subtitle: subtitleParts.join(' • ') || 'General Text',
+        media: Article
       }
     }
   }

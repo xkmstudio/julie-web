@@ -25,8 +25,8 @@ const ProductActions = ({
   return (
     <>
       <div
-        className={`product--actions${
-          type == 'feature' ? ' flex-1' : ''
+        className={`product--actions flex-shrink-0${
+          type == 'feature' ? '' : ''
         }`}
       >
         {activeVariant?.inStock && !activeVariant?.forceOutOfStock ? (
@@ -44,7 +44,7 @@ const ProductActions = ({
               toolkitProductID={toolkitProductID}
               className={`btn is-add is-block flex items-center gap-5${type == 'feature' ? ' w-full' : ''}`}
             >
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-5 ">
                 <span>{product?.preOrder ? 'Pre-Order' : 'Add to Cart'}</span>{' '}
                 &mdash;{' '}
                 <ProductPrice

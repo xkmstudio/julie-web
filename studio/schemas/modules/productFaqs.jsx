@@ -28,7 +28,23 @@ export default {
                     name: 'link',
                     type: 'url',
                 },
-            ]
+            ],
+            preview: {
+                select: {
+                    title: 'title',
+                    link: 'link'
+                },
+                prepare({ title, link }) {
+                    const displayTitle = title || 'CTA'
+                    const subtitle = link || undefined
+                    
+                    return {
+                        title: displayTitle,
+                        subtitle: subtitle,
+                        media: Quotes
+                    }
+                }
+            }
         },
         {
             title: 'Sections',
@@ -65,12 +81,44 @@ export default {
                                             name: 'content',
                                             type: 'simplePortableText'
                                         }
-                                    ]
+                                    ],
+                                    preview: {
+                                        select: {
+                                            title: 'title',
+                                            content: 'content.0.children[0].text'
+                                        },
+                                        prepare({ title, content }) {
+                                            const displayTitle = title || 'Drawer'
+                                            const subtitle = content ? `"${content.substring(0, 40)}${content.length > 40 ? '...' : ''}"` : undefined
+                                            
+                                            return {
+                                                title: displayTitle,
+                                                subtitle: subtitle,
+                                                media: Quotes
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         },
                         
-                    ]
+                    ],
+                    preview: {
+                        select: {
+                            title: 'title',
+                            drawersCount: 'drawers.length'
+                        },
+                        prepare({ title, drawersCount }) {
+                            const displayTitle = title || 'Section'
+                            const subtitle = drawersCount > 0 ? `${drawersCount} drawer${drawersCount > 1 ? 's' : ''}` : undefined
+                            
+                            return {
+                                title: displayTitle,
+                                subtitle: subtitle,
+                                media: Quotes
+                            }
+                        }
+                    }
                 }
             ]
         },
@@ -83,10 +131,28 @@ export default {
     preview: {
         select: {
             title: 'title',
+            sectionsCount: 'sections.length',
+            firstSectionTitle: 'sections.0.title',
+            firstDrawerTitle: 'sections.0.drawers.0.title',
+            drawersCount: 'sections.0.drawers.length',
+            hasCta: 'cta',
+            hasGradient: 'backgroundGradient'
         },
-        prepare({ title }) {
+        prepare({ title, sectionsCount, firstSectionTitle, firstDrawerTitle, drawersCount, hasCta, hasGradient }) {
+            const displayTitle = title || 'Product FAQs'
+            const subtitleParts = [
+                sectionsCount > 0 && `${sectionsCount} section${sectionsCount > 1 ? 's' : ''}`,
+                firstSectionTitle && `"${firstSectionTitle}"`,
+                drawersCount > 0 && `${drawersCount} drawer${drawersCount > 1 ? 's' : ''}`,
+                firstDrawerTitle && `"${firstDrawerTitle}"`,
+                hasCta && '✓ CTA',
+                hasGradient && '✓ Gradient'
+            ].filter(Boolean)
+            
             return {
-                title: title,
+                title: displayTitle,
+                subtitle: subtitleParts.join(' • ') || 'Product FAQs',
+                media: Quotes
             }
         }
     }

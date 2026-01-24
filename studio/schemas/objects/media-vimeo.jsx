@@ -76,11 +76,14 @@ export default {
   preview: {
     select: {
       image: 'media[0].image',
+      imageAlt: 'media[0].alt',
       video: 'media[0].video.asset.url'
     },
-    prepare({ image, video }) {      
+    prepare({ image, imageAlt, video }) {
+      const displayTitle = imageAlt || (image ? 'Image' : 'Video')
+      
       return {
-        title: image ? 'Image' : 'Video',
+        title: displayTitle,
         media: video ? (
           <div style={{ width: '100%', height: '100%' }}>
             <video
@@ -97,7 +100,7 @@ export default {
             ></video>
           </div>
         ) : (
-          image
+          image || Image
         )
       }
     }

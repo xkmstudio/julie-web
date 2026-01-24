@@ -39,12 +39,25 @@ export default {
   preview: {
     select: {
       title: 'title',
-      products: 'products'
+      subtitle: 'subtitle',
+      products: 'products',
+      firstProduct: 'products.0.title',
+      hasCta: 'cta.0'
     },
-    prepare({ title, products }) {
+    prepare({ title, subtitle, products, firstProduct, hasCta }) {
+      const displayTitle = title || 'Index Tutorials'
+      const productsCount = products?.length || 0
+      const subtitleParts = [
+        subtitle && `"${subtitle}"`,
+        productsCount > 0 && `${productsCount} product${productsCount === 1 ? '' : 's'}`,
+        firstProduct && `"${firstProduct}"`,
+        hasCta && '✓ CTA'
+      ].filter(Boolean)
+      
       return {
-        title: title || 'Index Tutorials',
-        subtitle: products ? `${products.length} ${products.length === 1 ? 'product' : 'products'}` : 'No products'
+        title: displayTitle,
+        subtitle: subtitleParts.join(' • ') || 'Index Tutorials',
+        media: List
       }
     }
   }

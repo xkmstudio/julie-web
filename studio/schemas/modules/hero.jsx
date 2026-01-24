@@ -39,14 +39,37 @@ export default {
       title: 'title.0.children[0].text',
       subtitle: 'subtitle.0.children[0].text',
       mobileTag: 'mobileTag',
-      backgroundMedia: 'backgroundMedia.media[0].image',
+      backgroundImage: 'backgroundMedia.media[0].image',
+      backgroundVideo: 'backgroundMedia.media[0].video.asset.url',
       hasEma: 'hasEma',
     },
-    prepare({ title, subtitle, mobileTag, backgroundMedia, hasEma }) {
+    prepare({ title, subtitle, mobileTag, backgroundImage, backgroundVideo, hasEma }) {
+      const displayTitle = title || 'Hero'
+      const displaySubtitle = [
+        subtitle && `"${subtitle}"`,
+        mobileTag && `Mobile: ${mobileTag}`,
+        hasEma ? '✓ Ema Chat' : 'No Ema Chat'
+      ].filter(Boolean).join(' • ') || 'Hero Module'
+      
       return {
-        title: title,
-        subtitle: `${hasEma ? 'Includes Ema Chat' : 'Does not include Ema Chat'}`,
-        media: backgroundMedia,
+        title: displayTitle,
+        subtitle: displaySubtitle,
+        media: backgroundVideo ? (
+          <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+              src={backgroundVideo}
+            />
+          </div>
+        ) : backgroundImage || Star,
       }
     }
   }

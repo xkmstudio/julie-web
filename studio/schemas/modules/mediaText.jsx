@@ -7,9 +7,10 @@ export default {
     icon: Image,
     fields: [
         {
-            title: 'Configuration',
+            title: 'Layout',
             name: 'config',
             type: 'string',
+            description: 'Choose the media position relative to text',
             options: {
               list: [
                 { title: 'Image Left', value: 'imageLeft' },
@@ -18,7 +19,7 @@ export default {
               layout: 'radio',
               direction: 'horizontal',
             },
-            initialValue: 'standard',
+            initialValue: 'imageRight',
           },
         {
             title: 'Media',
@@ -51,30 +52,41 @@ export default {
     preview: {
         select: {
             title: 'title',
+            subtitle: 'subtitle',
             image: 'media.media[0].image',
-            video: 'media.media[0].video.asset.url'
+            video: 'media.media[0].video.asset.url',
+            config: 'config',
+            hasCta: 'cta.0'
         },
-        prepare({ title, image, video }) {
+        prepare({ title, subtitle, image, video, config, hasCta }) {
+            const displayTitle = title || 'Media & Text'
+            const subtitleParts = [
+                subtitle && `"${subtitle}"`,
+                config && `Image ${config === 'imageLeft' ? 'Left' : 'Right'}`,
+                hasCta && '✓ CTA'
+            ].filter(Boolean)
+            
+            const mediaPreview = video ? (
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                        src={video}
+                    />
+                </div>
+            ) : image || Image
+            
             return {
-                title: title,
-                media: video ? (
-                    <div style={{ width: '100%', height: '100%' }}>
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                            }}
-                            src={video}
-                        ></video>
-                    </div>
-                ) : (
-                    image
-                )
+                title: displayTitle,
+                subtitle: subtitleParts.join(' • ') || 'Media & Text',
+                media: mediaPreview
             }
         }
     }

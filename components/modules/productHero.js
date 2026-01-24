@@ -22,6 +22,35 @@ import { useSiteContext } from '@lib/context'
 import { useWindowSize } from '@lib/helpers'
 
 const ProductIcon = ({ item, index, className }) => {
+  const icon = item.icon
+  if (!icon) return null
+
+  // Check if it's an SVG by checking mimeType
+  const mimeType = icon?.type || icon?.asset?.mimeType
+  const isSVG = mimeType?.includes('svg') || mimeType === 'image/svg+xml'
+
+  // Get the URL - for SVGs use direct URL, for others use Photo component
+  const iconUrl = isSVG && icon?.url 
+    ? icon.url
+    : null
+
+  const iconContent = isSVG ? (
+    <img
+      src={iconUrl}
+      alt={icon?.alt || ''}
+      className={className}
+    />
+  ) : (
+    <Photo
+      photo={icon}
+      width={1600}
+      srcSizes={[800, 1000, 1200, 1600]}
+      sizes="100%"
+      layout={'intrinsic'}
+      className={className}
+    />
+  )
+
   return item.link ? (
     <NextLink
       href={item.link}
@@ -29,25 +58,12 @@ const ProductIcon = ({ item, index, className }) => {
       target="_blank"
       key={index}
     >
-      <Photo
-        photo={item.icon}
-        width={1600}
-        srcSizes={[800, 1000, 1200, 1600]}
-        sizes="100%"
-        layout={'intrinsic'}
-        className={className}
-      />
+      {iconContent}
     </NextLink>
   ) : (
-    <Photo
-      key={index}
-      photo={item.icon}
-      width={1600}
-      srcSizes={[800, 1000, 1200, 1600]}
-      sizes="100%"
-      layout={'intrinsic'}
-      className={className}
-    />
+    <React.Fragment key={index}>
+      {iconContent}
+    </React.Fragment>
   )
 }
 

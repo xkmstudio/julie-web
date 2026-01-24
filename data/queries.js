@@ -320,7 +320,10 @@ export const modules = `
     title,
     description,
     values,
-    logos[]{${assetMeta}}
+    logos[]{
+      url,
+      asset{${assetMeta}}
+    }
   },
   _type == 'productCollection' => {
     _type,

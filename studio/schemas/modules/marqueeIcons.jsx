@@ -52,11 +52,18 @@ export default {
                     ],
                     preview: {
                         select: {
-                            text: 'text'
+                            iconAlt: 'icon.alt',
+                            iconImage: 'icon.image',
+                            link: 'link'
                         },
-                        prepare({ text }) {
+                        prepare({ iconAlt, iconImage, link }) {
+                            const displayTitle = iconAlt || iconImage?.asset?.originalFilename || 'Icon'
+                            const subtitle = link ? link : undefined
+                            
                             return {
-                                title: text
+                                title: displayTitle,
+                                subtitle: subtitle,
+                                media: iconImage || Circle
                             }
                         }
                     }
@@ -95,12 +102,28 @@ export default {
     ],
     preview: {
         select: {
-            text: 'items.0.text'
+            title: 'title',
+            firstIcon: 'items.0.icon',
+            itemsCount: 'items.length',
+            useMarquee: 'marquee',
+            speed: 'speed',
+            reverse: 'reverse',
+            pausable: 'pausable'
         },
-        prepare({ text }) {
+        prepare({ title, firstIcon, itemsCount, useMarquee, speed, reverse, pausable }) {
+            const displayTitle = title || 'Icons Marquee'
+            const subtitleParts = [
+                itemsCount > 0 && `${itemsCount} icon${itemsCount > 1 ? 's' : ''}`,
+                useMarquee ? 'Animated' : 'Static',
+                useMarquee && speed && `Speed: ${speed}`,
+                useMarquee && reverse && '← Reverse',
+                useMarquee && pausable && 'Pause on hover'
+            ].filter(Boolean)
+            
             return {
-                title: 'Marquee',
-                subtitle: text
+                title: displayTitle,
+                subtitle: subtitleParts.join(' • ') || 'Icons',
+                media: firstIcon || Infinity
             }
         }
     }

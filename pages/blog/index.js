@@ -58,12 +58,6 @@ const Articles = ({ data }) => {
   const filteredItems = filterItems(regularArticles, tags, 100)
   const allFilteredItems = filterItems(articles, tags, 100)
   
-  // Debug: check if gradients are preserved after filtering
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Filtered items sample:', filteredItems?.paginatedItems?.[0])
-    console.log('Original article with gradient:', articles.find(a => a.slug === 'article-10'))
-  }
-
   // Check if filters are active by looking at the filter state
   const hasActiveFilters = filteredItems?.activeFilters[0]?.values?.length > 0
 
@@ -244,20 +238,6 @@ const Articles = ({ data }) => {
         }
       })
 
-      // Debug: log first result to see image structure
-      if (mappedResults.length > 0 && process.env.NODE_ENV === 'development') {
-        console.log('First search result image data:', {
-          article: mappedResults[0].title,
-          image: mappedResults[0].image,
-          gradient: mappedResults[0].gradient,
-          gradientColorStops: mappedResults[0].gradient?.colorStops,
-          gradientColorStopsLength: mappedResults[0].gradient?.colorStops?.length,
-          useGradient: mappedResults[0].useGradient,
-          rawHitImage: hits[0]?.image,
-          rawHitGradient: hits[0]?.gradient,
-        })
-      }
-
       setSearchResults(mappedResults)
     } catch (error) {
       console.error('Algolia search error:', error)
@@ -320,8 +300,6 @@ const Articles = ({ data }) => {
   }
 
   const featuredArticle = regularArticles[0]
-
-  console.log(articles)
 
   return (
     <Layout site={site} page={page}>
@@ -619,9 +597,7 @@ const Articles = ({ data }) => {
                             href={`/blog/${article.slug}`}
                           >
                             <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
-                              {(() => {
-                                console.log(article.gradient);
-                                
+                              {(() => {                                
                                 // Check if gradient is valid (has colorStops with at least 2 items)
                                 const hasValidGradient = article.gradient && 
                                   article.gradient.colorStops && 

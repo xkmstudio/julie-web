@@ -11,25 +11,39 @@ export default {
       name: 'images',
       type: 'array',
       of: [{ type: 'asset'}],
-      validation: Rule => Rule.min(4),
+      description: 'Add at least 4 images for the carousel',
+      validation: Rule => Rule.min(4).error('At least 4 images are required for the carousel'),
       preview: {
         select: {
-          title: 'title',
-          image: 'images.0.image'
+          image: 'image',
+          alt: 'alt'
         },
-        prepare({ title, image }) {
+        prepare({ image, alt }) {
+          const displayTitle = alt || image?.asset?.originalFilename || 'Image'
+          
           return {
-            title: 'Images',
-            media: image
+            title: displayTitle,
+            media: image || ArrowsLeftRight
           }
         }
       }
     }
   ],
   preview: {
-    prepare() {
+    select: {
+      imagesCount: 'images.length',
+      firstImage: 'images.0'
+    },
+    prepare({ imagesCount, firstImage }) {
+      const displayTitle = 'Carousel'
+      const subtitle = imagesCount > 0 
+        ? `${imagesCount} image${imagesCount > 1 ? 's' : ''}`
+        : 'No images'
+      
       return {
-        title: 'Carousel'
+        title: displayTitle,
+        subtitle: subtitle,
+        media: firstImage || ArrowsLeftRight
       }
     }
   }

@@ -126,12 +126,46 @@ export default {
       title: 'title',
       type: 'type',
       colorStops: 'colorStops',
+      direction: 'direction',
+      firstColor: 'colorStops.0.color.hex',
+      lastColor: 'colorStops.-1.color.hex',
     },
-    prepare({ title, type, colorStops }) {
-      const colors = colorStops?.map(stop => stop?.color?.hex).filter(Boolean).join(', ') || 'No colors'
+    prepare({ title, type, colorStops, direction, firstColor, lastColor }) {
+      const displayTitle = title || 'Gradient'
+      const stopsCount = colorStops?.length || 0
+      const gradientType = type || 'linear'
+      const subtitleParts = [
+        `${gradientType} gradient`,
+        stopsCount > 0 && `${stopsCount} color${stopsCount > 1 ? 's' : ''}`,
+        direction && gradientType === 'linear' && direction !== 'to bottom' && direction,
+        firstColor && lastColor && `${firstColor} → ${lastColor}`
+      ].filter(Boolean)
+      
+      // Create a visual gradient preview
+      const gradientPreview = firstColor && lastColor ? (
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            background: gradientType === 'radial'
+              ? `radial-gradient(circle, ${firstColor}, ${lastColor})`
+              : `linear-gradient(${direction || 'to bottom'}, ${firstColor}, ${lastColor})`,
+          }}
+        />
+      ) : firstColor ? (
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: firstColor,
+          }}
+        />
+      ) : Gradient
+      
       return {
-        title: title || 'Gradient',
-        subtitle: `${type || 'linear'} gradient - ${colors}`,
+        title: displayTitle,
+        subtitle: subtitleParts.join(' • ') || 'Gradient',
+        media: gradientPreview
       }
     },
   },

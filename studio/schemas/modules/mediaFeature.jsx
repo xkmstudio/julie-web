@@ -30,29 +30,33 @@ export default {
         select: {
             title: 'title',
             image: 'media.media[0].image',
-            video: 'media.media[0].video.asset.url'
+            video: 'media.media[0].video.asset.url',
+            hasLink: 'link.0'
         },
-        prepare({ title, image, video }) {
+        prepare({ title, image, video, hasLink }) {
+            const displayTitle = title || 'Media Feature'
+            const subtitle = hasLink ? '✓ Has Link' : 'Media Feature'
+            const mediaPreview = video ? (
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                        src={video}
+                    />
+                </div>
+            ) : image || Image
+            
             return {
-                title: title,
-                media: video ? (
-                    <div style={{ width: '100%', height: '100%' }}>
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                            }}
-                            src={video}
-                        ></video>
-                    </div>
-                ) : (
-                    image
-                )
+                title: displayTitle,
+                subtitle: subtitle,
+                media: mediaPreview
             }
         }
     }

@@ -94,12 +94,31 @@ export default {
   ],
   preview: {
     select: {
-      text: 'items.0.text'
+      title: 'title',
+      firstItem: 'items.0.text',
+      itemsCount: 'items.length',
+      hasLink: 'link',
+      hasIcon: 'icon',
+      speed: 'speed',
+      reverse: 'reverse',
+      pausable: 'pausable'
     },
-    prepare({ text }) {
+    prepare({ title, firstItem, itemsCount, hasLink, hasIcon, speed, reverse, pausable }) {
+      const displayTitle = title || 'Text Marquee'
+      const subtitleParts = [
+        itemsCount > 0 && `${itemsCount} item${itemsCount > 1 ? 's' : ''}`,
+        firstItem && `"${firstItem}"`,
+        speed && `Speed: ${speed}`,
+        reverse && '← Reverse',
+        pausable && 'Pause on hover',
+        hasLink && '✓ Link',
+        hasIcon && '✓ Icon'
+      ].filter(Boolean)
+      
       return {
-        title: 'Marquee',
-        subtitle: text
+        title: displayTitle,
+        subtitle: subtitleParts.join(' • ') || 'Text Marquee',
+        media: Infinity
       }
     }
   }

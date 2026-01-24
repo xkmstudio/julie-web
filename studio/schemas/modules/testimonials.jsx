@@ -10,6 +10,7 @@ export default {
             title: 'Testimonials',
             name: 'testimonials',
             type: 'array',
+            description: 'Add customer testimonials or reviews',
             of: [
                 {
                     title: 'Testimonial',
@@ -19,25 +20,56 @@ export default {
                         {
                             title: 'Body',
                             name: 'content',
-                            type: 'simplePortableText'
+                            type: 'simplePortableText',
+                            validation: Rule => Rule.required()
                         },
                         {
                             title: 'Name',
                             name: 'name',
-                            type: 'string'
+                            type: 'string',
+                            description: 'Name of the person giving the testimonial'
                         },
-                    ]
+                    ],
+                    preview: {
+                        select: {
+                            name: 'name',
+                            content: 'content.0.children[0].text'
+                        },
+                        prepare({ name, content }) {
+                            const displayTitle = name || 'Testimonial'
+                            const subtitle = content ? `"${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"` : undefined
+                            
+                            return {
+                                title: displayTitle,
+                                subtitle: subtitle,
+                                media: Sidebar
+                            }
+                        }
+                    }
                 }
-            ]
+            ],
+            validation: Rule => Rule.min(1).error('At least one testimonial is required')
         },
     ],
     preview: {
         select: {
-            title: 'title',
+            testimonials: 'testimonials',
+            firstTestimonial: 'testimonials.0.content.0.children[0].text',
+            firstName: 'testimonials.0.name'
         },
-        prepare({ title }) {
+        prepare({ testimonials, firstTestimonial, firstName }) {
+            const testimonialsCount = testimonials?.length || 0
+            const displayTitle = 'Testimonials'
+            const subtitleParts = [
+                testimonialsCount > 0 && `${testimonialsCount} testimonial${testimonialsCount > 1 ? 's' : ''}`,
+                firstName && `by ${firstName}`,
+                firstTestimonial && `"${firstTestimonial.substring(0, 40)}${firstTestimonial.length > 40 ? '...' : ''}"`
+            ].filter(Boolean)
+            
             return {
-                title: title,
+                title: displayTitle,
+                subtitle: subtitleParts.join(' • ') || 'Testimonials',
+                media: Sidebar
             }
         }
     }

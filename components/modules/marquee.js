@@ -26,7 +26,7 @@ const Marquee = ({ data = {} }) => {
 
   return (
     <section ref={marqueeRef} className={`relative w-full`}>
-      <div className={`${icon ? 'min-h-[28rem] md:min-h-[35rem] flex flex-col md:flex-row items-center justify-center' : ' flex flex-col md:flex-row items-center gap-20 md:gap-0'}`}>
+      <div className={`text-pink${link ? ' transition-colors duration-300 hover:text-magenta' : ''}${icon ? ' min-h-[28rem] md:min-h-[35rem] flex flex-col md:flex-row items-center justify-center' : ' flex flex-col md:flex-row items-center gap-20 md:gap-0'}`}>
         {link && !icon && (
           <div className="marquee-link flex items-center justify-center relative pointer-events-none md:bg-white">
             {butterflyAnimation && (

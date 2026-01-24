@@ -32,10 +32,22 @@ export default {
   preview: {
     select: {
       title: 'title',
+      subtitle: 'subtitle',
+      content: 'content.0.children[0].text',
+      hasCta: 'cta.0'
     },
-    prepare({ title }) {
+    prepare({ title, subtitle, content, hasCta }) {
+      const displayTitle = title || 'Index List'
+      const subtitleParts = [
+        subtitle && `"${subtitle}"`,
+        content && `"${content.substring(0, 40)}${content.length > 40 ? '...' : ''}"`,
+        hasCta && '✓ CTA'
+      ].filter(Boolean)
+      
       return {
-        title: title,
+        title: displayTitle,
+        subtitle: subtitleParts.join(' • ') || 'Index List',
+        media: List
       }
     }
   }
