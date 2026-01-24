@@ -40,7 +40,8 @@ export default {
       title: 'Google Tag Manager (GTM)',
       description: 'To enable GTM enter your Container ID',
       name: 'gtmID',
-      type: 'string'
+      type: 'string',
+      hidden: true,
     }
   ],
   preview: {

@@ -140,6 +140,21 @@
   animation: ema-thinking-bounce 1.4s ease-in-out infinite;
 }
 
+/* Ema Input Thinking Animation */
+@keyframes ema-thinking-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ema-thinking-text {
+  animation: ema-thinking-pulse 1.5s ease-in-out infinite;
+  color: #ED0E61;
+}
+
 /* Ema Chat Overlay - fixed positioning */
 .ema-chat-overlay {
   position: fixed;

@@ -94,24 +94,22 @@ const EmaFixedInput = () => {
       sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
 
       // Navigate to the chat page with the question as a query parameter
-      await router.push({
+      // Use shallow: false to ensure proper navigation, but it will be fast
+      router.push({
         pathname: '/ema-chat',
         query: {
           q: question,
           from: router.asPath, // Save current route for back navigation
         },
-      })
+      }, undefined, { shallow: false })
 
-      setFixedInputText('')
-      // Reset textarea height
-      if (fixedInputRef.current) {
-        fixedInputRef.current.style.height = 'auto'
-      }
+      // Don't clear text immediately - let the thinking animation show
+      // The text will be cleared when navigation completes
     } catch (error) {
       console.error('Error navigating to chat:', error)
-    } finally {
       setIsSubmitting(false)
     }
+    // Note: We don't set isSubmitting to false here because navigation will unmount the component
   }
 
   return (
@@ -144,10 +142,12 @@ const EmaFixedInput = () => {
             </m.div>
             <textarea
               ref={fixedInputRef}
-              placeholder="How can Julie help?"
+              placeholder={isSubmitting ? "Thinking..." : "How can Julie help?"}
               rows={1}
-              value={fixedInputText}
+              value={isSubmitting ? "Thinking..." : fixedInputText}
+              disabled={isSubmitting}
               onChange={(e) => {
+                if (isSubmitting) return
                 setFixedInputText(e.target.value)
                 // Auto-resize textarea
                 const textarea = e.target
@@ -165,12 +165,17 @@ const EmaFixedInput = () => {
               className={cx(
                 'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-14 md:text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
                 {
-                  'pl-35': fixedInputText.trim().length === 0,
-                  'pl-15': fixedInputText.trim().length > 0,
+                  'pl-35': fixedInputText.trim().length === 0 && !isSubmitting,
+                  'pl-15': fixedInputText.trim().length > 0 || isSubmitting,
+                  'opacity-70 cursor-wait ema-thinking-text': isSubmitting,
                 }
               )}
               aria-label="Chat message input"
               onKeyDown={(e) => {
+                if (isSubmitting) {
+                  e.preventDefault()
+                  return
+                }
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
                   e.target.form?.requestSubmit()

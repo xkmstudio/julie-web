@@ -82,7 +82,7 @@ const Accordion = ({
 
             <div
               className={cx(
-                `flex items-center justify-center transition-[color,transform] duration-300`,
+                `flex items-center justify-center transition-[color,transform] duration-300 flex-shrink-0`,
                 { 'rotate-180': isOpen && iconName === 'Chevron Down' },
                 { 'rotate-[45deg]': isOpen && iconName !== 'Chevron Down' },
                 { 'w-[1.5rem] translate-y-5': type === 'faqs' },
@@ -110,7 +110,7 @@ const Accordion = ({
         onAnimationComplete={(v) => setHasFocus(v === 'open')}
       >
         <div
-          className={cx('accordion--inner border-t border-[#E8E8E8] text-14', {
+          className={cx('accordion--inner text-14', {
             'faqs-inner': iconName !== 'Chevron Down',
           })}
           hidden={!isOpen && !hasFocus}

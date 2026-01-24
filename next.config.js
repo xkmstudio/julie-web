@@ -73,10 +73,6 @@ module.exports = withBundleAnalyzer({
     NEXT_PUBLIC_LK_APP_BASE_URL: process.env.NEXT_PUBLIC_LK_APP_BASE_URL,
     NEXT_PUBLIC_LK_BRAND_NAME: process.env.NEXT_PUBLIC_LK_BRAND_NAME,
     
-    // Needed for EMA chat
-    EMA_API_KEY: process.env.EMA_API_KEY,
-    EMA_TENANT: process.env.EMA_TENANT,
-    
     // Server-side only (not exposed to browser)
     // LUCKY_API_KEY: process.env.LUCKY_API_KEY,
     // LUCKY_EXT_API_URL: process.env.LUCKY_EXT_API_URL,

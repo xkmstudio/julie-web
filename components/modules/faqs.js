@@ -43,24 +43,26 @@ const Faqs = ({ data = {} }) => {
               const isOpen = sectionId === activeSection
 
               return (
-                <Accordion
-                  key={sectionId}
-                  id={sectionId}
-                  index={index}
-                  title={section.title || `Section ${index + 1}`}
-                  type="faqs"
-                  isOpen={isOpen}
-                  onToggle={handleSectionToggle}
-                  titleClassName="text-14 md:text-18 font-plaid uppercase text-pink faqs"
-                  iconName="Chevron Down"
-                  iconViewBox="0 0 22 13"
-                >
-                  <AccordionList
+                <div className='w-full rounded-[1.5rem] overflow-hidden'>
+                  <Accordion
+                    key={sectionId}
+                    id={sectionId}
+                    index={index}
+                    title={section.title || `Section ${index + 1}`}
                     type="faqs"
-                    items={section.drawers || []}
-                    contentClassName=""
-                  />
-                </Accordion>
+                    isOpen={isOpen}
+                    onToggle={handleSectionToggle}
+                    titleClassName="text-14 md:text-18 font-plaid uppercase text-pink faqs"
+                    iconName="Chevron Down"
+                    iconViewBox="0 0 22 13"
+                  >
+                    <AccordionList
+                      type="faqs"
+                      items={section.drawers || []}
+                      contentClassName=""
+                    />
+                  </Accordion>
+                </div>
               )
             })}
           </div>

@@ -1,28 +1,26 @@
-.accordion-group {
-
-}
+.accordion-group {}
 
 .accordion {
-    &--title{
+    &--title {
         @apply text-left;
     }
-    
-    &.is-plus{
-        .accordion{
-        
-            &--toggle{
+
+    &.is-plus {
+        .accordion {
+
+            &--toggle {
                 @apply flex justify-between w-full text-16 md:text-20 text-left uppercase pr-15;
 
-                &.is-open{
+                &.is-open {
                     @apply opacity-100;
 
-                    .icon-plus{
+                    .icon-plus {
                         @apply rotate-45;
                     }
                 }
             }
 
-            &--content{
+            &--content {
                 @apply max-w-[75rem];
             }
         }
@@ -35,10 +33,30 @@
 
 /* Add horizontal padding to accordion children when in drawer - using more specific selector */
 .drawer--content .accordion--inner {
-  /* Remove padding from accordion--inner itself in drawers */
-  @apply px-0 py-0 md:px-0 md:py-0;
-} 
+    /* Remove padding from accordion--inner itself in drawers */
+    @apply px-0 py-0 md:px-0 md:py-0;
+}
+
+.accordion--inner {
+    @apply border-t border-[#E8E8E8]
+}
+
+.is-faqs .accordion--toggle {
+    @apply justify-between;
+}
+
+.accordion.is-faqs:not(.bg-cement) {
+    @apply border-t border-[#E8E8E8] rounded-none;
+
+    .accordion--inner:not(.faqs-inner) {
+        @apply border-t-0;
+    }
+}
 
 .is-faqs .accordion--inner:not(.faqs-inner) {
-  @apply md:px-0 md:py-0;
+    padding: 0 !important;
+}
+
+.is-faqs .accordion--inner.faqs-inner {
+    border-top: none !important;
 }

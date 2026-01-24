@@ -27,46 +27,29 @@ const EmaWidget = () => {
     let searchResults = []
 
     try {
-      // 1. Always search Algolia for relevant articles
-      try {
-        const searchResponse = await fetch('/api/ema/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: question }),
-        })
-
-        if (searchResponse.ok) {
-          const searchData = await searchResponse.json()
-          searchResults = searchData.hits || []
-        } else {
-          console.warn('Algolia search returned non-OK status:', searchResponse.status)
-        }
-      } catch (searchError) {
-        console.error('Error searching Algolia:', searchError)
-        // Continue even if search fails - searchResults will be empty array
-      }
-
       // Save current scroll position to sessionStorage for restoration on back
       const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
       sessionStorage.setItem('emaChatReturnScroll', scrollY.toString())
 
-      // Navigate to the chat page with the question as a query parameter
-      await router.push({
+      // Navigate immediately - don't wait for search to complete
+      // This reduces perceived lag
+      router.push({
         pathname: '/ema-chat',
         query: {
           q: question,
           from: router.asPath, // Save current route for back navigation
         },
-      })
+      }, undefined, { shallow: false })
+
+      // Search Algolia in the background (optional, can be done on chat page)
+      // We'll let the chat page handle the search if needed
     } catch (error) {
       console.error('Error navigating to chat:', error)
-    } finally {
       setIsSubmitting(false)
       setInitialInputText('')
       reset()
     }
+    // Note: We don't reset state here because navigation will unmount the component
   }
 
   return (
@@ -122,23 +105,27 @@ const EmaWidget = () => {
               {...register('question', {
                 required: 'Please enter a question',
               })}
-              value={initialInputText}
+              value={isSubmitting ? "Thinking..." : initialInputText}
+              disabled={isSubmitting}
               onChange={(e) => {
+                if (isSubmitting) return
                 const value = e.target.value
                 setInitialInputText(value)
                 setValue('question', value, { shouldValidate: true })
               }}
-              placeholder="How can Julie help?"
+              placeholder={isSubmitting ? "Thinking..." : "How can Julie help?"}
               rows={1}
               className={cx(
                 'transition-all duration-300 py-[1.6rem] w-full border-none outline-none text-14 md:text-16 text-black resize-none overflow-y-auto font-lm ema-gradient-placeholder',
                 {
-                  'pl-40': initialInputText.trim().length === 0,
-                  'pl-15': initialInputText.trim().length > 0,
+                  'pl-40': (initialInputText.trim().length === 0 && !isSubmitting),
+                  'pl-15': (initialInputText.trim().length > 0 || isSubmitting),
+                  'opacity-70 cursor-wait ema-thinking-text': isSubmitting,
                 }
               )}
               style={{ height: '100%', minHeight: 'auto' }}
               onInput={(e) => {
+                if (isSubmitting) return
                 const textarea = e.target
                 textarea.style.height = '100%'
                 const scrollHeight = textarea.scrollHeight
@@ -152,6 +139,10 @@ const EmaWidget = () => {
                 }
               }}
               onKeyDown={(e) => {
+                if (isSubmitting) {
+                  e.preventDefault()
+                  return
+                }
                 // Allow Enter to submit, Shift+Enter for new line
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
