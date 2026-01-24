@@ -1,4 +1,23 @@
+// Ensure body parsing is enabled (default, but explicit for Netlify compatibility)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+}
+
 export default async function handler(req, res) {
+  // Set CORS headers for cross-origin requests
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
+  
   // Disable caching for API routes to ensure fresh data
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
   
@@ -28,24 +47,99 @@ export default async function handler(req, res) {
     })
   }
 
-  // Parse request body
+  // Always log errors, but only log full request details in debug mode
+  const isDebug = process.env.NODE_ENV !== 'production' || process.env.DEBUG_EMA === 'true'
+  
+  // Log request details for debugging
+  if (isDebug) {
+    console.log('EMA Chat API Request:', {
+      method: req.method,
+      url: req.url,
+      headers: {
+        'content-type': req.headers['content-type'],
+        'content-length': req.headers['content-length'],
+        origin: req.headers['origin'],
+      },
+      bodyType: typeof req.body,
+      isBuffer: Buffer.isBuffer(req.body),
+      hasBody: !!req.body,
+      bodyKeys: req.body && typeof req.body === 'object' ? Object.keys(req.body) : 'N/A',
+    })
+  }
+
+  // Parse request body - handle different formats (Netlify, Vercel, local)
   let body
   try {
-    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
+    // Handle case where body might be undefined or empty
+    if (!req.body) {
+      console.error('Request body is undefined:', {
+        body: req.body,
+        bodyType: typeof req.body,
+        headers: req.headers,
+      })
+      return res.status(400).json({
+        error: 'Request body is required',
+        message: 'Request must include a JSON body with an "action" field',
+      })
+    }
+    
+    // Check if body is an empty object (but allow it if it's intentionally empty for some actions)
+    if (typeof req.body === 'object' && !Buffer.isBuffer(req.body) && Object.keys(req.body).length === 0) {
+      console.error('Request body is an empty object:', {
+        body: req.body,
+        bodyType: typeof req.body,
+      })
+      return res.status(400).json({
+        error: 'Request body cannot be empty',
+        message: 'Request must include a JSON body with an "action" field',
+      })
+    }
+
+    // Handle Buffer (Netlify sometimes sends as Buffer)
+    if (Buffer.isBuffer(req.body)) {
+      body = JSON.parse(req.body.toString('utf8'))
+    }
+    // Handle string
+    else if (typeof req.body === 'string') {
+      body = JSON.parse(req.body)
+    }
+    // Handle already parsed object (Next.js default behavior)
+    else if (typeof req.body === 'object') {
+      body = req.body
+    }
+    // Fallback: try to parse as string
+    else {
+      body = JSON.parse(String(req.body))
+    }
   } catch (e) {
+    console.error('Error parsing request body:', {
+      error: e.message,
+      bodyType: typeof req.body,
+      isBuffer: Buffer.isBuffer(req.body),
+      bodyPreview: typeof req.body === 'string' 
+        ? req.body.substring(0, 100) 
+        : JSON.stringify(req.body).substring(0, 100),
+    })
     return res.status(400).json({
       error: 'Invalid JSON in request body',
       message: e.message,
     })
   }
 
-  const { action, userId, message, context } = body
+  const { action, userId, message, context } = body || {}
 
   // Validate request body
   if (!action) {
+    console.error('Missing action in request body:', {
+      body,
+      hasAction: !!action,
+      hasUserId: !!userId,
+      hasMessage: !!message,
+    })
     return res.status(400).json({
       error: 'Missing required field: action',
       message: 'Request must include an "action" field (either "createUser" or "sendMessage")',
+      received: Object.keys(body || {}),
     })
   }
 
