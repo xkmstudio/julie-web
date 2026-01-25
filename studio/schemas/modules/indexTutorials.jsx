@@ -42,9 +42,13 @@ export default {
       subtitle: 'subtitle',
       products: 'products',
       firstProduct: 'products.0.title',
+      firstProductImage: 'products.0.productThumbnail.media[0].image',
+      firstProductVideo: 'products.0.productThumbnail.media[0].video.asset.url',
+      firstProductThumbnail: 'products.0.thumbnailFeature.image',
+      firstProductGallery: 'products.0.defaultGallery.0.image',
       hasCta: 'cta.0'
     },
-    prepare({ title, subtitle, products, firstProduct, hasCta }) {
+    prepare({ title, subtitle, products, firstProduct, firstProductImage, firstProductVideo, firstProductThumbnail, firstProductGallery, hasCta }) {
       const displayTitle = title || 'Index Tutorials'
       const productsCount = products?.length || 0
       const subtitleParts = [
@@ -54,10 +58,28 @@ export default {
         hasCta && '✓ CTA'
       ].filter(Boolean)
       
+      // Priority: productThumbnail video > productThumbnail image > thumbnailFeature > defaultGallery > icon
+      const mediaPreview = firstProductVideo ? (
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+            src={firstProductVideo}
+          />
+        </div>
+      ) : firstProductImage || firstProductThumbnail || firstProductGallery || List
+      
       return {
         title: displayTitle,
         subtitle: subtitleParts.join(' • ') || 'Index Tutorials',
-        media: List
+        media: mediaPreview
       }
     }
   }

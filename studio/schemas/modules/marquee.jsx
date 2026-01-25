@@ -98,12 +98,12 @@ export default {
       firstItem: 'items.0.text',
       itemsCount: 'items.length',
       hasLink: 'link',
-      hasIcon: 'icon',
+      iconImage: 'icon.image',
       speed: 'speed',
       reverse: 'reverse',
       pausable: 'pausable'
     },
-    prepare({ title, firstItem, itemsCount, hasLink, hasIcon, speed, reverse, pausable }) {
+    prepare({ title, firstItem, itemsCount, hasLink, iconImage, speed, reverse, pausable }) {
       const displayTitle = title || 'Text Marquee'
       const subtitleParts = [
         itemsCount > 0 && `${itemsCount} item${itemsCount > 1 ? 's' : ''}`,
@@ -112,13 +112,13 @@ export default {
         reverse && '← Reverse',
         pausable && 'Pause on hover',
         hasLink && '✓ Link',
-        hasIcon && '✓ Icon'
+        iconImage && '✓ Icon'
       ].filter(Boolean)
       
       return {
         title: displayTitle,
         subtitle: subtitleParts.join(' • ') || 'Text Marquee',
-        media: Infinity
+        media: iconImage || Infinity
       }
     }
   }

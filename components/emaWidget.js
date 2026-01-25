@@ -55,7 +55,8 @@ const EmaWidget = () => {
   return (
     <>
       {/* Initial Form */}
-      <div className="ema-widget w-full max-w-[600px] mx-auto">
+      <div className="ema-widget w-full max-w-[600px] mx-auto julie-gradient rounded-[1.5rem] relative">
+        <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient has-blur"></div>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white border border-pink rounded-[1.5rem] overflow-hidden relative h-[15rem] flex flex-col"

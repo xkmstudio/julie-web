@@ -51,6 +51,8 @@ const Jewels = () => {
 const FeaturedArticles = ({ data = {} }) => {
   const { articles, useList, featuredCard, title } = data
 
+  const CardType = featuredCard?.link ? 'a' : 'div';
+
   // List view (gradient style)
   if (useList) {
     return (
@@ -123,7 +125,7 @@ const FeaturedArticles = ({ data = {} }) => {
             </div>
           )}
           {featuredCard?.media?.content && (
-            <div className="w-full md:flex-1">
+            <CardType href={featuredCard?.link} target={featuredCard?.link ? '_blank' : undefined} rel={featuredCard?.link ? 'noopener noreferrer' : undefined} className="w-full md:flex-1">
               <div className="w-full h-full bg-[#FF3BAB] rounded-[1.5rem] flex flex-col md:flex-row">
                 {(!articles || articles.length === 0) && (
                   <div className="w-full md:w-[66.6667%] flex p-15 md:p-20 md:pr-0 relative">
@@ -193,7 +195,7 @@ const FeaturedArticles = ({ data = {} }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </CardType>
           )}
         </div>
       </section>
@@ -246,70 +248,70 @@ const FeaturedArticlesCarousel = ({ articles }) => {
       <div ref={scrollRef} className="overflow-hidden">
         <div ref={emblaRef} className="">
           <div className="flex">
-          {articles.map((article, key) => {
-            return (
-              <div
-                key={key}
-                className="article-card-container flex-[0_0_83.333%] md:flex-[0_0_40%] min-w-0 ml-15 md:ml-25"
-              >
-                <NextLink
-                  href={`/blog/${article.slug}`}
-                  className="block w-full"
+            {articles.map((article, key) => {
+              return (
+                <div
+                  key={key}
+                  className="article-card-container flex-[0_0_83.333%] md:flex-[0_0_40%] min-w-0 ml-15 md:ml-25"
                 >
-                  <div className="article-card w-full pb-[133.3333%] md:pb-[66.6667%] relative rounded-[1rem] overflow-hidden">
-                    {article.gradient ? (
-                      <div className="w-full h-full absolute top-0 left-0">
-                        <Gradient gradient={article.gradient} />
-                      </div>
-                    ) : article.image ? (
-                      <Photo
-                        photo={article.image}
-                        width={1200}
-                        srcSizes={[800, 1000, 1200, 1600]}
-                        sizes="(max-width: 768px) 83.333vw, 30vw"
-                        layout={'fill'}
-                        className={
-                          'w-full h-full object-cover absolute top-0 left-0'
-                        }
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-ash/10 absolute top-0 left-0" />
-                    )}
-                    {article.tags?.[0] && (
-                      <div className="tag is-card absolute top-10 left-10">
-                        {article.tags[0].title}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-10 p-10 flex flex-col items-center md:items-start text-center md:text-left gap-10">
-                    <h2 className="w-full title-2xs">{article.title}</h2>
-                    {article.authors?.length > 0 && (
-                      <div className="flex flex-col md:flex-row items-center flex-wrap gap-10 text-center md:text-left">
-                        <div className="flex justify-center items-center gap-3">
-                          <div>by</div>
-                          <div>
-                            <span className="underline font-lb">
-                              {article.authors[0].title}
-                            </span>
-                          </div>
+                  <NextLink
+                    href={`/blog/${article.slug}`}
+                    className="block w-full"
+                  >
+                    <div className="article-card w-full pb-[133.3333%] md:pb-[66.6667%] relative rounded-[1rem] overflow-hidden">
+                      {article.gradient ? (
+                        <div className="w-full h-full absolute top-0 left-0">
+                          <Gradient gradient={article.gradient} />
                         </div>
-                        {article.authors[0].role && (
-                          <div className="flex text-pink justify-center items-center gap-10 tag-role">
-                            {article.authors[0].role}
+                      ) : article.image ? (
+                        <Photo
+                          photo={article.image}
+                          width={1200}
+                          srcSizes={[800, 1000, 1200, 1600]}
+                          sizes="(max-width: 768px) 83.333vw, 30vw"
+                          layout={'fill'}
+                          className={
+                            'w-full h-full object-cover absolute top-0 left-0'
+                          }
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-ash/10 absolute top-0 left-0" />
+                      )}
+                      {article.tags?.[0] && (
+                        <div className="tag is-card absolute top-10 left-10">
+                          {article.tags[0].title}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-10 p-10 flex flex-col items-center md:items-start text-center md:text-left gap-10">
+                      <h2 className="w-full title-2xs">{article.title}</h2>
+                      {article.authors?.length > 0 && (
+                        <div className="flex flex-col md:flex-row items-center flex-wrap gap-10 text-center md:text-left">
+                          <div className="flex justify-center items-center gap-3">
+                            <div>by</div>
+                            <div>
+                              <span className="underline font-lb">
+                                {article.authors[0].title}
+                              </span>
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    )}
-                    {article.subtitle && (
-                      <div className="text-14 text-ash line-clamp-2">
-                        {article.subtitle}
-                      </div>
-                    )}
-                  </div>
-                </NextLink>
-              </div>
-            )
-          })}
+                          {article.authors[0].role && (
+                            <div className="flex text-pink justify-center items-center gap-10 tag-role">
+                              {article.authors[0].role}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {article.subtitle && (
+                        <div className="text-14 text-ash line-clamp-2">
+                          {article.subtitle}
+                        </div>
+                      )}
+                    </div>
+                  </NextLink>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

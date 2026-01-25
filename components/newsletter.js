@@ -37,7 +37,7 @@ const Newsletter = ({ newsletter, layout, type = 'general' }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          listID: newsletter?.formId,
+          listID: newsletter?.klaviyoListID,
           email: data.email,
           fullname: data.fullname,
         }),

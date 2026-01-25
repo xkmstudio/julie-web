@@ -103,14 +103,14 @@ export default {
     preview: {
         select: {
             title: 'title',
-            firstIcon: 'items.0.icon',
+            firstIconImage: 'items.0.icon.image',
             itemsCount: 'items.length',
             useMarquee: 'marquee',
             speed: 'speed',
             reverse: 'reverse',
             pausable: 'pausable'
         },
-        prepare({ title, firstIcon, itemsCount, useMarquee, speed, reverse, pausable }) {
+        prepare({ title, firstIconImage, itemsCount, useMarquee, speed, reverse, pausable }) {
             const displayTitle = title || 'Icons Marquee'
             const subtitleParts = [
                 itemsCount > 0 && `${itemsCount} icon${itemsCount > 1 ? 's' : ''}`,
@@ -123,7 +123,7 @@ export default {
             return {
                 title: displayTitle,
                 subtitle: subtitleParts.join(' • ') || 'Icons',
-                media: firstIcon || Infinity
+                media: firstIconImage || Infinity
             }
         }
     }

@@ -155,7 +155,7 @@ export default {
           },
         }
       ],
-      
+
       group: 'content',
     },
 
@@ -324,7 +324,11 @@ export default {
       title: 'title',
       productTitle: 'productTitle',
       slug: 'slug',
-      thumbnailFeature: 'thumbnailFeature.image'
+      featureImage: 'thumbnailFeature.image',
+      productThumbnailImage: 'productThumbnail.media[0].image',
+      productThumbnailVideo: 'productThumbnail.media[0].video.asset.url',
+      firstGalleryImage: 'defaultGallery.0.image',
+      productBadge: 'productBadge.image'
     },
     prepare({
       store,
@@ -332,23 +336,38 @@ export default {
       wasDeleted = false,
       title,
       slug = {},
-      cartPhotos,
-      thumbnailFeature,
-      thumbnailSecondary
+      featureImage,
+      productThumbnailImage,
+      productThumbnailVideo,
+      firstGalleryImage,
+      productBadge
     }) {
       const path = `/products/${slug.current ?? store.slug?.current}`
+      
+      // Priority: productThumbnail > thumbnailFeature > defaultGallery > productBadge > icon
+      const mediaPreview = productThumbnailVideo ? (
+        <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+            src={productThumbnailVideo}
+          />
+        </div>
+      ) : productThumbnailImage || featureImage || firstGalleryImage || productBadge || Gift
+      
       return {
         title:
           (title ? title : store.title) +
           (wasDeleted ? ' (removed)' : '') +
           (isDraft ? ' (draft)' : ''),
-        media: thumbnailFeature ? (
-          thumbnailFeature
-        ) : thumbnailSecondary ? (
-          thumbnailSecondary
-        ) : (
-          <Gift />
-        ),
+        media: mediaPreview,
         subtitle: path
       }
     }

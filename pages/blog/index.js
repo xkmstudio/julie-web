@@ -316,7 +316,7 @@ const Articles = ({ data }) => {
             layout={'fill'}
             className={'w-full h-full object-cover absolute top-0 left-0'}
           />
-          <div className="absolute bottom-0 left-0 w-full text-white p-25 max-w-[80rem] flex flex-col gap-20">
+          <div className="absolute bottom-1/2 translate-y-1/2 md:translate-y-0 md:translate-x-0 md:bottom-0 left-1/2 -translate-x-1/2 transform md:left-0 w-full text-white p-15 pt-50 md:pt-15 md:p-50 max-w-[80rem] flex flex-col gap-20">
             <div className="flex flex-col md:flex-row items-center gap-15 md:gap-10">
               <div>by {featuredArticle.authors[0]?.title}</div>
               <div className="flex justify-center items-center gap-10 tag-role">

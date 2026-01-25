@@ -4,7 +4,22 @@
 
 .julie-gradient{
   background: linear-gradient(to top, #ED0E61 0%, #FF3BAB 100%);
-} 
+}
+
+.julie-gradient.has-blur {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
 
 .border-gradient{
   border: 1px solid;

@@ -63,6 +63,7 @@ export default {
                             const displayTitle = title || imageAlt || 'Media Item'
                             const displaySubtitle = subtitle || undefined
                             
+                            // Use the media from this item as the preview
                             const mediaPreview = video ? (
                                 <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
                                     <video
@@ -111,6 +112,7 @@ export default {
                 hasBackground && '✓ Gradient'
             ].filter(Boolean)
             
+            // Use the first item's media as the module preview media
             const mediaPreview = firstItemVideo ? (
                 <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
                     <video

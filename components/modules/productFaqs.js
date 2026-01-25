@@ -81,9 +81,6 @@ const ProductFaqs = ({ data = {} }) => {
   const activeSection = sections[activeSectionIndex]
   const hasMultipleSections = sections.length > 1
 
-  console.log('cta', cta);
-
-
   return (
     <section
       ref={triggerRef}

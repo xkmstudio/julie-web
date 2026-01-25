@@ -135,17 +135,17 @@ const PageContent = ({
                   {tag &&
                     (actuallyInFrame && onFrameLinkClick ? (
                       <a
-                        href={`/blog/tags/${tag.slug}`}
+                        href={`/blog?tag=${tag.slug}`}
                         onClick={(e) => {
                           e.preventDefault()
-                          onFrameLinkClick(`/blog/tags/${tag.slug}`)
+                          onFrameLinkClick(`/blog?tag=${tag.slug}`)
                         }}
                         className="tag"
                       >
                         {tag.title}
                       </a>
                     ) : (
-                      <NextLink href={`/blog/tags/${tag.slug}`} className="tag">
+                      <NextLink href={`/blog?tag=${tag.slug}`} className="tag">
                         {tag.title}
                       </NextLink>
                     ))}
@@ -317,7 +317,7 @@ const PageContent = ({
                 </div>
                 {summary && (
                   <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-10 bg-white rounded-[1.5rem] julie-gradient p-1 relative mt-30">
-                    <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient"></div>
+                    <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient has-blur"></div>
                     <div className="relative z-2 w-full flex flex-col gap-10 bg-white p-20 rounded-[1.5rem]">
                       <div className="flex items-center gap-10">
                         <div className="w-[2rem]">

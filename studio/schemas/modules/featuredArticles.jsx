@@ -117,13 +117,14 @@ export default {
       title: 'title',
       articles: 'articles',
       firstArticle: 'articles.0.title',
+      firstArticleImage: 'articles.0.image.image',
       useList: 'useList',
       cardImage: 'featuredCard.media.media[0].image',
       cardVideo: 'featuredCard.media.media[0].video.asset.url',
       cardTitle: 'featuredCard.title',
       hasCard: 'featuredCard'
     },
-    prepare({ title, articles, firstArticle, useList, cardImage, cardVideo, cardTitle, hasCard }) {
+    prepare({ title, articles, firstArticle, firstArticleImage, useList, cardImage, cardVideo, cardTitle, hasCard }) {
       const displayTitle = title || 'Featured Articles'
       const articlesCount = articles?.length || 0
       const subtitleParts = [
@@ -134,6 +135,7 @@ export default {
         cardTitle && `Card: "${cardTitle}"`
       ].filter(Boolean)
       
+      // Priority: cardVideo > cardImage > firstArticleImage > icon
       const mediaPreview = cardVideo ? (
         <div style={{ width: '100%', height: '100%', backgroundColor: '#000' }}>
           <video
@@ -149,7 +151,7 @@ export default {
             src={cardVideo}
           />
         </div>
-      ) : cardImage || Article
+      ) : cardImage || firstArticleImage || Article
       
       return {
         title: displayTitle,

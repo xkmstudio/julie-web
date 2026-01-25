@@ -78,9 +78,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
   }
 
   // Ask Julie - navigate to chat page
-  if (linkType === 'askJulie') {
-    console.log('is ask');
-    
+  if (linkType === 'askJulie') {    
     // Extract onClick from rest to merge handlers
     const { onClick: restOnClick, ...restProps } = rest
     

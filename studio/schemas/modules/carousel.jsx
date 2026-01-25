@@ -32,7 +32,7 @@ export default {
   preview: {
     select: {
       imagesCount: 'images.length',
-      firstImage: 'images.0'
+      firstImage: 'images.0.image'
     },
     prepare({ imagesCount, firstImage }) {
       const displayTitle = 'Carousel'

@@ -121,11 +121,13 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
                 {product.icons && product.icons.length > 0 && (
                   <div className="my-10 w-full flex gap-15 md:gap-30 items-center justify-center">
                     {product.icons.map((icon, key) => (
-                      <ProductIcon
-                        className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain"
-                        item={icon}
-                        index={key}
-                      />
+                  <React.Fragment key={key}>
+                        <ProductIcon
+                          className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain"
+                          item={icon}
+                          index={key}
+                        />
+                      </React.Fragment>
                     ))}
                   </div>
                 )}

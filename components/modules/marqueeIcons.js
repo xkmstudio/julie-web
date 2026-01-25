@@ -90,11 +90,13 @@ const MarqueeIcons = ({ data = {} }) => {
           <div className="flex flex-col md:flex-row gap-15 md:gap-50 justify-center items-center">
             {items.map((item, key) => {
               return (
-                <MarqueeIcon
-                  className="h-[4rem] w-1/2 md:w-[unset]"
-                  item={item}
-                  index={key}
-                />
+                <React.Fragment key={key}>
+                  <MarqueeIcon
+                    className="h-[4rem] w-1/2 md:w-[unset]"
+                    item={item}
+                    index={key}
+                  />
+                </React.Fragment>
               )
             })}
           </div>

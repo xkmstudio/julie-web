@@ -21,7 +21,7 @@ export default async function send(req, res) {
   }
 
   try {
-    const COMPANY_ID = process.env.KLAVIYO_COMPANY_ID
+    const COMPANY_ID = process.env.KLAVIYO_API_KEY
     if (!COMPANY_ID) {
       return res.status(500).json({ error: 'Missing Klaviyo Company ID' })
     }
