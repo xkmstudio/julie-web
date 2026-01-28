@@ -1,5 +1,5 @@
 {
-  "name": "xkm",
+  "name": "julie",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@sanity/asset-utils": "^2.3.0",
-    "@sanity/cli": "^5.6.0",
+    "@sanity/cli": "^5.7.0",
     "@sanity/client": "^7.14.1",
     "@sanity/color-input": "^6.0.3",
     "@sanity/components": "^2.14.0",

@@ -250,6 +250,16 @@ export default (S) =>
                     .documentId('seoSettings'),
                 )
                 .icon(GlobeSimple),
+              S.divider(),
+              S.listItem()
+                .title('EMA')
+                .child(
+                  S.editor()
+                    .id('emaSettings')
+                    .schemaType('emaSettings')
+                    .documentId('emaSettings'),
+                )
+                .icon(Gear),
             ]),
         )
         .icon(Gear),

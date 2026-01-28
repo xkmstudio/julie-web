@@ -12,7 +12,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   const profileHref = item.authors?.[0]?.slug ? `/profiles/${item.authors[0].slug}` : null
   
   const cardContent = (
-    <div className={cx('flex flex-col gap-15 md:gap-20', className || 'w-full md:w-1/2')}>
+    <div className={cx('flex flex-col gap-15 md:gap-20', articleHref ? null : (className || 'w-full md:w-1/2'))}>
       <div className="w-full flex flex-col">
         <div className="w-full pb-[100%] relative rounded-[1rem] overflow-hidden">
           {(() => {
@@ -78,7 +78,12 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
           <div className="flex justify-center items-center gap-3">
             <div>by</div>
             <div>
-              {shouldHandleInFrame && profileHref ? (
+              {articleHref ? (
+                // When card is already a link, use span to avoid nested <a> tags
+                <span className="underline font-lb">
+                  {item.authors[0].title}
+                </span>
+              ) : shouldHandleInFrame && profileHref ? (
                 <a
                   className="underline font-lb"
                   href={profileHref}
@@ -116,7 +121,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
           e.preventDefault()
           onFrameLinkClick(articleHref)
         }}
-        className="block"
+        className={cx(className, 'block')}
       >
         {cardContent}
       </a>
@@ -126,7 +131,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   // If articleHref is provided but not in frame, use NextLink
   if (articleHref && !shouldHandleInFrame) {
     return (
-      <NextLink href={articleHref} className="block">
+      <NextLink href={articleHref} className={cx(className, 'block')}>
         {cardContent}
       </NextLink>
     )

@@ -5,7 +5,8 @@ const singletons = [
   'cookieSettings',
   'headerSettings',
   'footerSettings',
-  'seoSettings'
+  'seoSettings',
+  'emaSettings'
 ]
 
 export default [

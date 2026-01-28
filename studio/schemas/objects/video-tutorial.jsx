@@ -19,6 +19,9 @@ export default {
       title: 'Video Placeholder',
       description: '(Optional) Must be same aspect ratio as video.',
       type: 'image',
+      options: {
+        hotspot: true
+      },
     },
     {
       name: 'sections',

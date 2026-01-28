@@ -52,12 +52,18 @@ export default {
       title: 'Default Share Graphic',
       name: 'shareGraphic',
       type: 'image',
+      options: {
+        hotspot: true
+      },
       description: 'Recommended size: 1200x630 (PNG or JPG)'
     },
     {
       title: 'Browser Icon (Favicon)',
       name: 'favicon',
       type: 'image',
+      options: {
+        hotspot: true
+      },
       description: 'Upload a 16 x 16 SVG icon to use as the browser icon',
       // options: {
       //   accept: 'image/svg+xml'
@@ -86,6 +92,9 @@ export default {
       title: 'Touch Icon',
       name: 'touchIcon',
       type: 'image',
+      options: {
+        hotspot: true
+      },
       description: 'Recommended size: 192x192 (PNG)'
     }
   ],

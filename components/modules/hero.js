@@ -10,7 +10,7 @@ const Hero = ({ data = {} }) => {
 
   return (
     <div
-      className={`hero-bleed w-full flex flex-col items-center relative mb-15${
+      className={`hero-bleed w-full flex flex-col items-center relative z-3 mb-15${
         !backgroundMedia?.content
           ? ' text-black justify-center'
           : mobileTag

@@ -7,7 +7,7 @@ import {
   motion,
   AnimatePresence,
 } from 'framer-motion'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import Header from '@components/header'
 import Footer from '@components/footer'
 import Cart from '@components/cart'
@@ -15,14 +15,6 @@ import Cart from '@components/cart'
 
 import '../styles/tailwind.css'
 import '../styles/app.css'
-
-// Load Inter font with all required weights
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
-  display: 'swap',
-})
 
 // Load JetBrains Mono font with all required weights
 const jetbrainsMono = JetBrains_Mono({
@@ -179,7 +171,7 @@ const Site = ({ Component, pageProps, router }) => {
           <title>Loading...</title>
         </Head>
       )}
-      <div className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <div className={`${jetbrainsMono.variable}`}>
         {router.pathname !== '/ema-chat' && (
           <Header
             key="header"

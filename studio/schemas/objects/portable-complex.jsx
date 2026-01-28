@@ -26,10 +26,7 @@ export default {
           }
         }
       ],
-      lists: [
-        { title: 'Bullet', value: 'bullet' },
-        { title: 'Numbered', value: 'number' }
-      ],
+      lists: [{ title: 'Bullet', value: 'bullet' }],
       marks: {
         decorators: [
           { title: 'Strong', value: 'strong' },
@@ -40,42 +37,15 @@ export default {
             title: 'Link',
             name: 'link',
             type: 'object',
-            // blockEditor: {
-            //   render: Button
-            // },
             fields: [
               {
-                title: 'Link Type',
-                name: 'linkType',
-                type: 'string',
-                options: {
-                  list: [
-                    { title: 'Internal Page', value: 'internal' },
-                    { title: 'External URL', value: 'external' }
-                  ]
-                },
-                initialValue: 'internal',
-                validation: Rule => Rule.required()
-              },
-              {
-                title: 'Internal Page',
-                name: 'page',
-                type: 'reference',
-                to: [
-                  { type: 'page' },
-                ],
-                hidden: ({ parent }) => parent.linkType !== 'internal'
-              },
-              {
-                title: 'External URL',
-                name: 'url',
+                title: 'URL',
+                name: 'href',
                 type: 'url',
-                hidden: ({ parent }) => parent.linkType !== 'external',
                 validation: Rule => Rule.uri({
                   scheme: ['http', 'https', 'mailto', 'tel']
                 })
-              },
-              
+              }
             ]
           },
           {

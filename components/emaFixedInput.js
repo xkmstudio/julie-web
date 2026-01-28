@@ -4,14 +4,33 @@ import { useRouter } from 'next/router'
 import Icon from '@components/icon'
 import cx from 'classnames'
 import { useEmaChat } from '@lib/context'
+import { getSanityClient } from '@lib/sanity'
 
 const EmaFixedInput = () => {
   const router = useRouter()
   const [showFixedInput, setShowFixedInput] = useState(false)
   const [fixedInputText, setFixedInputText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [emaSettings, setEmaSettings] = useState(null)
   const { emaChatOpen } = useEmaChat()
   const fixedInputRef = useRef(null)
+
+  // Fetch EMA settings
+  useEffect(() => {
+    const fetchEmaSettings = async () => {
+      try {
+        const settings = await getSanityClient().fetch(
+          `*[_type == "emaSettings"][0]{
+            chatPlaceholder
+          }`
+        )
+        setEmaSettings(settings)
+      } catch (error) {
+        console.error('Error fetching EMA settings:', error)
+      }
+    }
+    fetchEmaSettings()
+  }, [])
 
   // Scroll detection for fixed input
   useEffect(() => {
@@ -145,7 +164,7 @@ const EmaFixedInput = () => {
               </m.div>
               <textarea
                 ref={fixedInputRef}
-                placeholder={isSubmitting ? "Thinking..." : "How can Julie help?"}
+                placeholder={isSubmitting ? "Thinking..." : (emaSettings?.chatPlaceholder || "How can Julie help?")}
                 rows={1}
                 value={isSubmitting ? "Thinking..." : fixedInputText}
                 disabled={isSubmitting}

@@ -7,6 +7,7 @@ import { useWindowSize } from '@lib/helpers'
 import PageContent from '@components/page-content'
 import cx from 'classnames'
 import Gradient from '@components/gradient'
+import { getSanityClient } from '@lib/sanity'
 
 const MOBILE_BREAKPOINT = 850
 
@@ -321,6 +322,24 @@ const EmaChat = ({ onClose = null }) => {
   const [emaUserId, setEmaUserId] = useState(null)
   const [initialSearchQuery, setInitialSearchQuery] = useState('')
   const [isHydrated, setIsHydrated] = useState(false)
+  const [emaSettings, setEmaSettings] = useState(null)
+
+  // Fetch EMA settings
+  useEffect(() => {
+    const fetchEmaSettings = async () => {
+      try {
+        const settings = await getSanityClient().fetch(
+          `*[_type == "emaSettings"][0]{
+            chatPlaceholder
+          }`
+        )
+        setEmaSettings(settings)
+      } catch (error) {
+        console.error('Error fetching EMA settings:', error)
+      }
+    }
+    fetchEmaSettings()
+  }, [])
 
   // Load persisted state from localStorage after hydration
   useEffect(() => {
@@ -924,7 +943,7 @@ const EmaChat = ({ onClose = null }) => {
 
                     <textarea
                       ref={chatInputRef}
-                      placeholder="How can Julie help?"
+                      placeholder={emaSettings?.chatPlaceholder || "How can Julie help?"}
                       rows={1}
                       value={chatInputText}
                       onChange={(e) => setChatInputText(e.target.value)}

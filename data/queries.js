@@ -56,6 +56,8 @@ export const imageMeta = `
 export const assetMeta = `
   alt,
   'asset': image.asset,
+  "crop": image.crop,
+  "hotspot": image.hotspot,
   "url": image.asset->url,
   "id": image.asset->assetId,
   "type": image.asset->mimeType,
@@ -626,6 +628,11 @@ export const site = `
       "favicon": favicon.asset->url,
       "faviconLegacy": faviconLegacy.asset->url,
       touchIcon
+    },
+    "ema": *[_type == "emaSettings"][0]{
+      suggestions,
+      chatPlaceholder,
+      disclaimer
     },
     "gtmID": *[_type == "generalSettings"][0].gtmID,
     "pages": *[_type == "page" && wasDeleted != true && isDraft != true] | order(_updatedAt desc) {

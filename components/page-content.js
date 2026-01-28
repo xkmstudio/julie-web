@@ -103,15 +103,23 @@ const PageContent = ({
         {/* Article Header Section */}
         <div
           className={cx(
-            'w-full flex flex-col md:flex-row gap-15 md:gap-25 pb-20 md:h-screen section-padding relative',
+            'w-full flex flex-col pb-20 md:h-screen section-padding relative',
             {
               'pt-[calc(var(--headerHeight)+2.5rem)]': !actuallyInFrame,
+              'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient),
+              'justify-center items-center': useGradient && gradient,
             }
           )}
         >
-          <div className="w-full flex flex-col md:flex-row gap-15 md:gap-25 relative">
-            {image && (
-              <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
+          <div className={cx('w-full flex flex-col relative', {
+            'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient),
+            'justify-center items-center h-full': useGradient && gradient,
+          })}>
+            {image && !(useGradient && gradient) && (
+              <div className={cx('w-full h-[100vw] relative rounded-[1.5rem] overflow-hidden', {
+                'md:w-1/2 md:h-full': !(useGradient && gradient),
+                'hidden md:block': useGradient && gradient,
+              })}>
                 {image && (
                   <Photo
                     photo={image}
@@ -125,11 +133,14 @@ const PageContent = ({
               </div>
             )}
             {useGradient && gradient && (
-              <div className="absolute left-0 bottom-0 w-full h-[100vw] md:h-full rounded-[1.5rem] overflow-hidden">
+              <div className="absolute left-0 top-0 w-full h-full rounded-[1.5rem] overflow-hidden">
                 <Gradient gradient={gradient} />
               </div>
             )}
-            <div className="relative z-2 w-full md:w-1/2 mx-auto flex flex-col gap-15 md:gap-25 items-center md:p-25 mt-10 md:mt-0">
+            <div className={cx('relative z-2 mx-auto flex flex-col gap-15 md:gap-25 items-center md:p-25 mt-10 md:mt-0', {
+              'w-full md:w-1/2': image && !(useGradient && gradient),
+              'w-full h-full': useGradient && gradient,
+            })}>
               <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
                 <div className="w-full text-center flex-1 flex flex-col justify-center gap-20 items-center">
                   {tag &&
@@ -368,7 +379,7 @@ const PageContent = ({
         {/* Author and reviewer section */}
         {(authors?.length > 0 || reviewers?.length > 0) && (
           <div
-            className={`w-full section-padding ${
+            className={`w-full section-padding mt-60 ${
               isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
             }`}
           >

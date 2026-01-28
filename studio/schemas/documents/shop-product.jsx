@@ -158,7 +158,6 @@ export default {
 
       group: 'content',
     },
-
     {
       title: 'Product Badge',
       description:

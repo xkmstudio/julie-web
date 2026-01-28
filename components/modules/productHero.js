@@ -80,26 +80,28 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
   return (
     <div
       ref={containerRef}
-      className={`product md:h-screen md:min-h-[60rem] px-15 md:px-25 pb-[2.5rem] pt-[calc(var(--headerHeight)+2.5rem)]`}
+      className={`product px-15 md:px-25 pb-[2.5rem] pt-[calc(var(--headerHeight)+2.5rem)]`}
     >
-      <div className={`w-full h-full flex flex-col md:flex-row gap-15 md:gap-25`}>
-        <div className={`w-full h-[100vw] md:h-full`}>
-          <div className="w-full h-full relative z-2">
-            {(activeVariant?.galleryImages &&
-            activeVariant.galleryImages.length > 0
-              ? activeVariant.galleryImages
-              : product.defaultGallery) && (
-              <ProductGallery
-                slides={
-                  activeVariant?.galleryImages &&
-                  activeVariant.galleryImages.length > 0
-                    ? activeVariant.galleryImages
-                    : product.defaultGallery
-                }
-                hasArrows
-                hasCounter
-              />
-            )}
+      <div className={`w-full flex items-start flex-col md:flex-row gap-15 md:gap-25`}>
+        <div className={`w-full sticky top-0`}>
+          <div className="w-full h-[100vw] md:h-hero">
+            <div className="w-full h-full z-2 absolute top-0 left-0">
+              {(activeVariant?.galleryImages &&
+              activeVariant.galleryImages.length > 0
+                ? activeVariant.galleryImages
+                : product.defaultGallery) && (
+                <ProductGallery
+                  slides={
+                    activeVariant?.galleryImages &&
+                    activeVariant.galleryImages.length > 0
+                      ? activeVariant.galleryImages
+                      : product.defaultGallery
+                  }
+                  hasArrows
+                  hasCounter
+                />
+              )}
+            </div>
           </div>
         </div>
 

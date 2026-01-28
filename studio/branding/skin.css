@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+/* Inter font removed - using Ladna instead */
 
 :root {
   --brand-primary: #000;
@@ -118,7 +118,7 @@ li[class*="moving"] * {
 
 /* high-fidelity renders */
 .pt-editable * {
-  font-family: 'Inter', 'Helvetica Neue', sans-serif !important;
+  font-family: 'Ladna Medium', 'Helvetica Neue', sans-serif !important;
 }
 
 .btn {

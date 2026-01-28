@@ -24,7 +24,8 @@ const singletons = [
   'headerSettings',
   'footerSettings',
   'shopSettings',
-  'seoSettings'
+  'seoSettings',
+  'emaSettings'
 ]
 
 const editAndDelete = ['project']

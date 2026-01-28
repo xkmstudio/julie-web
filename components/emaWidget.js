@@ -1,14 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
-import { m } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import Icon from '@components/icon'
 import cx from 'classnames'
+import { getSanityClient } from '@lib/sanity'
 
 const EmaWidget = () => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [initialInputText, setInitialInputText] = useState('')
+  const [emaSettings, setEmaSettings] = useState(null)
+  const [isInputFocused, setIsInputFocused] = useState(false)
+
+  // Fetch EMA settings
+  useEffect(() => {
+    const fetchEmaSettings = async () => {
+      try {
+        const settings = await getSanityClient().fetch(
+          `*[_type == "emaSettings"][0]{
+            suggestions,
+            chatPlaceholder,
+            disclaimer
+          }`
+        )
+        setEmaSettings(settings)
+      } catch (error) {
+        console.error('Error fetching EMA settings:', error)
+      }
+    }
+    fetchEmaSettings()
+  }, [])
 
   const {
     register,
@@ -18,11 +40,22 @@ const EmaWidget = () => {
     formState: { errors },
   } = useForm()
 
+  const handleSuggestionClick = (suggestion) => {
+    setInitialInputText(suggestion)
+    setValue('question', suggestion, { shouldValidate: true })
+    setIsInputFocused(false)
+    // Auto-submit the suggestion
+    setTimeout(() => {
+      handleSubmit(onSubmit)()
+    }, 100)
+  }
+
   const onSubmit = async (data) => {
     const question = data.question?.trim()
     if (!question) return
 
     setIsSubmitting(true)
+    setIsInputFocused(false)
 
     let searchResults = []
 
@@ -52,6 +85,16 @@ const EmaWidget = () => {
     // Note: We don't reset state here because navigation will unmount the component
   }
 
+  const placeholderText = emaSettings?.chatPlaceholder || 'How can Julie help?'
+  const disclaimer = emaSettings?.disclaimer
+  const suggestions = emaSettings?.suggestions || []
+  
+  // Show suggestions when input is focused or user has typed something
+  const shouldShowSuggestions = 
+    suggestions.length > 0 && 
+    !isSubmitting && 
+    (isInputFocused || initialInputText.trim().length > 0)
+
   return (
     <>
       {/* Initial Form */}
@@ -59,29 +102,10 @@ const EmaWidget = () => {
         <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient has-blur"></div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white border border-pink rounded-[1.5rem] overflow-hidden relative h-[15rem] flex flex-col"
+          className="bg-white border border-pink rounded-[1.5rem] relative h-[15rem] flex flex-col"
         >
-          {/* Header */}
-          {/* <div className="flex items-center gap-10 p-20 pb-10 flex-shrink-0">
-            <m.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-              className="flex-shrink-0"
-            >
-              <Icon
-                name="star"
-                viewBox="0 0 19 19"
-                className="w-[1.5rem] h-[1.5rem] text-pink"
-              />
-            </m.div>
-            <h3 className="text-16 md:text-18 font-medium text-pink">
-              How can Julie Help?
-            </h3>
-          </div> */}
-
           {/* Input Area */}
-          <div className="flex-1 relative flex items-start h-full">
+          <div className="flex-1 relative flex items-start h-full rounded-[1.5rem] overflow-hidden">
             <m.div
               initial={{ opacity: 1 }}
               animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
@@ -94,27 +118,34 @@ const EmaWidget = () => {
                 className="w-[1.5rem] h-[1.5rem] text-pink absolute left-15 top-20"
               />
             </m.div>
-            <m.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-              className="text-slate text-12 absolute left-20 bottom-20 italic text-left pr-90"
-            >
-              Julie AI is vetted by medical professionals and completely anonymous.
-            </m.div>
+            {disclaimer && (
+              <m.div
+                initial={{ opacity: 1 }}
+                animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
+                transition={{ duration: 0.2 }}
+                className="text-slate text-12 absolute left-20 bottom-20 italic text-left pr-90"
+              >
+                {disclaimer}
+              </m.div>
+            )}
             <textarea
               {...register('question', {
                 required: 'Please enter a question',
               })}
               value={isSubmitting ? "Thinking..." : initialInputText}
               disabled={isSubmitting}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => {
+                // Delay hiding suggestions to allow click events
+                setTimeout(() => setIsInputFocused(false), 200)
+              }}
               onChange={(e) => {
                 if (isSubmitting) return
                 const value = e.target.value
                 setInitialInputText(value)
                 setValue('question', value, { shouldValidate: true })
               }}
-              placeholder={isSubmitting ? "Thinking..." : "How can Julie help?"}
+              placeholder={isSubmitting ? "Thinking..." : placeholderText}
               rows={1}
               className={cx(
                 'transition-all duration-300 py-[1.6rem] w-full border-none outline-none text-14 md:text-16 text-black resize-none overflow-y-auto font-lm ema-gradient-placeholder',
@@ -183,6 +214,38 @@ const EmaWidget = () => {
               {errors.question.message}
             </p>
           )}
+
+          {/* Suggestions Modal - Absolutely positioned below input */}
+          <AnimatePresence>
+            {shouldShowSuggestions && (
+              <m.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute z-[4] top-full left-0 right-0 mt-10 hidden md:block"
+              >
+                <div className="bg-white border border-pink rounded-[1.5rem] p-20 shadow-lg" >
+                  <div className="flex flex-col gap-5">
+                    {suggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        onMouseDown={(e) => {
+                          // Prevent blur from firing before click
+                          e.preventDefault()
+                        }}
+                        className="text-left italic ema-gradient-placeholder rounded-[1rem] hover:bg-pink/10 text-14 md:text-16 text-black border border-transparent hover:opacity-70 transition-opacity duration-300"
+                        type="button"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </m.div>
+            )}
+          </AnimatePresence>
         </form>
       </div>
     </>

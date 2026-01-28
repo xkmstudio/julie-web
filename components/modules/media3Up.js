@@ -73,7 +73,7 @@ const Media3Up = ({ data = {} }) => {
             </div>
         </div>
 
-        <div className="absolute z-2 bottom-0 left-0 right-0 w-full text-white">
+        <div className="absolute z-2 bottom-0 left-0 right-0 w-full text-white text-center">
           <div className="absolute flex flex-col items-center z-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             {item.title && (
               <div className="text-40 md:text-48 font-lxb">

@@ -28,7 +28,7 @@ const Photo = ({
   })
 
   const srcSet = buildSrcSet(photo, {
-    widths: srcSizes,
+    srcSizes: srcSizes,
     quality,
     format: 'webp', // Force Next-Gen format
   })
@@ -72,7 +72,7 @@ const Photo = ({
               layout === 'fill',
           }
         )}
-        alt={photo.asset?.altText || 'XKM Studio'}
+        alt={photo.asset?.altText || 'Julie'}
         blurDataURL={photo.lqip}
         loading={force ? 'eager' : 'lazy'} // Prevent lazy loading if force is true
       />

@@ -116,7 +116,8 @@
 }
 
 /* Ema Widget Gradient Placeholder */
-.ema-gradient-placeholder::placeholder {
+.ema-gradient-placeholder::placeholder,
+button.ema-gradient-placeholder {
   background: linear-gradient(to right, #ED0E61 0%, #FF3BAB 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

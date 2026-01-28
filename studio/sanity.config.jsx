@@ -47,21 +47,6 @@ export default defineConfig({
     }),
     colorInput(),
     visionTool(),
-    dashboardTool({
-      widgets: [
-        netlifyWidget({
-          title: 'Sites',
-          sites: [
-            // {
-            //   title: 'Production',
-            //   apiId: '6a4d33a3-c3e4-44c2-b21b-56cfcbca6f83',
-            //   buildHookId: '67d43a2870d5040ee3bd76d5',
-            //   name: 'xkm'
-            // }
-          ]
-        })
-      ]
-    }),
     myLogoPlugin()
   ],
   schema: {

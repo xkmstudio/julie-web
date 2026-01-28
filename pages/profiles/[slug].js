@@ -72,7 +72,7 @@ const Profile = ({ data, sanityConfig }) => {
                   {articles.map((article, key) => {
                     return (
                       <React.Fragment key={key}>
-                        <ArticleCard item={article} className="col-span-12 md:col-span-4" />
+                        <ArticleCard item={article} className="col-span-12 md:col-span-4" articleHref={`/blog/${article.slug}`} />
                       </React.Fragment>
                     )
                   })}

@@ -29,8 +29,8 @@ const HeadSEO = ({ site = {}, page = {}, schema }) => {
     page.seo?.metaTitle
       ? `${
           router.asPath == '/'
-            ? `XKM Studio | ${page.seo.metaTitle}`
-            : `${page.seo.metaTitle} | XKM Studio`
+            ? `${page.seo.metaTitle}`
+            : `${page.seo.metaTitle}`
         }`
       : site.seo?.metaTitle,
     templateTags

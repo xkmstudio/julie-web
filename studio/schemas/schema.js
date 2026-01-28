@@ -6,6 +6,7 @@ import headerSettings from './documents/settings-header'
 import footerSettings from './documents/settings-footer'
 import shopSettings from './documents/settings-shop'
 import seoSettings from './documents/settings-seo'
+import emaSettings from './documents/settings-ema'
 import home from './documents/home'
 import error from './documents/error'
 import blog from './documents/blog'
@@ -101,6 +102,7 @@ export default [
     footerSettings,
     shopSettings,
     seoSettings,
+    emaSettings,
     home,
     error,
 

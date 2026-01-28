@@ -49,7 +49,7 @@ const Marquee = ({ data = {} }) => {
           <Marqy
             speed={speed}
             direction={reverse ? 'right' : 'left'}
-            pauseOnHover={false}
+            pauseOnHover={pausable}
             className="marquee"
           >
             <div className="marquee--item">

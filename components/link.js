@@ -85,9 +85,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
     const handleClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
-      
-      console.log('Ask Julie link clicked, navigating to chat page')
-      
+            
       // Save current scroll position for restoration on back
       const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
       if (typeof window !== 'undefined') {

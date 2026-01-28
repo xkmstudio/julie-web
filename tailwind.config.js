@@ -57,17 +57,16 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['Ladna Medium', 'sans-serif'],
-      inter: ['var(--font-inter)', 'sans-serif'],
       mono: ['var(--font-jetbrains-mono)', 'monospace'],
       lb: 'Ladna Bold',
       lxb: 'Ladna ExtraBold',
       lm: 'Ladna Medium',
       plaid: 'Plaid',
-      // Legacy font classes mapped to Inter weights
-      vr: ['var(--font-inter)', 'sans-serif'],
-      vm: ['var(--font-inter)', 'sans-serif'],
-      vs: ['var(--font-inter)', 'sans-serif'],
-      vb: ['var(--font-inter)', 'sans-serif'],
+      // Legacy font classes mapped to Ladna weights
+      vr: 'Ladna Medium',
+      vm: 'Ladna Medium',
+      vs: 'Ladna Medium',
+      vb: 'Ladna Bold',
     },
     screens: {
       xs: '480px',
@@ -148,6 +147,7 @@ module.exports = {
       full: '100%',
       screen: 'calc(var(--vh, 1vh) * 100)',
       index: 'calc((var(--vh, 1vh) * 100) - var(--headerHeight))',
+      hero: 'calc((var(--vh, 1vh) * 100) - var(--headerHeight) - 5rem)',
     },
     extend: {
       fontFamily: {

@@ -49,6 +49,9 @@ export default {
       title: 'Share Graphic',
       name: 'shareGraphic',
       type: 'image',
+      options: {
+        hotspot: true
+      },
       description: 'Recommended size: 1200x630 (PNG or JPG)'
     },
     {

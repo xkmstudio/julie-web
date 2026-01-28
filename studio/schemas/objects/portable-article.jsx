@@ -19,11 +19,11 @@ import {
         type: 'block',
         styles: [
           { title: 'Paragraph', value: 'normal' },
-          // {
-          //   title: 'H2',
-          //   value: 'h2',
-          //   component: Header2
-          // }
+          {
+            title: 'H2',
+            value: 'h2',
+            component: Header2
+          },
           {
             title: 'H3',
             value: 'h3',
@@ -116,6 +116,9 @@ import {
         title: 'Image',
         name: 'image',
         type: 'image',
+        options: {
+          hotspot: true
+        },
         fields: [
           {
             title: 'Caption',
