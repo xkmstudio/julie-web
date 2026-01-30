@@ -52,14 +52,13 @@ function transformArticleToAlgolia(article) {
       title: tag.title || tag,
       slug: tag.slug?.current || tag.slug || tag,
     })),
-    // Transform authors
+    // Transform authors (minimal data - no images to save space)
     authors: (article.authors || []).map((author) => ({
       title: author.title || '',
       slug: author.slug?.current || author.slug || '',
       role: author.role || '',
-      image: author.image || null,
     })),
-    // Transform image - store as object with url, alt, lqip, etc.
+    // Transform image - store as object (no lqip - too large)
     image: (() => {
       if (!article.image) return null
       const url = article.image.url || (article.image.asset ? buildImageUrlFromRef(
@@ -71,32 +70,32 @@ function transformArticleToAlgolia(article) {
       return {
         url,
         alt: article.image.alt || '',
-        lqip: article.image.lqip || null,
         width: article.image.width || null,
         height: article.image.height || null,
         aspectRatio: article.image.aspectRatio || null,
       }
     })(),
-    // Transform gradient - store the full gradient object structure
+    // Transform gradient - store colorStops for CSS gradient rendering
     gradient: article.gradient && article.gradient.colorStops && article.gradient.colorStops.length >= 2
       ? {
+          _type: article.gradient._type || 'gradient',
           type: article.gradient.type || 'linear',
           direction: article.gradient.direction || 'to bottom',
           customAngle: article.gradient.customAngle || null,
-          colorStops: (article.gradient.colorStops || []).map((stop) => {
-            // Preserve the full color object structure (hex, rgb, alpha)
-            const color = stop.color
-            return {
-              color: color ? {
-                hex: color.hex || null,
-                rgb: color.rgb || null,
-                alpha: color.alpha !== undefined ? color.alpha : (color.rgb?.a !== undefined ? color.rgb.a : 1),
+          colorStops: (article.gradient.colorStops || []).map((stop) => ({
+            _key: stop._key,
+            position: stop.position ?? 0,
+            color: stop.color ? {
+              hex: stop.color.hex || '#000000',
+              alpha: stop.color.alpha ?? 1,
+              rgb: stop.color.rgb ? {
+                r: stop.color.rgb.r || 0,
+                g: stop.color.rgb.g || 0,
+                b: stop.color.rgb.b || 0,
+                a: stop.color.rgb.a ?? 1,
               } : null,
-              position: stop.position || 0,
-            }
-          }),
-          height: article.gradient.height || null,
-          padding: article.gradient.padding || null,
+            } : null,
+          })),
         }
       : null,
     // Include content for search (plain text from portable text)
@@ -132,28 +131,28 @@ async function fetchArticleFromSanity(articleId) {
       date,
       useGradient,
           gradient{
+            _type,
             type,
             direction,
             customAngle,
             colorStops[]{
+              _key,
+              position,
               color{
+                _type,
                 hex,
-                rgb,
-                alpha
-              },
-              position
-            },
-            height,
-            padding
+                alpha,
+                rgb{
+                  r, g, b, a
+                }
+              }
+            }
           },
           image{
             alt,
             "asset": image.asset._ref,
             "url": image.asset->url,
-            "id": image.asset->assetId,
-            "type": image.asset->mimeType,
             "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
-            "lqip": image.asset->metadata.lqip,
             "width": image.asset->metadata.dimensions.width,
             "height": image.asset->metadata.dimensions.height
           },
@@ -164,23 +163,7 @@ async function fetchArticleFromSanity(articleId) {
       authors[]->{
         title,
         "slug": slug.current,
-        role,
-        image{
-          alt,
-          asset->{
-            _ref,
-            assetId,
-            mimeType,
-            metadata{
-              dimensions{
-                aspectRatio,
-                width,
-                height
-              },
-              lqip
-            }
-          }
-        }
+        role
       },
       content[],
       excerpt[],

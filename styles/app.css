@@ -24,6 +24,7 @@
 @import "components/_counters";
 @import "components/_article";
 @import "components/_testimonials";
+@import "components/_scrolling-title";
 
 /* EMA Chat iOS Keyboard Fix */
 :root {

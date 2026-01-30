@@ -372,6 +372,11 @@ const EmaChat = ({ onClose = null }) => {
   const [frameLoading, setFrameLoading] = useState(false)
   const [chatInputText, setChatInputText] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [feedbackFormOpen, setFeedbackFormOpen] = useState(null) // messageId for which feedback form is open
+  const [feedbackReason, setFeedbackReason] = useState('')
+  const [feedbackDescription, setFeedbackDescription] = useState('')
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false)
+  const [feedbackSuccessMessage, setFeedbackSuccessMessage] = useState(null) // { messageId, message }
 
   const { width } = useWindowSize()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
@@ -437,7 +442,11 @@ const EmaChat = ({ onClose = null }) => {
           })
           if (searchResponse.ok) {
             const searchData = await searchResponse.json()
-            setSearchResults(searchData.hits || [])
+            const hits = searchData.hits || []
+            setSearchResults(hits)
+          } else {
+            const errorData = await searchResponse.json().catch(() => ({}))
+            console.error('Search response not ok:', searchResponse.status, errorData)
           }
         } catch (error) {
           console.error('Error fetching search results:', error)
@@ -629,6 +638,187 @@ const EmaChat = ({ onClose = null }) => {
     }
   }, [initialSearchQuery])
 
+  const handleFeedback = async (messageId, flagValue, messageUserId = null) => {
+    // Use the userId from the message if available, otherwise use current emaUserId
+    // This handles both new messages (with userId) and old messages (without userId)
+    const userIdToUse = messageUserId || emaUserId
+    
+    // Validate inputs
+    if (!messageId || typeof messageId !== 'string' || messageId.trim() === '') {
+      console.error('Invalid messageId:', messageId)
+      alert('Unable to submit feedback: Invalid message ID')
+      return
+    }
+    
+    if (!userIdToUse || typeof userIdToUse !== 'string' || userIdToUse.trim() === '') {
+      console.error('Invalid userId:', userIdToUse)
+      alert('Unable to submit feedback: User session not found')
+      return
+    }
+    
+    if (isSubmittingFeedback) {
+      return
+    }
+
+    // If removing feedback (flagValue is null), just update local state
+    if (flagValue === null) {
+      setMessages((prev) => {
+        return prev.map((msg) => {
+          if (msg.messageId === messageId) {
+            return {
+              ...msg,
+              flag: null,
+            }
+          }
+          return msg
+        })
+      })
+      setFeedbackFormOpen(null)
+      setFeedbackReason('')
+      setFeedbackDescription('')
+      return
+    }
+
+    setIsSubmittingFeedback(true)
+
+    try {
+      const requestBody = {
+        userId: userIdToUse,
+        messageId: messageId,
+        flag: {
+          value: flagValue,
+          reason: null,
+          description: null,
+        },
+      }
+      
+      const response = await fetch('/api/ema/flag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (response.ok) {
+        // Update the message flag state
+        setMessages((prev) => {
+          return prev.map((msg) => {
+            if (msg.messageId === messageId) {
+              return {
+                ...msg,
+                flag: { value: flagValue },
+              }
+            }
+            return msg
+          })
+        })
+
+        // Show success message
+        setFeedbackSuccessMessage({
+          messageId: messageId,
+          message: flagValue === 'good' ? 'Thank you for your feedback!' : 'Feedback removed',
+        })
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setFeedbackSuccessMessage(null)
+        }, 3000)
+
+        // Close feedback form if it was open
+        if (flagValue === 'good') {
+          setFeedbackFormOpen(null)
+          setFeedbackReason('')
+          setFeedbackDescription('')
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Error submitting feedback:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        })
+        alert(`Failed to submit feedback: ${errorData.message || errorData.error || 'Please try again.'}`)
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error)
+      alert(`Failed to submit feedback: ${error.message || 'Please try again.'}`)
+    } finally {
+      setIsSubmittingFeedback(false)
+    }
+  }
+
+  const handleSubmitBadFeedback = async (messageId, messageUserId = null) => {
+    // Use the userId from the message if available, otherwise use current emaUserId
+    const userIdToUse = messageUserId || emaUserId
+    
+    if (!messageId || !userIdToUse || isSubmittingFeedback) return
+
+    setIsSubmittingFeedback(true)
+
+    try {
+      const response = await fetch('/api/ema/flag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userIdToUse,
+          messageId: messageId,
+          flag: {
+            value: 'bad',
+            reason: feedbackReason.trim() || null,
+            description: feedbackDescription.trim() || null,
+          },
+        }),
+      })
+
+      if (response.ok) {
+        // Update the message flag state
+        setMessages((prev) => {
+          return prev.map((msg) => {
+            if (msg.messageId === messageId) {
+              return {
+                ...msg,
+                flag: {
+                  value: 'bad',
+                  reason: feedbackReason.trim() || null,
+                  description: feedbackDescription.trim() || null,
+                },
+              }
+            }
+            return msg
+          })
+        })
+
+        // Show success message
+        setFeedbackSuccessMessage({
+          messageId: messageId,
+          message: 'Thank you for your feedback!',
+        })
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setFeedbackSuccessMessage(null)
+        }, 3000)
+
+        // Close feedback form
+        setFeedbackFormOpen(null)
+        setFeedbackReason('')
+        setFeedbackDescription('')
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Error submitting feedback:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        })
+        alert(`Failed to submit feedback: ${errorData.message || errorData.error || 'Please try again.'}`)
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error)
+      alert(`Failed to submit feedback: ${error.message || 'Please try again.'}`)
+    } finally {
+      setIsSubmittingFeedback(false)
+    }
+  }
+
   const sendMessage = async (message) => {
     if (!message?.trim() || !emaUserId) return
 
@@ -650,8 +840,12 @@ const EmaChat = ({ onClose = null }) => {
       })
       if (searchResponse.ok) {
         const searchData = await searchResponse.json()
-        setSearchResults(searchData.hits || [])
-              }
+        const hits = searchData.hits || []
+        setSearchResults(hits)
+      } else {
+        const errorData = await searchResponse.json().catch(() => ({}))
+        console.error('Search response not ok:', searchResponse.status, errorData)
+      }
             } catch (error) {
       console.error('Error fetching search results:', error)
     }
@@ -681,6 +875,9 @@ const EmaChat = ({ onClose = null }) => {
           sender: 'assistant',
           message: '',
           timestamp: new Date().toISOString(),
+          messageId: null, // Will be set when received from API
+          userId: emaUserId, // Store the userId used to create this message
+          flag: null, // Track feedback state
         }
 
         setMessages((prev) => [...prev, assistantMessage])
@@ -724,7 +921,18 @@ const EmaChat = ({ onClose = null }) => {
                   }
                 }
 
-              if (parsed.messageId) setIsStreaming(false)
+              if (parsed.messageId) {
+                // Store the messageId from Ema API
+                setMessages((prev) => {
+                  const updated = [...prev]
+                  const lastMessage = updated[updated.length - 1]
+                  if (lastMessage && lastMessage.sender === 'assistant') {
+                    lastMessage.messageId = parsed.messageId
+                  }
+                  return updated
+                })
+                setIsStreaming(false)
+              }
               } catch (e) {
               // ignore
             }
@@ -776,10 +984,43 @@ const EmaChat = ({ onClose = null }) => {
     background: 'transparent',
   }
 
+  // Setup keyboard tracking and scroll lock
+  useEffect(() => {
+    if (!overlayRef.current) return
+
+    const unlockScroll = lockDocumentScroll()
+    const cleanupKeyboard = setupKeyboardTracking(overlayRef.current)
+    const cleanupFocus = preventIosFocusScrollJump()
+
+    return () => {
+      unlockScroll()
+      cleanupKeyboard()
+      cleanupFocus()
+    }
+  }, [])
+
+  // Set composer height CSS variable
+  useEffect(() => {
+    if (!composerRef.current || !overlayRef.current) return
+
+    const updateComposerHeight = () => {
+      const height = composerRef.current?.offsetHeight || 72
+      overlayRef.current.style.setProperty('--composer-h', `${height}px`)
+    }
+
+    updateComposerHeight()
+    window.addEventListener('resize', updateComposerHeight)
+    
+    return () => {
+      window.removeEventListener('resize', updateComposerHeight)
+    }
+  }, [messages, chatInputText])
+
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Full-page chat experience */}
             <m.div
+        ref={overlayRef}
         className="ema-chat-overlay"
         style={overlayStyle}
         role="main"
@@ -826,7 +1067,7 @@ const EmaChat = ({ onClose = null }) => {
                           onClose()
                         }
                       }}
-                      className="absolute top-18 md:top-25 right-15 md:right-25 z-10 w-[4.5rem] md:w-[6rem] h-[4.5rem] md:h-[6rem] rounded-full bg-pink text-white flex items-center justify-center hover:bg-pink transition-colors focus:outline-none"
+                      className="absolute top-18 md:top-25 right-15 md:right-25 z-[110] w-[4.5rem] md:w-[6rem] h-[4.5rem] md:h-[6rem] rounded-full bg-pink text-white flex items-center justify-center hover:bg-pink transition-colors focus:outline-none"
                       aria-label="Close chat"
                       type="button"
                     >
@@ -854,8 +1095,8 @@ const EmaChat = ({ onClose = null }) => {
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`flex max-w-[50rem] mx-auto ${
-                        msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                      className={`flex flex-col max-w-[50rem] mx-auto ${
+                        msg.sender === 'user' ? 'items-end' : 'items-start'
                       }`}
                     >
                       <div
@@ -877,6 +1118,181 @@ const EmaChat = ({ onClose = null }) => {
                             <span className="inline-block w-[0.5rem] h-[1rem] bg-current ml-5 animate-pulse" />
                           )}
                       </div>
+                      
+                      {/* Feedback buttons for assistant messages */}
+                      {msg.sender === 'assistant' && 
+                       msg.messageId && 
+                       !isStreaming && (
+                        <div className="flex items-center gap-10 mt-10">
+                          <button
+                            onClick={() => handleFeedback(msg.messageId, 'good', msg.userId)}
+                            disabled={isSubmittingFeedback || msg.flag?.value === 'good'}
+                            className={cx(
+                              'flex items-center gap-5 px-10 py-5 rounded-full text-12 transition-colors',
+                              {
+                                'bg-pink/20 text-pink': msg.flag?.value === 'good',
+                                'bg-white/50 text-black hover:bg-white/70': msg.flag?.value !== 'good',
+                                'opacity-50 cursor-not-allowed': isSubmittingFeedback,
+                              }
+                            )}
+                            type="button"
+                            aria-label="Good feedback"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9194 19.3914 19.4682L20.4681 12.4682C20.7479 10.6559 19.3001 9 17.4629 9H14C13.4477 9 13 8.55228 13 8V4.46584C13 3.10399 11.896 2 10.5342 2C10.2093 2 9.91498 2.1913 9.78306 2.48812L7.26394 8.57843C7.09896 8.94958 6.74594 9.18943 6.35123 9.18943H4C2.89543 9.18943 2 10.0849 2 11.1894V13Z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <span>Helpful</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              if (msg.flag?.value === 'bad') {
+                                setFeedbackFormOpen(null)
+                                handleFeedback(msg.messageId, null, msg.userId) // Remove flag
+                              } else {
+                                setFeedbackFormOpen(msg.messageId)
+                              }
+                            }}
+                            disabled={isSubmittingFeedback}
+                            className={cx(
+                              'flex items-center gap-5 px-10 py-5 rounded-full text-12 transition-colors',
+                              {
+                                'bg-pink/20 text-pink': msg.flag?.value === 'bad',
+                                'bg-white/50 text-black hover:bg-white/70': msg.flag?.value !== 'bad',
+                                'opacity-50 cursor-not-allowed': isSubmittingFeedback,
+                              }
+                            )}
+                            type="button"
+                            aria-label="Bad feedback"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83384 3.08058 4.60857 4.53178L3.53188 11.5318C3.25212 13.3441 4.69989 15 6.5371 15H10C10.5523 15 11 15.4477 11 16V19.5342C11 20.896 12.104 22 13.4658 22C13.7907 22 14.085 21.8087 14.2169 21.5119L16.7361 15.4216C16.901 15.0504 17.2541 14.8106 17.6488 14.8106H20C21.1046 14.8106 22 13.9151 22 12.8106V11Z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <span>{msg.flag?.value === 'bad' ? 'Not helpful (click to remove)' : 'Not helpful'}</span>
+                          </button>
+                        </div>
+                      )}
+                      
+                      {/* Success message after feedback submission */}
+                      <AnimatePresence>
+                        {feedbackSuccessMessage && feedbackSuccessMessage.messageId === msg.messageId && (
+                          <m.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-10 max-w-[100%] md:max-w-[80%] bg-pink/10 border border-pink/30 rounded-[1rem] px-15 py-10"
+                          >
+                            <div className="flex items-center gap-10">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="flex-shrink-0"
+                              >
+                                <path
+                                  d="M8 0C3.58 0 0 3.58 0 8C0 12.42 3.58 16 8 16C12.42 16 16 12.42 16 8C16 3.58 12.42 0 8 0ZM7 11L3 7L4.41 5.59L7 8.17L11.59 3.58L13 5L7 11Z"
+                                  fill="currentColor"
+                                  className="text-pink"
+                                />
+                              </svg>
+                              <span className="text-12 text-pink font-medium">
+                                {feedbackSuccessMessage.message}
+                              </span>
+                            </div>
+                          </m.div>
+                        )}
+                      </AnimatePresence>
+                      
+                      {/* Feedback form for bad feedback */}
+                      {msg.sender === 'assistant' && 
+                       msg.messageId && 
+                       feedbackFormOpen === msg.messageId && (
+                        <div className="mt-10 max-w-[100%] md:max-w-[80%] bg-white rounded-[1rem] p-15 md:p-20">
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault()
+                              handleSubmitBadFeedback(msg.messageId, msg.userId)
+                            }}
+                            className="space-y-10"
+                          >
+                            <div>
+                              <label className="block text-12 font-medium text-black mb-5">
+                                Reason (optional)
+                              </label>
+                              <input
+                                type="text"
+                                value={feedbackReason}
+                                onChange={(e) => setFeedbackReason(e.target.value)}
+                                placeholder="e.g., Inaccurate, Unhelpful, Off-topic"
+                                className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-14 outline-none focus:ring-2 focus:ring-pink"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-12 font-medium text-black mb-5">
+                                Description (optional)
+                              </label>
+                              <textarea
+                                value={feedbackDescription}
+                                onChange={(e) => setFeedbackDescription(e.target.value)}
+                                placeholder="Tell us more about what was wrong..."
+                                rows={3}
+                                className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-14 outline-none focus:ring-2 focus:ring-pink resize-none"
+                              />
+                            </div>
+                            
+                            <div className="flex gap-10">
+                              <button
+                                type="submit"
+                                disabled={isSubmittingFeedback}
+                                className="px-15 py-8 bg-pink text-white rounded-[0.5rem] text-14 font-medium hover:bg-pink/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback'}
+                              </button>
+                              
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFeedbackFormOpen(null)
+                                  setFeedbackReason('')
+                                  setFeedbackDescription('')
+                                }}
+                                disabled={isSubmittingFeedback}
+                                className="px-15 py-8 bg-white border border-pink text-pink rounded-[0.5rem] text-14 font-medium hover:bg-pink/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      )}
                     </div>
                   ))}
 
@@ -995,60 +1411,62 @@ const EmaChat = ({ onClose = null }) => {
                   <m.div
                     animate={{ opacity: frameOpen ? 0 : 1 }}
                     transition={frameTransition}
-                    className="hidden md:block absolute bottom-0 right-0 w-full md:w-[25rem] h-screen pb-25 pt-[10rem] overflow-y-auto flex-shrink-0 pointer-events-none"
+                    className="hidden md:block absolute bottom-0 right-0 w-full md:w-[25rem] h-screen pb-25 pt-[10rem] overflow-y-auto flex-shrink-0 pointer-events-none z-[100]"
                     style={{
                       maskImage:
                         'linear-gradient(to bottom, transparent 0px, black 100px, black 100%)',
                       WebkitMaskImage:
                         'linear-gradient(to bottom, transparent 0px, black 100px, black 100%)',
-                      pointerEvents: frameOpen ? 'none' : 'auto',
                     }}
                   >
-                    <div className="w-full max-w-[50rem] mx-auto px-15 md:px-25">
-                      <div className="space-y-10">
-                        {searchResults.map((article, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleOpenFrame(`/blog/${article.slug}`)}
-                            className="block group w-full text-left"
-                            type="button"
-                          >
-                            <div className="overflow-hidden relative w-full h-[28rem] rounded-[1.5rem]">
-                              {article.image ? (
-                                <div className="w-full h-full relative">
-                                  <Image
-                                    src={article.image.url || article.image}
-                                    alt={article.image.alt || article.title}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 400px"
-                                    placeholder={article.image.lqip ? 'blur' : undefined}
-                                    blurDataURL={article.image.lqip}
-                                  />
-                                </div>
-                              ) : article.gradient ? (
-                                <div className="w-full h-full relative">
-                                  <Gradient gradient={article.gradient} />
-                                </div>
-                              ) : null}
+                    {/* Wrapper to align content to bottom when not overflowing */}
+                    <div className="min-h-full flex flex-col justify-end pointer-events-none">
+                      <div className="w-full max-w-[50rem] mx-auto px-15 md:px-25">
+                        <div className="space-y-10">
+                          {searchResults.map((article, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleOpenFrame(`/blog/${article.slug}`)}
+                              className="article-card-container block group w-full text-left pointer-events-auto"
+                              type="button"
+                            >
+                              <div className="article-card relative w-full h-[28rem]">
+                                {(!article.useGradient && article.image) ? (
+                                  <div className="w-full h-full relative">
+                                    <Image
+                                      src={article.image.url || article.image}
+                                      alt={article.image.alt || article.title}
+                                      fill
+                                      className="object-cover"
+                                      sizes="(max-width: 768px) 100vw, 400px"
+                                      placeholder={article.image.lqip ? 'blur' : undefined}
+                                      blurDataURL={article.image.lqip}
+                                    />
+                                  </div>
+                                ) : article.useGradient ? (
+                                  <div className="w-full h-full relative">
+                                    <Gradient gradient={article.gradient} />
+                                  </div>
+                                ) : null}
 
-                              <div
-                                className={cx('p-15 absolute bottom-0 left-0 w-full text-white', {
-                                  'bg-gradient-to-t from-black to-transparent': !article.gradient,
-                                })}
-                              >
-                                {article.authors && article.authors.length > 0 && (
-                                    <div className="text-12 text-gray-300 mb-5">
-                                    by {article.authors[0]?.title || article.authors[0]?.name}
-                                    </div>
-                                  )}
-                                <h4 className="text-16 font-lb text-white line-clamp-2">
-                                  {article.title}
-                                </h4>
+                                <div
+                                  className={cx('p-15 absolute bottom-0 left-0 w-full text-white', {
+                                    'bg-gradient-to-t from-black to-transparent': !article.useGradient,
+                                  })}
+                                >
+                                  {article.authors && article.authors.length > 0 && (
+                                      <div className="text-12 text-gray-300 mb-5">
+                                      by {article.authors[0]?.title || article.authors[0]?.name}
+                                      </div>
+                                    )}
+                                  <h4 className="text-16 font-lb text-white line-clamp-2">
+                                    {article.title}
+                                  </h4>
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </m.div>
@@ -1072,7 +1490,7 @@ const EmaChat = ({ onClose = null }) => {
                     )}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="absolute z-[9999] top-0 left-0 w-full px-15 md:px-0 pt-15 md:pt-0">
+                    <div className="md:hidden absolute z-[9999] top-0 left-0 w-full px-15 md:px-0 pt-15 md:pt-0">
                       <div className="flex items-center justify-between p-20 rounded-full text-white bg-pink flex-shrink-0">
                         <button
                           onClick={() => handleCloseFrame(true)}
@@ -1098,7 +1516,7 @@ const EmaChat = ({ onClose = null }) => {
                     <button
                       onClick={() => handleCloseFrame(true)}
                       className={cx(
-                        'absolute bg-pink rounded-full text-white hidden md:flex items-center justify-center hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0',
+                        'absolute z-[99999] bg-pink rounded-full text-white hidden md:flex items-center justify-center hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0',
                         {
                           'top-15 right-15 w-[4.5rem] h-[4.5rem]': isMobile,
                           'left-0 -translate-x-full w-[6rem] h-[6rem]': !isMobile,
@@ -1123,7 +1541,7 @@ const EmaChat = ({ onClose = null }) => {
                           <div className="text-16 text-gray-500">Loading...</div>
                           </div>
                       ) : frameContent && frameContent.data && frameContent.data.page ? (
-                        <div className="ema-frame-mobile">
+                        <div className="ema-frame-mobile pt-[1.5rem] md:pt-[2rem]">
                           <PageContent
                             page={frameContent.data.page}
                             type={frameContent.type}

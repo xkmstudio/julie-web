@@ -338,3 +338,6 @@ text-start
 text-center
 text-end
 text-justify
+
+!object-contain
+!object-cover

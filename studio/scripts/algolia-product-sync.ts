@@ -90,10 +90,7 @@ async function initialSync() {
           alt,
           "asset": image.asset._ref,
           "url": image.asset->url,
-          "id": image.asset->assetId,
-          "type": image.asset->mimeType,
           "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
-          "lqip": image.asset->metadata.lqip,
           "width": image.asset->metadata.dimensions.width,
           "height": image.asset->metadata.dimensions.height
         },
@@ -103,10 +100,7 @@ async function initialSync() {
             alt,
             "asset": image.asset._ref,
             "url": image.asset->url,
-            "id": image.asset->assetId,
-            "type": image.asset->mimeType,
             "aspectRatio": image.asset->metadata.dimensions.aspectRatio,
-            "lqip": image.asset->metadata.lqip,
             "width": image.asset->metadata.dimensions.width,
             "height": image.asset->metadata.dimensions.height
           }
@@ -142,7 +136,6 @@ async function initialSync() {
           heroImage = {
             url: imageUrl,
             alt: product.heroImage.alt || '',
-            lqip: product.heroImage.lqip || null,
             width: product.heroImage.width || null,
             height: product.heroImage.height || null,
             aspectRatio: product.heroImage.aspectRatio || null,
@@ -161,13 +154,27 @@ async function initialSync() {
           thumbnail = {
             url: imageUrl,
             alt: product.productThumbnail.alt || '',
-            lqip: product.productThumbnail.lqip || null,
             width: product.productThumbnail.width || null,
             height: product.productThumbnail.height || null,
             aspectRatio: product.productThumbnail.aspectRatio || null,
           }
         }
       }
+
+      // Truncate description aggressively to prevent exceeding Algolia's 10KB limit
+      // Keep description for search but limit its size significantly
+      const maxDescriptionLength = 2000 // Limit to ~2KB to leave room for other fields
+      let description = product.description || ''
+      if (description.length > maxDescriptionLength) {
+        description = description.substring(0, maxDescriptionLength) + '...'
+      }
+
+      // Simplify options array - only keep essential fields
+      const simplifiedOptions = (product.options || []).map((option: any) => ({
+        name: option.name || '',
+        values: option.values || [],
+        // Remove position field to save space
+      }))
 
       const document = {
         objectID: product._id,
@@ -184,10 +191,10 @@ async function initialSync() {
         preOrder: product.preOrder || false,
         limitedEdition: product.limitedEdition || false,
         soldOut: product.soldOut || false,
-        heroImage,
-        thumbnail,
-        description: product.description || '',
-        options: product.options || [],
+        heroImage: heroImage,
+        thumbnail: thumbnail,
+        description: description,
+        options: simplifiedOptions,
         _createdAt: product._createdAt,
         _updatedAt: product._updatedAt,
       }
@@ -230,6 +237,7 @@ if (require.main === module) {
 }
 
 export default initialSync
+
 
 
 

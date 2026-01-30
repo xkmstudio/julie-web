@@ -69,6 +69,7 @@ export const assetMeta = `
 
 // Construct our "media meta" GROQ
 export const mediaContent = `
+  includeInGallery,
   'content': media[0]{
     _type,
     ...,
@@ -302,6 +303,10 @@ export const modules = `
       'slug': slug.current,
       'id': productID,
       price,
+      disableAddToCart,
+      additionalLinks[]{
+        ${link}
+      },
       "variants": *[_type == "productVariant" && productID == ^.productID && wasDeleted != true && isDraft != true]{
         "id": variantID,
         title,

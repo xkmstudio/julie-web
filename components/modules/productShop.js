@@ -8,6 +8,7 @@ import Icon from '@components/icon'
 import Photo from '@components/photo'
 import { ProductActions } from '@components/product'
 import { imageBuilder } from '@lib/sanity'
+import Link from '@components/link'
 
 import { useAddItem } from '@lib/context'
 
@@ -177,15 +178,22 @@ const ProductShop = ({
                 Learn More
               </NextLink>
               {activeVariant && (
-                <ProductActions
-                  product={product}
-                  type={'feature'}
-                  activeVariant={activeVariant}
-                  klaviyoAccountID={product.klaviyoAccountID}
-                  onAddToCart={handleAddToCart}
-                  toolkitIncluded={toolkitIncluded}
-                  toolkitProductID={toolkitProductID}
-                />
+                product.disableAddToCart && product.additionalLinks && product.additionalLinks.length > 0 ? (
+                  <Link
+                    link={product.additionalLinks[0]}
+                    className="btn is-add is-large flex items-center justify-center gap-5 flex-[1_1_0%] min-w-0"
+                  />
+                ) : !product.disableAddToCart ? (
+                  <ProductActions
+                    product={product}
+                    type={'feature'}
+                    activeVariant={activeVariant}
+                    klaviyoAccountID={product.klaviyoAccountID}
+                    onAddToCart={handleAddToCart}
+                    toolkitIncluded={toolkitIncluded}
+                    toolkitProductID={toolkitProductID}
+                  />
+                ) : null
               )}
             </div>
             {logos && logos.length > 0 && (

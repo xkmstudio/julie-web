@@ -209,34 +209,27 @@ const Articles = ({ data }) => {
 
     setIsSearching(true)
     try {
-      // In Algolia v5, use searchSingleIndex() directly on the client
-      // Don't specify attributesToRetrieve - by default Algolia returns all attributes
-      // unless they're in unretrievableAttributes
-      const { hits } = await algoliaClient.searchSingleIndex({
+      const result = await algoliaClient.searchSingleIndex({
         indexName: algoliaIndexName,
         searchParams: {
-          query: query,
+          query: query.trim(),
           hitsPerPage: 100,
-          // Omit attributesToRetrieve to get all attributes by default
         },
       })
 
-      // Map Algolia results to match article structure
-      // Image and gradient are objects with url, alt, lqip, etc.
-      const mappedResults = hits.map((hit) => {
-        return {
-          slug: hit.slug,
-          title: hit.title,
-          subtitle: hit.subtitle,
-          date: hit.date,
-          tags: hit.tags || [],
-          authors: hit.authors || [],
-          // Image and gradient are objects (or null)
-          image: hit.image || null,
-          gradient: hit.gradient || null,
-          useGradient: hit.useGradient || false,
-        }
-      })
+      const { hits } = result
+
+      const mappedResults = hits.map((hit) => ({
+        slug: hit.slug,
+        title: hit.title,
+        subtitle: hit.subtitle,
+        date: hit.date,
+        tags: hit.tags || [],
+        authors: hit.authors || [],
+        image: hit.image || null,
+        gradient: hit.gradient || null,
+        useGradient: hit.useGradient || false,
+      }))
 
       setSearchResults(mappedResults)
     } catch (error) {
@@ -495,12 +488,12 @@ const Articles = ({ data }) => {
                   <div className="w-full grid grid-cols-12 gap-x-20 gap-y-50">
                     {searchResults.map((article, key) => {
                       return (
-                        <div key={key} className="col-span-12 md:col-span-4">
+                        <div key={key} className="article-card-container col-span-12 md:col-span-4">
                           <Link
                             className="relative block"
                             href={`/blog/${article.slug}`}
                           >
-                            <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
+                            <div className="article-card w-full pb-[120%] relative">
                               {(() => {
                                 // Check if gradient is valid (has colorStops with at least 2 items)
                                 const hasValidGradient = article.gradient && 
@@ -591,12 +584,12 @@ const Articles = ({ data }) => {
                   <div className="w-full grid grid-cols-12 gap-x-20 gap-y-50">
                     {allArticles.map((article, key) => {
                       return (
-                        <div key={key} className="col-span-12 md:col-span-4">
+                        <div key={key} className="article-card-container col-span-12 md:col-span-4">
                           <Link
                             className="relative block"
                             href={`/blog/${article.slug}`}
                           >
-                            <div className="w-full pb-[120%] relative rounded-[1rem] overflow-hidden">
+                            <div className="article-card w-full pb-[120%] relative">
                               {(() => {                                
                                 // Check if gradient is valid (has colorStops with at least 2 items)
                                 const hasValidGradient = article.gradient && 
@@ -794,13 +787,13 @@ const Articles = ({ data }) => {
                   : 'justify-center'
 
                 items.push(
-                  <div key={key} className={colSpan}>
+                  <div key={key} className={`article-card-container ${colSpan}`}>
                     <Link
                       className="relative block"
                       href={`/blog/${article.slug}`}
                     >
                       <div
-                        className={`w-full ${aspectRatio} relative rounded-[1rem] overflow-hidden`}
+                        className={`article-card w-full ${aspectRatio} relative`}
                       >
                         {(() => {
                           // Check if gradient is valid (has colorStops with at least 2 items)

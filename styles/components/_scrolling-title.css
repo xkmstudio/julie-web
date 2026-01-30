@@ -1,0 +1,117 @@
+/* Scrolling title animation for overflowing text */
+.scrolling-title-container {
+  position: relative;
+  overflow: hidden !important; /* Force overflow hidden - this clips content */
+  width: 100%; /* Take full width of parent */
+  max-width: 100%; /* Never expand beyond parent */
+  min-width: 0; /* Allow flex children to shrink */
+  /* Parent div already has flex-1, so this just takes 100% of that space */
+  box-sizing: border-box; /* Include padding/border in width calculation */
+  /* Container width is locked - content inside can be wider but will be clipped */
+  contain: layout style; /* Contain layout calculations to prevent expansion */
+}
+
+.scrolling-title-text {
+  display: inline-block;
+  white-space: nowrap;
+  width: auto; /* Let text be its natural width */
+  min-width: 100%; /* But at least fill container */
+  position: relative;
+  z-index: 1;
+  animation: scroll-title 8s ease-in-out infinite;
+  animation-play-state: paused;
+  box-sizing: border-box;
+  text-overflow: ellipsis; /* Show ellipsis when not scrolling */
+}
+
+.scrolling-title-text.is-overflowing {
+  width: max-content; /* Allow text to be wider than container */
+  animation-play-state: running;
+  text-overflow: clip; /* Don't show ellipsis when scrolling */
+  /* Text is wider than container but clipped by parent's overflow: hidden */
+}
+
+/* Gradient overlay - white to transparent fade on the right edge */
+.scrolling-title-gradient {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 120px; /* Width of gradient fade */
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0.8) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* On hover, match gray-50 background */
+.group:hover .scrolling-title-gradient {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(249, 250, 251, 0.4) 40%,
+    rgba(249, 250, 251, 0.8) 80%,
+    rgba(249, 250, 251, 1) 100%
+  );
+}
+
+/* Desktop: prevent wrapping, scroll text if overflowing */
+@media (min-width: 850px) {
+  .scrolling-title-text {
+    white-space: nowrap;
+  }
+}
+
+/* Mobile: allow normal wrapping, no gradient, no scroll */
+@media (max-width: 849px) {
+  .scrolling-title-text {
+    white-space: normal !important;
+    overflow: visible !important;
+    width: 100% !important;
+    animation: none !important;
+    display: block !important;
+  }
+
+  .scrolling-title-gradient {
+    display: none !important;
+  }
+}
+
+@keyframes scroll-title {
+  0% {
+    transform: translateX(0);
+  }
+  /* Pause at start for 2 seconds */
+  25% {
+    transform: translateX(0);
+  }
+  /* Scroll to reveal overflow */
+  50% {
+    transform: translateX(calc(-1 * var(--title-scroll-distance, 0px)));
+  }
+  /* Pause at end for 2 seconds */
+  75% {
+    transform: translateX(calc(-1 * var(--title-scroll-distance, 0px)));
+  }
+  /* Return to start */
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .scrolling-title-text {
+    animation: none !important;
+  }
+  
+  .scrolling-title-gradient {
+    display: none !important;
+  }
+}
+

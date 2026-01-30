@@ -84,7 +84,8 @@ const ProductGallery = ({
               <div
                 key={index}
                 className={cx(
-                  'w-full min-w-[100%] h-full'
+                  'w-full min-w-[100%] h-full',
+                  slide.forceContain && 'p-[1.5rem] md:p-[3rem]'
                 )}
               >
                 <div className="w-full h-full relative">
@@ -94,7 +95,10 @@ const ProductGallery = ({
                     srcSizes={[600, 800, 1200, 1600]}
                     sizes="100vw"
                     layout="fill"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className={cx(
+                      'absolute inset-0 w-full h-full',
+                      slide.forceContain ? '!object-contain' : '!object-cover'
+                    )}
                   />
                 </div>
               </div>

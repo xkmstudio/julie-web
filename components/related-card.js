@@ -14,7 +14,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   const cardContent = (
     <div className="flex flex-col gap-15 md:gap-20">
       <div className="w-full flex flex-col">
-        <div className="w-full pb-[100%] relative rounded-[1rem] overflow-hidden">
+        <div className="article-card w-full pb-[100%] relative">
           {(() => {
             // Check if gradient is valid (has colorStops with at least 2 items)
             const hasValidGradient = item?.gradient && 
@@ -121,7 +121,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
           e.preventDefault()
           onFrameLinkClick(articleHref)
         }}
-        className={cx(className || 'w-full md:w-1/2', 'block')}
+        className={cx('article-card-container', className || 'w-full md:w-1/2', 'block')}
       >
         {cardContent}
       </a>
@@ -131,7 +131,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   // If articleHref is provided but not in frame, use NextLink
   if (articleHref && !shouldHandleInFrame) {
     return (
-      <NextLink href={articleHref} className={cx(className || 'w-full md:w-1/2', 'block')}>
+      <NextLink href={articleHref} className={cx('article-card-container', className || 'w-full md:w-1/2', 'block')}>
         {cardContent}
       </NextLink>
     )
@@ -139,7 +139,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   
   // Just return content without link wrapper
   return (
-    <div className={className || 'w-full md:w-1/2'}>
+    <div className={cx('article-card-container', className || 'w-full md:w-1/2')}>
       {cardContent}
     </div>
   )

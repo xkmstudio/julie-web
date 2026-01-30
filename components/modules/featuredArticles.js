@@ -10,6 +10,7 @@ import Media from '@components/media'
 import Icon from '@components/icon'
 import BlockContent from '@components/block-content'
 import Gradient from '@components/gradient'
+import ScrollingTitle from '@components/scrolling-title'
 
 const Jewels = () => {
   return (
@@ -100,13 +101,15 @@ const FeaturedArticles = ({ data = {} }) => {
                       href={`/blog/${article.slug}`}
                       className="group w-full flex flex-col-reverse md:flex-row items-center md:items-end justify-between text-center md:text-left py-20 border-b-2 border-ash hover:bg-gray-50 transition-colors gap-20"
                     >
-                      <div className="flex-1 flex flex-col-reverse md:flex-col gap-15 md:gap-10">
+                      <div className="flex-1 flex flex-col-reverse md:flex-col gap-15 md:gap-10 min-w-0 overflow-hidden">
                         <div className="font-lb">
                           by {article.authors?.[0]?.title || 'Unknown'}
                         </div>
-                        <h3 className="title-lg font-bold">{article.title}</h3>
+                        <ScrollingTitle as="h3" titleClassName="title-lg font-bold">
+                          {article.title}
+                        </ScrollingTitle>
                       </div>
-                      <div className="flex flex-col items-end gap-15">
+                      <div className="flex flex-col items-end gap-15 flex-shrink-0">
                         <div className="hidden md:block text-ash transition-colors duration-300 group-hover:text-black">
                           <Icon
                             name="Arrow Out"
@@ -115,7 +118,7 @@ const FeaturedArticles = ({ data = {} }) => {
                           />
                         </div>
                         {article.tags?.[0] && (
-                          <div className="tag">{article.tags[0].title}</div>
+                          <div className="tag flex-shrink-0">{article.tags[0].title}</div>
                         )}
                       </div>
                     </NextLink>
@@ -258,7 +261,7 @@ const FeaturedArticlesCarousel = ({ articles }) => {
                     href={`/blog/${article.slug}`}
                     className="block w-full"
                   >
-                    <div className="article-card w-full pb-[133.3333%] md:pb-[66.6667%] relative rounded-[1rem] overflow-hidden">
+                    <div className="article-card w-full pb-[133.3333%] md:pb-[66.6667%] relative rounded-[1rem]">
                       {article.gradient ? (
                         <div className="w-full h-full absolute top-0 left-0">
                           <Gradient gradient={article.gradient} />
@@ -284,7 +287,9 @@ const FeaturedArticlesCarousel = ({ articles }) => {
                       )}
                     </div>
                     <div className="mt-10 p-10 flex flex-col items-center md:items-start text-center md:text-left gap-10">
-                      <h2 className="w-full title-2xs">{article.title}</h2>
+                      <ScrollingTitle className="w-full" as="h2" titleClassName="title-2xs">
+                        {article.title}
+                      </ScrollingTitle>
                       {article.authors?.length > 0 && (
                         <div className="flex flex-col md:flex-row items-center flex-wrap gap-10 text-center md:text-left">
                           <div className="flex justify-center items-center gap-3">

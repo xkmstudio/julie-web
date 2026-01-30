@@ -29,11 +29,11 @@ export default async function handler(req, res) {
     const algoliaIndexName =
       process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || 'articles'
 
-    // Search Algolia
+    // Search Algolia - simple, clean implementation
     const { hits } = await algoliaClient.searchSingleIndex({
       indexName: algoliaIndexName,
       searchParams: {
-        query: query,
+        query: query.trim(),
         hitsPerPage: 10,
       },
     })
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       return {
         slug: hit.slug,
         title: hit.title,
-        subtitle: hit.subtitle,
+        subtitle: hit.subtitle || '',
         date: hit.date,
         tags: hit.tags || [],
         authors: hit.authors || [],

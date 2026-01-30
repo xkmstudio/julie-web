@@ -99,28 +99,31 @@ const PageContent = ({
       globalCta,
     } = page
 
-    console.log(useGradient, gradient)
-
     return (
       <div className="w-full">
         {/* Article Header Section */}
         <div
           className={cx(
-            'w-full flex flex-col pb-20 md:h-screen section-padding relative',
+            'w-full flex flex-col pb-20 section-padding relative',
             {
               'pt-[calc(var(--headerHeight)+2.5rem)]': !actuallyInFrame,
-              'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient),
+              'md:h-screen': !actuallyInFrame,
+              'min-h-[50vh]': actuallyInFrame && useGradient && gradient,
+              'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
+              'gap-15': actuallyInFrame && image && !(useGradient && gradient),
               'justify-center items-center': useGradient && gradient,
             }
           )}
         >
           <div className={cx('w-full flex flex-col relative', {
-            'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient),
+            'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
+            'gap-15': actuallyInFrame && image && !(useGradient && gradient),
             'justify-center items-center h-full': useGradient && gradient,
           })}>
             {image && !(useGradient && gradient) && (
-              <div className={cx('w-full h-[100vw] relative rounded-[1.5rem] overflow-hidden', {
-                'md:w-1/2 md:h-full': !(useGradient && gradient),
+              <div className={cx('w-full relative rounded-[1.5rem] overflow-hidden', {
+                'aspect-square': actuallyInFrame,
+                'h-[100vw] md:w-1/2 md:h-full': !actuallyInFrame && !(useGradient && gradient),
                 'hidden md:block': useGradient && gradient,
               })}>
                 {image && (
@@ -136,12 +139,18 @@ const PageContent = ({
               </div>
             )}
             {useGradient && gradient && (
-              <div className="absolute left-0 top-0 w-full h-full rounded-[1.5rem] overflow-hidden">
+              <div className={cx(
+                'absolute left-0 top-0 w-full h-full rounded-[1.5rem] overflow-hidden',
+                { 'min-h-[50vh]': actuallyInFrame }
+              )}>
                 <Gradient gradient={gradient} />
               </div>
             )}
-            <div className={cx('relative z-2 mx-auto flex flex-col gap-15 md:gap-25 items-center md:p-25 mt-10 md:mt-0', {
-              'w-full md:w-1/2': image && !(useGradient && gradient),
+            <div className={cx('relative z-2 mx-auto flex flex-col items-center', {
+              'gap-15': actuallyInFrame,
+              'gap-15 md:gap-25 md:p-25 mt-10 md:mt-0': !actuallyInFrame,
+              'w-full': actuallyInFrame && image && !(useGradient && gradient),
+              'w-full md:w-1/2': !actuallyInFrame && image && !(useGradient && gradient),
               'w-full h-full': useGradient && gradient,
             })}>
               <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
@@ -381,7 +390,7 @@ const PageContent = ({
 
         {/* Editorial Standards */}
         {editorialStandards && editorialStandards.length > 0 && (
-          <div className="w-full max-w-[80rem] mx-auto mt-60 md:mt-60 pb-60 md:pb-120 border-t border-ash pt-60 md:pt-60">
+          <div className="w-full max-w-[80rem] section-padding mx-auto mt-60 md:mt-60 pb-60 md:pb-120 border-t border-ash pt-60 md:pt-60">
             <div className="font-plaid text-16 md:text-18 uppercase tracking-[-.02em] leading-100 text-center">Editorial Standards</div>
             <div className="w-full mt-50">
               <BlockContent
@@ -516,6 +525,7 @@ const PageContent = ({
           modules={page.modules}
           onVariantChange={updateVariant}
           activeVariant={activeVariant}
+          isInFrame={actuallyInFrame}
         />
         {page.modules?.map((module, key) => (
           <Module
@@ -526,6 +536,7 @@ const PageContent = ({
             activeVariant={activeVariant}
             onVariantChange={updateVariant}
             onFrameLinkClick={onFrameLinkClick}
+            isInFrame={actuallyInFrame}
           />
         ))}
       </div>
@@ -535,11 +546,23 @@ const PageContent = ({
   // Render profile content
   if (type === 'profile') {
     const { title, image, role, bio, articles } = page
+    // Use mobile layout when in frame
+    const useMobileLayout = actuallyInFrame
 
     return (
       <div className="w-full">
-        <div className="w-full md:h-screen min-h-[50rem] flex flex-col md:flex-row gap-15 md:gap-25 pt-0 pb-20 section-padding">
-          <div className="w-full md:w-1/2 h-[100vw] md:h-full relative rounded-[1.5rem] overflow-hidden">
+        <div className={cx(
+          'w-full flex gap-15 pt-0 pb-20 section-padding',
+          useMobileLayout 
+            ? 'flex-col min-h-[50rem]' 
+            : 'flex-col md:flex-row md:h-screen md:gap-25 min-h-[50rem]'
+        )}>
+          <div className={cx(
+            'relative rounded-[1.5rem] overflow-hidden',
+            useMobileLayout 
+              ? 'w-full aspect-square' 
+              : 'w-full md:w-1/2 aspect-square md:aspect-auto md:h-full'
+          )}>
             {image && (
               <Photo
                 photo={image}
@@ -551,8 +574,16 @@ const PageContent = ({
               />
             )}
           </div>
-          <div className="w-full md:w-1/2 flex flex-col gap-15 md:gap-25 items-center p-25">
-            <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
+          <div className={cx(
+            'flex flex-col items-center p-25',
+            useMobileLayout 
+              ? 'w-full gap-15' 
+              : 'w-full md:w-1/2 gap-15 md:gap-25'
+          )}>
+            <div className={cx(
+              'w-full max-w-[60rem] mx-auto flex flex-col h-full',
+              useMobileLayout ? 'gap-15' : 'gap-15 md:gap-25'
+            )}>
               <div className="w-full text-center flex-1 flex flex-col justify-center gap-35 items-center">
                 <div className="w-full flex flex-col gap-20">
                   <h1 className="title-2xl">{title}</h1>
@@ -570,7 +601,12 @@ const PageContent = ({
         </div>
 
         {articles && articles.length > 0 && (
-          <div className="w-full flex flex-col items-center gap-30 md:gap-50 mt-30 mb-90 md:my-90 section-padding">
+          <div className={cx(
+            'w-full flex flex-col items-center section-padding',
+            useMobileLayout 
+              ? 'gap-30 mt-30 mb-90' 
+              : 'gap-30 md:gap-50 mt-30 mb-90 md:my-90'
+          )}>
             <div className="title-lg text-center">Articles with {title}</div>
             <div className="grid-standard gap-y-40">
               {articles.map((article, key) => {
@@ -579,7 +615,7 @@ const PageContent = ({
                   <ArticleCard
                     key={key}
                     item={article}
-                    className="col-span-12 md:col-span-4"
+                    className={useMobileLayout ? 'col-span-12' : 'col-span-12 md:col-span-4'}
                     articleHref={articleHref}
                     onFrameLinkClick={onFrameLinkClick}
                   />

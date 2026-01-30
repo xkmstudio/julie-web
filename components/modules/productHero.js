@@ -10,6 +10,7 @@ import Photo from '@components/photo'
 import NextLink from 'next/link'
 import AccordionList from '@components/accordion-list'
 import Link from '@components/link'
+import cx from 'classnames'
 
 import {
   ProductGallery,
@@ -68,7 +69,7 @@ const ProductIcon = ({ item, index, className }) => {
   )
 }
 
-const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
+const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame = false }) => {
   const [scrollRef, inView] = useInView({ threshold: 0, triggerOnce: true })
 
   const { isPageTransition } = useSiteContext()
@@ -77,38 +78,69 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
   const icon = useRef()
   const containerRef = useRef()
 
+  // Use mobile layout when in frame
+  const useMobileLayout = isInFrame
+
   return (
     <div
       ref={containerRef}
-      className={`product px-15 md:px-25 pb-[2.5rem] pt-[calc(var(--headerHeight)+2.5rem)]`}
+      className={cx('product pb-[2.5rem]', {
+        'px-15': useMobileLayout,
+        'px-15 md:px-25 pt-[calc(var(--headerHeight)+2.5rem)] md:h-screen md:min-h-[60rem]': !useMobileLayout,
+      })}
     >
-      <div className={`w-full flex items-start flex-col md:flex-row gap-15 md:gap-25`}>
-        <div className={`w-full sticky top-0`}>
-          <div className="w-full h-[100vw] md:h-hero">
-            <div className="w-full h-full z-2 absolute top-0 left-0">
-              {(activeVariant?.galleryImages &&
-              activeVariant.galleryImages.length > 0
+      <div className={cx('w-full flex', {
+        'flex-col gap-15': useMobileLayout,
+        'h-full flex-col md:flex-row gap-15 md:gap-25': !useMobileLayout,
+      })}>
+        <div className={cx('w-full', {
+          'aspect-square': useMobileLayout,
+          'h-[100vw] md:h-full': !useMobileLayout,
+        })}>
+          <div className="w-full h-full relative z-2">
+            {(() => {
+              // Get base gallery slides
+              const baseSlides = activeVariant?.galleryImages?.length > 0
                 ? activeVariant.galleryImages
-                : product.defaultGallery) && (
+                : product.defaultGallery || []
+              
+              // Check if thumbnail should be included in gallery
+              const thumbnailContent = product.productThumbnail?.content
+              const includeInGallery = product.productThumbnail?.includeInGallery
+              
+              // Build final slides array
+              const slides = includeInGallery && thumbnailContent
+                ? [{ ...thumbnailContent, forceContain: true }, ...baseSlides]
+                : baseSlides
+              
+              return slides.length > 0 && (
                 <ProductGallery
-                  slides={
-                    activeVariant?.galleryImages &&
-                    activeVariant.galleryImages.length > 0
-                      ? activeVariant.galleryImages
-                      : product.defaultGallery
-                  }
+                  slides={slides}
                   hasArrows
                   hasCounter
                 />
-              )}
-            </div>
+              )
+            })()}
           </div>
         </div>
 
-        <div className={`w-full col-span-12 md:col-span-6 flex flex-col pt-15 md:py-50${product.drawers?.length > 0 ? ' justify-start' : ' justify-center'}`}>
-          <div className={`w-full max-w-[50rem] md:mx-auto pt-10 md:pt-0 flex flex-col flex-1${product.drawers?.length > 0 ? ' justify-start' : ' justify-center'}`}>
+        <div className={cx('w-full flex flex-col', {
+          'pt-15': useMobileLayout,
+          'col-span-12 md:col-span-6 pt-15 md:py-50': !useMobileLayout,
+          'justify-start': product.drawers?.length > 0,
+          'justify-center': !product.drawers?.length,
+        })}>
+          <div className={cx('w-full max-w-[50rem] flex flex-col flex-1', {
+            'pt-10': useMobileLayout,
+            'md:mx-auto pt-10 md:pt-0': !useMobileLayout,
+            'justify-start': product.drawers?.length > 0,
+            'justify-center': !product.drawers?.length,
+          })}>
             <div className="">
-              <div className="mb-20 md:mb-20 flex flex-col items-center text-center gap-15 md:gap-10">
+              <div className={cx('mb-20 flex flex-col items-center text-center', {
+                'gap-15': useMobileLayout,
+                'gap-15 md:gap-10': !useMobileLayout,
+              })}>
                 {product.subtitle && (
                   <div className="subtitle-lg">{product.subtitle}</div>
                 )}

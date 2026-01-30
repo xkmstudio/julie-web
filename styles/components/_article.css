@@ -55,14 +55,9 @@
 }
 
 .article-card{
-    @apply relative rounded-[1.5rem];
-    transition: border-radius 200ms linear 0ms;
-    
-    &::before{
-        content: '';
-        @apply absolute inset-0 rounded-[1.5rem] bg-pink opacity-0 blur-[10px];
-        transition: border-radius 200ms linear 0ms, opacity 200ms linear 0ms;
-    }
+    @apply relative rounded-[1.5rem] overflow-hidden;
+    transition: border-radius 200ms linear 0ms, box-shadow 200ms linear 0ms;
+    box-shadow: 0 0 0 0 rgba(255, 59, 171, 0);
     
     img{
         @apply rounded-[1.5rem];
@@ -71,10 +66,7 @@
     @media screen and (min-width: 949px){
         &:hover{
             @apply rounded-[20vw];
-            
-            &::before{
-                @apply opacity-100 rounded-[20vw];
-            }
+            box-shadow: 0 0 12px 4px rgba(255, 59, 171, 0.7);
             
             img{
                 @apply rounded-[20vw];

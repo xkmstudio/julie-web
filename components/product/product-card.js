@@ -5,6 +5,7 @@ import Media from '@components/media'
 import { ProductActions } from '@components/product'
 import { useAddItem } from '@lib/context'
 import { useIsInFrame } from '@lib/helpers'
+import Link from '@components/link'
 
 const ProductCard = ({
   product,
@@ -163,13 +164,20 @@ const ProductCard = ({
           </NextLink>
         )}
         {!hasMultipleVariants && (
-          <ProductActions
-            product={product}
-            type={'feature'}
-            activeVariant={activeVariant}
-            klaviyoAccountID={product.klaviyoAccountID}
-            onAddToCart={handleAddToCart}
-          />
+          product.disableAddToCart && product.additionalLinks && product.additionalLinks.length > 0 ? (
+            <Link
+              link={product.additionalLinks[0]}
+              className="btn is-add is-large flex items-center justify-center gap-5 flex-[1_1_0%] min-w-0"
+            />
+          ) : !product.disableAddToCart ? (
+            <ProductActions
+              product={product}
+              type={'feature'}
+              activeVariant={activeVariant}
+              klaviyoAccountID={product.klaviyoAccountID}
+              onAddToCart={handleAddToCart}
+            />
+          ) : null
         )}
       </div>
     </div>
@@ -254,13 +262,20 @@ const ProductCard = ({
           </NextLink>
         )}
         {!hasMultipleVariants && (
-          <ProductActions
-            product={product}
-            type={'feature'}
-            activeVariant={activeVariant}
-            klaviyoAccountID={product.klaviyoAccountID}
-            onAddToCart={handleAddToCart}
-          />
+          product.disableAddToCart && product.additionalLinks && product.additionalLinks.length > 0 ? (
+            <Link
+              link={product.additionalLinks[0]}
+              className="btn is-add is-large flex items-center justify-center gap-5 flex-[1_1_0%] min-w-0"
+            />
+          ) : !product.disableAddToCart ? (
+            <ProductActions
+              product={product}
+              type={'feature'}
+              activeVariant={activeVariant}
+              klaviyoAccountID={product.klaviyoAccountID}
+              onAddToCart={handleAddToCart}
+            />
+          ) : null
         )}
       </div>
     </div>
