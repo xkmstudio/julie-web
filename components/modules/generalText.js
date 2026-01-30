@@ -20,7 +20,7 @@ const GeneralText = ({ data = {} }) => {
           </div>
         )}
         {content && (
-          <div className="w-full">
+          <div className="w-full article-lists">
             <BlockContent blocks={content} />
           </div>
         )}

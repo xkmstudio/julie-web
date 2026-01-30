@@ -442,7 +442,7 @@ const Articles = ({ data }) => {
                   type="text"
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  placeholder="Search the journal..."
+                  placeholder="Search the library..."
                   className="text-16 w-full px-10 py-15 border border-pink rounded-[1rem] focus:outline-none focus:border-pink transition-colors"
                 />
                 {searchQuery && (
@@ -555,7 +555,7 @@ const Articles = ({ data }) => {
                               )}
                             </div>
                             <div className="mt-10 p-10 flex flex-col gap-10 items-center md:items-start text-center md:text-left">
-                              <h2 className="w-full title-2xs max-w-[28rem]">
+                              <h2 className="w-full title-lg">
                                 {article.title}
                               </h2>
                               {article.authors?.length > 0 && (
@@ -650,7 +650,7 @@ const Articles = ({ data }) => {
                               )}
                             </div>
                             <div className="mt-10 p-10 flex flex-col gap-10 items-center md:items-start text-center md:text-left">
-                              <h2 className="w-full title-2xs max-w-[28rem]">
+                              <h2 className="w-full title-lg">
                                 {article.title}
                               </h2>
                               {article.authors?.length > 0 && (
@@ -783,7 +783,7 @@ const Articles = ({ data }) => {
 
                 // Use square ratio for 50% width articles (first two in cycle)
                 const aspectRatio =
-                  cyclePosition < 2 ? 'pb-[120%] md:pb-[100%]' : 'pb-[120%] md:pb-[120%]'
+                  cyclePosition < 2 ? 'pb-[120%] md:pb-[80%]' : 'pb-[120%] md:pb-[100%]'
 
                 // Set alignment classes based on card width
                 const alignmentClasses = isOneThird 
@@ -853,8 +853,8 @@ const Articles = ({ data }) => {
                           </div>
                         )}
                       </div>
-                      <div className={`mt-10 p-10 flex flex-col gap-10 ${alignmentClasses}`}>
-                        <h2 className="w-full title-2xs max-w-[28rem]">
+                      <div className={`mt-10 pt-5 flex flex-col gap-10 ${alignmentClasses}`}>
+                        <h2 className="w-full title-lg max-w-[40rem]">
                           {article.title}
                         </h2>
                         {article.authors?.length > 0 && (
@@ -959,22 +959,40 @@ export async function getServerSideProps({ res, preview, previewData }) {
       description[]{${queries.ptContent}},
       image{${queries.assetMeta}},
       background{${queries.assetMeta}},
-      "articles": *[_type == "article" && defined(date)] | order(date desc){
-        'slug': slug.current, 
-        authors[]->{
-          title,
-          'slug': slug.current,
+      "articles": coalesce(
+        articles[]->{
+          'slug': slug.current, 
+          authors[]->{
+            title,
+            'slug': slug.current,
+            image{${queries.assetMeta}},
+            role,
+          },
+          title, 
+          subtitle,
+          date,
           image{${queries.assetMeta}},
-          role,
+          gradient{${queries.gradient}},
+          tags[]->{'slug': slug.current, title},
+          useGradient
         },
-        title, 
-        subtitle,
-        date,
-        image{${queries.assetMeta}},
-        gradient{${queries.gradient}},
-        tags[]->{'slug': slug.current, title},
-        useGradient
-      },
+        *[_type == "article" && defined(date)] | order(date desc){
+          'slug': slug.current, 
+          authors[]->{
+            title,
+            'slug': slug.current,
+            image{${queries.assetMeta}},
+            role,
+          },
+          title, 
+          subtitle,
+          date,
+          image{${queries.assetMeta}},
+          gradient{${queries.gradient}},
+          tags[]->{'slug': slug.current, title},
+          useGradient
+        }
+      ),
       seo,
     }
   `,

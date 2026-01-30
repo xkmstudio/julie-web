@@ -56,6 +56,15 @@ export default {
         'This will set the add to cart button as Pre-Order to notify the customer'
     },
     {
+      title: 'Disable Add to Cart',
+      name: 'disableAddToCart',
+      type: 'boolean',
+      group: 'settings',
+      initialValue: false,
+      description:
+        'When enabled, the add to cart button will be hidden and buy links will be shown instead'
+    },
+    {
       title: 'Shipping Note',
       name: 'noteShipping',
       type: 'string',
@@ -112,7 +121,7 @@ export default {
     },
     {
       title: 'Additional Links',
-      description: 'These links will display as buttons below the add to cart button',
+      description: 'These links will display as buttons below the add to cart button. When "Disable Add to Cart" is enabled, these links will replace the add to cart button (first link will be solid, subsequent links will be outline).',
       name: 'additionalLinks',
       type: 'array',
       of: [{ type: 'link' }],

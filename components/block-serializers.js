@@ -33,9 +33,23 @@ const createMarks = (onFrameLinkClick = null) => ({
             _type: "navPage",
             page: {
               type: value.page.type,
-              slug: { current: value.page.slug },
+              slug: value.page.slug,
               isHome: value.page.isHome,
             },
+            title: children,
+          }}
+          onFrameLinkClick={onFrameLinkClick}
+        />
+      );
+    }
+    // Handle href for backward compatibility (simplePortableText, complexPortableText)
+    if (value.href) {
+      return (
+        <CustomLink
+          className="link-inline"
+          link={{
+            _type: "navLink",
+            url: value.href,
             title: children,
           }}
           onFrameLinkClick={onFrameLinkClick}

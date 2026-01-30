@@ -11,6 +11,7 @@ import ArticleCard from '@components/related-card'
 import ProductCarousel from '@components/product-carousel'
 import ProductHero from '@components/modules/productHero'
 import Gradient from '@components/gradient'
+import Link from '@components/link'
 
 const MOBILE_BREAKPOINT = 850
 
@@ -74,7 +75,7 @@ const PageContent = ({
   const activeVariant =
     type === 'product' && product?.variants
       ? product.variants.find((v) => v.id == activeVariantID) ||
-        product.variants[0]
+      product.variants[0]
       : null
 
   if (!page) return null
@@ -94,6 +95,8 @@ const PageContent = ({
       related,
       useGradient,
       gradient,
+      editorialStandards,
+      globalCta,
     } = page
 
     console.log(useGradient, gradient)
@@ -376,12 +379,25 @@ const PageContent = ({
           </div>
         )}
 
+        {/* Editorial Standards */}
+        {editorialStandards && editorialStandards.length > 0 && (
+          <div className="w-full max-w-[80rem] mx-auto mt-60 md:mt-60 pb-60 md:pb-120 border-t border-ash pt-60 md:pt-60">
+            <div className="font-plaid text-16 md:text-18 uppercase tracking-[-.02em] leading-100 text-center">Editorial Standards</div>
+            <div className="w-full mt-50">
+              <BlockContent
+                blocks={editorialStandards}
+                sanityConfig={sanityConfig}
+                onFrameLinkClick={onFrameLinkClick}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Author and reviewer section */}
         {(authors?.length > 0 || reviewers?.length > 0) && (
           <div
-            className={`w-full section-padding mt-60 ${
-              isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
-            }`}
+            className={`w-full section-padding mt-60 ${isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
+              }`}
           >
             {isClient && (isMobile || actuallyInFrame) ? (
               <ProductCarousel
@@ -431,26 +447,36 @@ const PageContent = ({
           </div>
         )}
 
-        {/* Still have questions section */}
-        <div className="w-full flex flex-col items-center gap-35 my-90 section-padding">
-          <div className="title-2xl">still have questions?</div>
-          <button className="btn" href="/contact">
-            Ask Julie
-          </button>
-        </div>
+        {/* Global CTA */}
+        {globalCta && globalCta.title && globalCta.link && (
+          <div className="w-full flex flex-col items-center gap-35 my-60 md:my-90 section-padding">
+            <div className="title-2xl text-center">{globalCta.title}</div>
+            <Link
+              link={globalCta.link}
+              onFrameLinkClick={onFrameLinkClick}
+              className="btn"
+            >
+              {globalCta.link.title || 'Learn More'}
+            </Link>
+          </div>
+        )}
 
         {/* Related articles */}
         {related && related.length > 0 && (
           <div
-            className={`mt-60 md:mt-100 flex flex-col items-center gap-30 md:gap-60 pb-60 md:pb-120 section-padding ${
-              isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
-            }`}
+            className={`mt-60 md:mt-100 flex flex-col items-center gap-30 md:gap-60 pb-60 md:pb-120 section-padding ${isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
+              }`}
           >
             {isClient && (isMobile || actuallyInFrame) ? (
               <ProductCarousel
                 items={related}
                 renderSlide={(item, key) => (
-                  <ArticleCard key={key} item={item} />
+                  <ArticleCard
+                    key={key}
+                    item={item}
+                    articleHref={item.slug ? `/blog/${item.slug}` : null}
+                    onFrameLinkClick={onFrameLinkClick}
+                  />
                 )}
                 slideClassName="w-[83.333%] min-w-[83.333%] ml-15"
                 enabled={isClient && (isMobile || actuallyInFrame)}
@@ -460,7 +486,12 @@ const PageContent = ({
                 {related.map((item, key) => {
                   return (
                     <React.Fragment key={key}>
-                      <ArticleCard item={item} />
+                      <ArticleCard
+                        item={item}
+                        className="w-full md:w-1/2"
+                        articleHref={item.slug ? `/blog/${item.slug}` : null}
+                        onFrameLinkClick={onFrameLinkClick}
+                      />
                     </React.Fragment>
                   )
                 })}
@@ -468,6 +499,10 @@ const PageContent = ({
             )}
           </div>
         )}
+
+
+
+
       </div>
     )
   }

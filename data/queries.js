@@ -127,7 +127,9 @@ export const ptContent = `
   markDefs[]{
     ...,
     _type == "link" => {
+      "linkType": @.linkType,
       "url": @.url,
+      "href": @.href,
       "isButton": @.isButton,
       "styles": @.styles{style, isLarge, isBlock},
       "page":@.page->{
@@ -187,7 +189,7 @@ export const product = `
     description[]{
       ${ptContent}
     },
-    buyLinks,
+    disableAddToCart,
     productThumbnail{${mediaContent}},
     productBadge{${assetMeta}},
     message[]{
@@ -374,6 +376,12 @@ export const modules = `
     _type,
     _key,
     title,
+    hero{
+      hasEma,
+      title[]{${ptContent}},
+      subtitle[]{${ptContent}},
+      mobileTag
+    },
     cta{
       text,
       link{${link}}
@@ -395,6 +403,7 @@ export const modules = `
   _type == 'testimonials' => {
     _type,
     _key,
+    title,
     testimonials[]{
       _type,
       _key,

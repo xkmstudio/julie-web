@@ -1,7 +1,7 @@
 .article{
     @apply w-full max-w-[65rem] mx-auto;
 
-    p,{
+    p{
         @apply indent-25 text-18;
     }
 
@@ -32,6 +32,24 @@
 
         @media screen and (max-width: 849px){
             font-size: 2.4rem!important;
+        }
+    }
+}
+
+.article-lists{
+    ul,
+    ol{
+        @apply text-18;
+    }
+
+    ul{
+        li{
+            @apply relative pl-25;
+
+            &:after{
+                content: '';
+                @apply top-8;
+              }
         }
     }
 }

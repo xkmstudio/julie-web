@@ -7,6 +7,35 @@ export default {
   icon: Sidebar,
   fields: [
     {
+      title: 'Hero',
+      name: 'hero',
+      type: 'object',
+      fields: [
+        {
+          title: 'Include Ema',
+          name: 'hasEma',
+          type: 'boolean',
+          initialValue: true,
+        },
+        {
+          title: 'Title',
+          name: 'title',
+          type: 'simplePortableText'
+        },
+        {
+          title: 'Subtitle',
+          name: 'subtitle',
+          type: 'simplePortableText'
+        },
+        {
+          title: 'Mobile Tag',
+          name: 'mobileTag',
+          type: 'string',
+          description: 'This will be displayed on the mobile at the bottom and stretch the hero to the bottom of the screen',
+        },
+      ],
+    },
+    {
       title: 'Title',
       name: 'title',
       type: 'string'

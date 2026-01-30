@@ -61,6 +61,7 @@ module.exports = {
       lb: 'Ladna Bold',
       lxb: 'Ladna ExtraBold',
       lm: 'Ladna Medium',
+      lr: 'Ladna Regular',
       plaid: 'Plaid',
       // Legacy font classes mapped to Ladna weights
       vr: 'Ladna Medium',

@@ -172,7 +172,12 @@ export async function getArticle(slug, preview) {
             bio[]{${queries.ptContent}},
           },
         },
-        seo
+        seo,
+        "editorialStandards": *[_type == "blog"][0].editorialStandards[]{${queries.ptContent}},
+        "globalCta": *[_type == "blog"][0].globalCta{
+          title,
+          link{${queries.link}}
+        }
       },
       ${queries.site},
     }

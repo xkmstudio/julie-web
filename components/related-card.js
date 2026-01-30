@@ -12,7 +12,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   const profileHref = item.authors?.[0]?.slug ? `/profiles/${item.authors[0].slug}` : null
   
   const cardContent = (
-    <div className={cx('flex flex-col gap-15 md:gap-20', articleHref ? null : (className || 'w-full md:w-1/2'))}>
+    <div className="flex flex-col gap-15 md:gap-20">
       <div className="w-full flex flex-col">
         <div className="w-full pb-[100%] relative rounded-[1rem] overflow-hidden">
           {(() => {
@@ -121,7 +121,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
           e.preventDefault()
           onFrameLinkClick(articleHref)
         }}
-        className={cx(className, 'block')}
+        className={cx(className || 'w-full md:w-1/2', 'block')}
       >
         {cardContent}
       </a>
@@ -131,14 +131,18 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   // If articleHref is provided but not in frame, use NextLink
   if (articleHref && !shouldHandleInFrame) {
     return (
-      <NextLink href={articleHref} className={cx(className, 'block')}>
+      <NextLink href={articleHref} className={cx(className || 'w-full md:w-1/2', 'block')}>
         {cardContent}
       </NextLink>
     )
   }
   
   // Just return content without link wrapper
-  return cardContent
+  return (
+    <div className={className || 'w-full md:w-1/2'}>
+      {cardContent}
+    </div>
+  )
 }
 
 export default RelatedCard

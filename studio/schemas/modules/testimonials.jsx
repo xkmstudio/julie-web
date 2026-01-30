@@ -7,6 +7,11 @@ export default {
     icon: Sidebar,
     fields: [
         {
+            title: 'Title',
+            name: 'title',
+            type: 'string'
+        },
+        {
             title: 'Testimonials',
             name: 'testimonials',
             type: 'array',

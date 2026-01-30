@@ -68,11 +68,15 @@ import {
                   title: 'Internal Page',
                   name: 'page',
                   type: 'reference',
-                  to: [{ type: 'page' }],
-                  validation: Rule =>
-                    Rule.uri({
-                      scheme: ['http', 'https', 'mailto', 'tel']
-                    }),
+                  to: [
+                    { type: 'page' },
+                    { type: 'article' },
+                    { type: 'blog' },
+                    { type: 'profile' },
+                    { type: 'product' },
+                    { type: 'collection' },
+                    { type: 'home' }
+                  ],
                   hidden: ({ parent }) => parent.linkType !== 'internal'
                 },
                 {

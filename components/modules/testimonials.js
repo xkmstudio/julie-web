@@ -10,7 +10,7 @@ import Media from '@components/media'
 import Icon from '@components/icon'
 
 const Testimonials = ({ data = {} }) => {
-  const { testimonials, mediaLeft, mediaRight } = data
+  const { title, testimonials, mediaLeft, mediaRight } = data
 
   const [currentSlide, setCurrentSlide] = useState(0)
   const [scrollSnaps, setScrollSnaps] = useState([])
@@ -89,6 +89,13 @@ const Testimonials = ({ data = {} }) => {
 
   return (
     <section ref={scrollRef} className="w-full overflow-hidden">
+      {title && (
+        <div className="w-full text-center">
+          <h2 className="title-2xl w-full text-center">
+            {title}
+          </h2>
+        </div>
+      )}
       <div className="w-full flex flex-col md:flex-row justify-between testimonials">
         <div
           className="flex-1 flex flex-col md:flex-row items-center overflow-hidden relative gap-20 md:gap-0"

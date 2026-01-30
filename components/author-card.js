@@ -10,52 +10,54 @@ const AuthorCard = ({ person, className = 'flex-1', onFrameLinkClick }) => {
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
   const profileHref = `/profiles/${person.slug}`
   
-  const cardContent = (
-    <>
-      <div className="w-full flex gap-10">
-        <div className="w-50 h-50 rounded-full overflow-hidden relative">
-          <Photo
-            photo={person.image}
-            width={600}
-            srcSizes={[800, 1200, 1600, 2400]}
-            sizes="100%"
-            layout={'fill'}
-            className={'object-cover h-full w-full'}
-          />
-        </div>
-        <div className="flex flex-col gap-5">
-          <div className="">{person.title}</div>
-          <div>{person.role}</div>
-        </div>
-      </div>
-      <div className="w-full text-14 mt-20">
-        <BlockContent blocks={person.bio} />
-      </div>
-    </>
-  )
-  
-  if (shouldHandleInFrame) {
-    return (
-      <a
-        href={profileHref}
-        onClick={(e) => {
-          e.preventDefault()
-          onFrameLinkClick(profileHref)
-        }}
-        className={`${className} block rounded-[1.5rem] border border-pink p-20`}
-      >
-        {cardContent}
-      </a>
-    )
+  const handleClick = (e) => {
+    if (shouldHandleInFrame) {
+      e.preventDefault()
+      onFrameLinkClick(profileHref)
+    }
   }
   
+  const headerContent = (
+    <div className="w-full flex items-center gap-10">
+      <div className="w-50 h-50 rounded-full overflow-hidden relative">
+        <Photo
+          photo={person.image}
+          width={600}
+          srcSizes={[800, 1200, 1600, 2400]}
+          sizes="100%"
+          layout={'fill'}
+          className={'object-cover h-full w-full'}
+        />
+      </div>
+      <div className="flex flex-col gap-0">
+        <div className="font-lxb">{person.title}</div>
+        <div>{person.role}</div>
+      </div>
+    </div>
+  )
+  
   return (
-    <NextLink
-      href={profileHref}
-      className={`${className} block rounded-[1.5rem] border border-pink p-20`}
-    >
-      {cardContent}
-    </NextLink>
+    <div className={`${className} block rounded-[1.5rem] border border-pink p-20`}>
+      {shouldHandleInFrame ? (
+        <a
+          href={profileHref}
+          onClick={handleClick}
+          className="block"
+        >
+          {headerContent}
+        </a>
+      ) : (
+        <NextLink
+          href={profileHref}
+          className="block"
+        >
+          {headerContent}
+        </NextLink>
+      )}
+      <div className="w-full text-14 mt-20">
+        <BlockContent blocks={person.bio} onFrameLinkClick={onFrameLinkClick} />
+      </div>
+    </div>
   )
 }
 

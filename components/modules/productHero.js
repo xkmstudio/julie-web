@@ -151,7 +151,8 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type }) => {
                 klaviyoAccountID={product.klaviyoAccountID}
               />
               {product.additionalLinks &&
-                product.additionalLinks.length > 0 && (
+                product.additionalLinks.length > 0 &&
+                !product.disableAddToCart && (
                   <div className="flex flex-col gap-10">
                     {product.additionalLinks.map((link) => (
                       <Link

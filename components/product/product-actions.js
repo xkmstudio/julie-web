@@ -9,6 +9,7 @@ import {
 } from '@components/product'
 
 import Newsletter from '@components/newsletter'
+import Link from '@components/link'
 
 const ProductActions = ({
   activeVariant,
@@ -21,6 +22,26 @@ const ProductActions = ({
 }) => {
   // set default quantity
   const [quantity, setQuantity] = useState(1)
+
+  // Check if add to cart is disabled and additional links should be shown instead
+  const showBuyLinks = product?.disableAddToCart && product?.additionalLinks && product.additionalLinks.length > 0
+
+  // Render additional links as buy links if add to cart is disabled
+  if (showBuyLinks) {
+    return (
+      <div className="flex flex-col gap-10">
+        {product.additionalLinks.map((link, index) => (
+          <Link
+            key={link._key || index}
+            link={link}
+            className={`btn is-large flex items-center justify-center gap-5 ${
+              type === 'feature' ? 'flex-[1_1_0%] min-w-0' : 'w-full'
+            } ${index === 0 ? 'is-add' : 'is-outline'}`}
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <>

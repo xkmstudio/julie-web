@@ -3,6 +3,14 @@
 @layer base {
   /* Load Ladna Medium as default font */
   @font-face {
+    font-family: 'Ladna Regular';
+    src: url('/fonts/Ladna-Medium.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
     font-family: 'Ladna Medium';
     src: url('/fonts/Ladna-Medium.woff2') format('woff2');
     font-weight: 500;
@@ -69,6 +77,12 @@
   kbd,
   samp {
     font-family: var(--font-jetbrains-mono), monospace;
+  }
+
+  input,
+  textarea,
+  select {
+    font-family: 'Ladna Regular', sans-serif;
   }
 
   strong {
