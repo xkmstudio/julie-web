@@ -14,7 +14,7 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
   const cardContent = (
     <div className="flex flex-col gap-15 md:gap-20">
       <div className="w-full flex flex-col">
-        <div className="article-card w-full pb-[100%] relative">
+        <div className="article-card w-full pb-[66.67%] relative">
           {(() => {
             // Check if gradient is valid (has colorStops with at least 2 items)
             const hasValidGradient = item?.gradient && 
@@ -25,9 +25,12 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
             // If useGradient is true or no image, prioritize gradient
             if ((item?.useGradient || !item?.image) && hasValidGradient) {
               return (
-                <div className="w-full h-full absolute top-0 left-0">
-                  <Gradient gradient={item.gradient} />
-                </div>
+                <>
+                  <div className="w-full h-full absolute top-0 left-0">
+                    <Gradient gradient={item.gradient} />
+                  </div>
+                  <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                </>
               );
             }
             
@@ -48,9 +51,12 @@ const RelatedCard = ({ item, className, onFrameLinkClick, articleHref }) => {
             // Fallback to gradient if available (even if useGradient not set)
             if (hasValidGradient) {
               return (
-                <div className="w-full h-full absolute top-0 left-0">
-                  <Gradient gradient={item.gradient} />
-                </div>
+                <>
+                  <div className="w-full h-full absolute top-0 left-0">
+                    <Gradient gradient={item.gradient} />
+                  </div>
+                  <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                </>
               );
             }
             

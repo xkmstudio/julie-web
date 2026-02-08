@@ -42,6 +42,15 @@ const Articles = ({ data }) => {
     (article) => article.useGradient === true
   )
 
+  // Featured article is the first regular article (used in hero)
+  const featuredArticle = regularArticles[0]
+
+  // Exclude featured article from the grid lists
+  const regularArticlesWithoutFeatured = regularArticles.slice(1)
+  const articlesWithoutFeatured = articles.filter(
+    (article) => article.slug !== featuredArticle?.slug
+  )
+
   // Setup filters - calculate tags early so it can be used in useEffect
   const tags = []
   articles.forEach((article) => {
@@ -55,8 +64,8 @@ const Articles = ({ data }) => {
     })
   })
 
-  const filteredItems = filterItems(regularArticles, tags, 100)
-  const allFilteredItems = filterItems(articles, tags, 100)
+  const filteredItems = filterItems(regularArticlesWithoutFeatured, tags, 100)
+  const allFilteredItems = filterItems(articlesWithoutFeatured, tags, 100)
   
   // Check if filters are active by looking at the filter state
   const hasActiveFilters = filteredItems?.activeFilters[0]?.values?.length > 0
@@ -292,8 +301,6 @@ const Articles = ({ data }) => {
     )
   }
 
-  const featuredArticle = regularArticles[0]
-
   return (
     <Layout site={site} page={page}>
       <div className={`mb-60 md:mb-100 hero-bleed`}>
@@ -329,25 +336,17 @@ const Articles = ({ data }) => {
                     <div ref={carouselScrollRef} className="flex">
                       <button
                         onClick={() => {
-                          // Both use the same filter state, so update both
-                          filteredItems.updateParams(
-                            filteredItems.activeFilters.map((filter) => ({
-                              name: filter.name,
-                              value: null,
-                            }))
-                          )
-                          allFilteredItems.updateParams(
-                            allFilteredItems.activeFilters.map((filter) => ({
-                              name: filter.name,
-                              value: null,
-                            }))
-                          )
+                          // Clear search state
+                          setSearchQuery('')
+                          setSearchResults(null)
+                          // Clear all filters and search by navigating to clean URL
+                          router.replace(router.pathname, undefined, { shallow: true })
                         }}
                         className={`btn is-tag flex-shrink-0 ml-15 md:ml-10${
-                          !activeTags ? ' is-active' : ''
+                          !activeTags && !searchQuery ? ' is-active' : ''
                         }`}
                       >
-                        All
+                        all
                       </button>
                       {tags?.map((tag, key) => {
                         return (
@@ -377,25 +376,17 @@ const Articles = ({ data }) => {
                     >
                       <button
                         onClick={() => {
-                          // Both use the same filter state, so update both
-                          filteredItems.updateParams(
-                            filteredItems.activeFilters.map((filter) => ({
-                              name: filter.name,
-                              value: null,
-                            }))
-                          )
-                          allFilteredItems.updateParams(
-                            allFilteredItems.activeFilters.map((filter) => ({
-                              name: filter.name,
-                              value: null,
-                            }))
-                          )
+                          // Clear search state
+                          setSearchQuery('')
+                          setSearchResults(null)
+                          // Clear all filters and search by navigating to clean URL
+                          router.replace(router.pathname, undefined, { shallow: true })
                         }}
                         className={`btn is-tag${
-                          !activeTags ? ' is-active' : ''
+                          !activeTags && !searchQuery ? ' is-active' : ''
                         }`}
                       >
-                        All
+                        all
                       </button>
                       {tags?.map((tag, key) => {
                         return (
@@ -435,7 +426,7 @@ const Articles = ({ data }) => {
                   type="text"
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  placeholder="Search the library..."
+                  placeholder="search the library..."
                   className="text-16 w-full px-10 py-15 border border-pink rounded-[1rem] focus:outline-none focus:border-pink transition-colors"
                 />
                 {searchQuery && (
@@ -493,7 +484,7 @@ const Articles = ({ data }) => {
                             className="relative block"
                             href={`/blog/${article.slug}`}
                           >
-                            <div className="article-card w-full pb-[120%] relative">
+                            <div className="article-card w-full pb-[66.67%] relative">
                               {(() => {
                                 // Check if gradient is valid (has colorStops with at least 2 items)
                                 const hasValidGradient = article.gradient && 
@@ -504,9 +495,12 @@ const Articles = ({ data }) => {
                                 // If useGradient is true or no image, prioritize gradient
                                 if ((article.useGradient || !article.image || !article.image.url) && hasValidGradient) {
                                   return (
-                                    <div className="w-full h-full absolute top-0 left-0">
-                                      <Gradient gradient={article.gradient} />
-                                    </div>
+                                    <>
+                                      <div className="w-full h-full absolute top-0 left-0">
+                                        <Gradient gradient={article.gradient} />
+                                      </div>
+                                      <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                                    </>
                                   );
                                 }
                                 
@@ -530,9 +524,12 @@ const Articles = ({ data }) => {
                                 // Fallback to gradient if available (even if useGradient not set)
                                 if (hasValidGradient) {
                                   return (
-                                    <div className="w-full h-full absolute top-0 left-0">
-                                      <Gradient gradient={article.gradient} />
-                                    </div>
+                                    <>
+                                      <div className="w-full h-full absolute top-0 left-0">
+                                        <Gradient gradient={article.gradient} />
+                                      </div>
+                                      <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                                    </>
                                   );
                                 }
                                 
@@ -600,9 +597,12 @@ const Articles = ({ data }) => {
                                 // If useGradient is true or no image, prioritize gradient
                                 if ((article.useGradient || !article.image) && hasValidGradient) {
                                   return (
-                                    <div className="w-full h-full absolute top-0 left-0">
-                                      <Gradient gradient={article.gradient} />
-                                    </div>
+                                    <>
+                                      <div className="w-full h-full absolute top-0 left-0">
+                                        <Gradient gradient={article.gradient} />
+                                      </div>
+                                      <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                                    </>
                                   );
                                 }
                                 
@@ -625,9 +625,12 @@ const Articles = ({ data }) => {
                                 // Fallback to gradient if available (even if useGradient not set)
                                 if (hasValidGradient) {
                                   return (
-                                    <div className="w-full h-full absolute top-0 left-0">
-                                      <Gradient gradient={article.gradient} />
-                                    </div>
+                                    <>
+                                      <div className="w-full h-full absolute top-0 left-0">
+                                        <Gradient gradient={article.gradient} />
+                                      </div>
+                                      <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                                    </>
                                   );
                                 }
                                 
@@ -776,7 +779,7 @@ const Articles = ({ data }) => {
 
                 // Use square ratio for 50% width articles (first two in cycle)
                 const aspectRatio =
-                  cyclePosition < 2 ? 'pb-[120%] md:pb-[80%]' : 'pb-[120%] md:pb-[100%]'
+                  cyclePosition < 2 ? 'pb-[120%] md:pb-[80%]' : 'pb-[120%] md:pb-[66.67%]'
 
                 // Set alignment classes based on card width
                 const alignmentClasses = isOneThird 
@@ -805,9 +808,12 @@ const Articles = ({ data }) => {
                           // If useGradient is true or no image, prioritize gradient
                           if ((article.useGradient || !article.image) && hasValidGradient) {
                             return (
-                              <div className="w-full h-full absolute top-0 left-0">
-                                <Gradient gradient={article.gradient} />
-                              </div>
+                              <>
+                                <div className="w-full h-full absolute top-0 left-0">
+                                  <Gradient gradient={article.gradient} />
+                                </div>
+                                <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                              </>
                             );
                           }
                           
@@ -830,9 +836,12 @@ const Articles = ({ data }) => {
                           // Fallback to gradient if available (even if useGradient not set)
                           if (hasValidGradient) {
                             return (
-                              <div className="w-full h-full absolute top-0 left-0">
-                                <Gradient gradient={article.gradient} />
-                              </div>
+                              <>
+                                <div className="w-full h-full absolute top-0 left-0">
+                                  <Gradient gradient={article.gradient} />
+                                </div>
+                                <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
+                              </>
                             );
                           }
                           
@@ -882,8 +891,8 @@ const Articles = ({ data }) => {
           </AnimatePresence>
         </div>
 
-        {/* Gradient Articles List - only show when no filters are active and no search is active */}
-        {!hasActiveFilters && searchResults === null && gradientArticles.length > 0 && (
+        {/* Gradient Articles List - hidden for now */}
+        {/* {!hasActiveFilters && searchResults === null && gradientArticles.length > 0 && (
           <div className="w-full mt-90 section-padding">
             <div className="w-full mx-auto border-t-2 border-ash">
               <div className="w-full flex flex-col gap-0">
@@ -916,7 +925,7 @@ const Articles = ({ data }) => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </Layout>
   )

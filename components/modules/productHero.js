@@ -86,7 +86,7 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame 
       ref={containerRef}
       className={cx('product pb-[2.5rem]', {
         'px-15': useMobileLayout,
-        'px-15 md:px-25 pt-[calc(var(--headerHeight)+2.5rem)] md:h-screen md:min-h-[60rem]': !useMobileLayout,
+        'px-15 md:px-25 pt-[calc(var(--headerHeight)+2.5rem)] md:min-h-screen': !useMobileLayout,
       })}
     >
       <div className={cx('w-full flex', {
@@ -95,7 +95,7 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame 
       })}>
         <div className={cx('w-full', {
           'aspect-square': useMobileLayout,
-          'h-[100vw] md:h-full': !useMobileLayout,
+          'h-[100vw] md:h-[45vw]': !useMobileLayout,
         })}>
           <div className="w-full h-full relative z-2">
             {(() => {

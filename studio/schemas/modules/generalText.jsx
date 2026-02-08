@@ -1,4 +1,5 @@
 import { Article } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
   title: 'General Text',
@@ -6,6 +7,7 @@ export default {
   type: 'object',
   icon: Article,
   fields: [
+    anchorSlugField,
     {
       title: 'Title',
       name: 'title',

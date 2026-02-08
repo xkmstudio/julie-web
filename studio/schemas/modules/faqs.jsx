@@ -1,4 +1,5 @@
 import { Sidebar } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
   title: 'FAQs',
@@ -6,6 +7,7 @@ export default {
   type: 'object',
   icon: Sidebar,
   fields: [
+    anchorSlugField,
     {
       title: 'Hero',
       name: 'hero',

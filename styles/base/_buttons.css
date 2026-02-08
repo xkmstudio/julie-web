@@ -140,7 +140,7 @@ button{
 }
 
 .tag{
-  @apply font-plaid uppercase leading-100 text-16 tracking-[-.02em] bg-[rgba(0,0,0,.1)] py-10 px-10 rounded-[.5rem];
+  @apply font-plaid leading-100 text-16 tracking-[-.02em] bg-[rgba(0,0,0,.1)] py-10 px-10 rounded-[.5rem];
 
   &.is-card{
     @apply text-white text-14 backdrop-blur-[30px];

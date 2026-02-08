@@ -58,14 +58,14 @@ export default {
       title: 'Authors',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'profile' }] }],
-      validation: Rule => Rule.required()
+      // validation: Rule => Rule.required()
     },
     {
       name: 'reviewers',
       title: 'Reviewers',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'profile' }] }],
-      validation: Rule => Rule.required()
+      // validation: Rule => Rule.required()
     },
     {
       name: 'excerpt',

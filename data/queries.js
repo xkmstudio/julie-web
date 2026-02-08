@@ -276,6 +276,7 @@ export const modules = `
   _type == 'generalText' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle,
     icon,
@@ -286,15 +287,18 @@ export const modules = `
   _type == 'hero' => {
     _type,
     _key,
+    anchorSlug,
     hasEma,
     title[]{${ptContent}},
     subtitle[]{${ptContent}},
     backgroundMedia{${mediaContent}},
-    mobileTag
+    mobileTag,
+    theme
   },
   _type == 'productFeature' => {
     _type,
     _key,
+    anchorSlug,
     products[]->{
       productType,
       title,
@@ -321,6 +325,7 @@ export const modules = `
   _type == 'productShop' => {
     _type,
     _key,
+    anchorSlug,
     mobileTag,
     backgroundMedia{${mediaContent}},
     product->{
@@ -337,6 +342,7 @@ export const modules = `
   _type == 'productCollection' => {
     _type,
     _key,
+    anchorSlug,
     products[]->{
       title,
       subtitle,
@@ -348,6 +354,7 @@ export const modules = `
   _type == 'textBlock' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle,
     content[]{${ptContent}},
@@ -356,6 +363,7 @@ export const modules = `
   _type == 'mediaFeature' => {
     _type,
     _key,
+    anchorSlug,
     title,
     link[0]{${link}},
     media{${mediaContent}}
@@ -363,6 +371,7 @@ export const modules = `
   _type == 'mediaText' => {
     _type,
     _key,
+    anchorSlug,
     config,
     subtitle,
     title,
@@ -373,6 +382,7 @@ export const modules = `
   _type == 'mediaBleed' => {
     _type,
     _key,
+    anchorSlug,
     size,
     sizeMobile,
     media{${mediaContentBleed}}
@@ -380,12 +390,14 @@ export const modules = `
   _type == 'faqs' => {
     _type,
     _key,
+    anchorSlug,
     title,
     hero{
       hasEma,
       title[]{${ptContent}},
       subtitle[]{${ptContent}},
-      mobileTag
+      mobileTag,
+      theme
     },
     cta{
       text,
@@ -408,6 +420,7 @@ export const modules = `
   _type == 'testimonials' => {
     _type,
     _key,
+    anchorSlug,
     title,
     testimonials[]{
       _type,
@@ -419,12 +432,14 @@ export const modules = `
   _type == 'storeLocator' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle
   },
   _type == 'featuredArticles' => {
     _type,
     _key,
+    anchorSlug,
     title,
     useList,
     featuredCard{
@@ -454,6 +469,7 @@ export const modules = `
   _type == 'featuredProfiles' => {
     _type,
     _key,
+    anchorSlug,
     title,
     profiles[]->{
       title,
@@ -465,6 +481,7 @@ export const modules = `
   _type == 'productFaqs' => {
     _type,
     _key,
+    anchorSlug,
     title,
     cta{
       title,
@@ -486,6 +503,7 @@ export const modules = `
   _type == 'productRelated' => {
     _type,
     _key,
+    anchorSlug,
     title,
     media{${mediaContent}},
     product->{
@@ -495,6 +513,7 @@ export const modules = `
   _type == 'indexList' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle,
     content[]{${ptContent}},
@@ -503,6 +522,7 @@ export const modules = `
   _type == 'indexTutorials' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle,
     products[]->{
@@ -520,6 +540,7 @@ export const modules = `
   _type == 'productContents' => {
     _type,
     _key,
+    anchorSlug,
     title,
     contents[]{
       title,
@@ -529,6 +550,7 @@ export const modules = `
   _type == 'slideshow' => {
     _type,
     _key,
+    anchorSlug,
     title,
     slides[]{
       media{${mediaContent}},
@@ -538,6 +560,7 @@ export const modules = `
   _type == 'marqueeIcons' => {
     _type,
     _key,
+    anchorSlug,
     title,
     marquee,
     items[]{
@@ -552,6 +575,7 @@ export const modules = `
   _type == 'media3Up' => {
     _type,
     _key,
+    anchorSlug,
     title,
     subtitle,
     background,
@@ -565,6 +589,7 @@ export const modules = `
   _type == 'marquee' => {
     _type,
     _key,
+    anchorSlug,
     title,
     icon{${assetMeta}},
     link->{

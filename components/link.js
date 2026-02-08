@@ -42,7 +42,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
 
   const router = useRouter()
   const linkType = link.linkType || (link.url ? 'navLink' : 'navPage')
-  const isAnchor = link.anchor != null || link.anchor != undefined
+  const hasAnchor = link.anchor != null && link.anchor !== undefined && link.anchor !== ''
   const toggleEmail = useToggleEmail()
   const isInFrame = useIsInFrame()
   
@@ -193,8 +193,9 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
 
   // Internal Page (navPage)
   const pageUrl = getPageUrl(link.page)
-  const href = isAnchor
-    ? `${pageUrl}#${link.anchor.toLowerCase().replace(/\s+/g, '-')}`
+  // Use query parameter for anchors: /page?anchor=section-slug
+  const href = hasAnchor
+    ? `${pageUrl}?anchor=${encodeURIComponent(link.anchor)}`
     : pageUrl
 
   return (
@@ -209,7 +210,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
           : null
       }
       {...rest}
-      scroll={false}
+      scroll={!hasAnchor} // Disable default scroll when we have an anchor
     >
       <span>{link.title || children}</span>
       {hasArrow && (

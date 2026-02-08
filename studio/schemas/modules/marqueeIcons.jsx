@@ -1,6 +1,7 @@
 import { Circle, Infinity } from 'phosphor-react'
 
 import customImage from '../../lib/custom-image'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
     title: 'Icons',
@@ -15,6 +16,7 @@ export default {
         }
     ],
     fields: [
+        anchorSlugField,
         {
             title: 'Title',
             name: 'title',

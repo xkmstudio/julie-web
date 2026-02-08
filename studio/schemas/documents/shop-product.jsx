@@ -223,6 +223,7 @@ export default {
         { type: 'indexTutorials' },
         { type: 'mediaFeature' },
         { type: 'mediaBleed' },
+        { type: 'featuredArticles' },
       ],
       group: 'content'
     },

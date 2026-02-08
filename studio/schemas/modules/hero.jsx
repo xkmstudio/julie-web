@@ -1,4 +1,5 @@
 import { Star } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
   title: 'Hero',
@@ -6,6 +7,7 @@ export default {
   type: 'object',
   icon: Star,
   fields: [
+    anchorSlugField,
     {
       title: 'Include Ema',
       name: 'hasEma',
@@ -32,6 +34,21 @@ export default {
       title: 'Background Media',
       name: 'backgroundMedia',
       type: 'media'
+    },
+    {
+      title: 'Theme',
+      name: 'theme',
+      type: 'string',
+      description: 'Controls the text color',
+      options: {
+        list: [
+          { title: 'Light', value: 'light' },
+          { title: 'Dark', value: 'dark' }
+        ],
+        layout: 'radio',
+        direction: 'horizontal'
+      },
+      initialValue: 'light'
     },
   ],
   preview: {

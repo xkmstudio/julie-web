@@ -65,7 +65,7 @@ const Newsletter = ({ newsletter, layout, type = 'general' }) => {
               }`}
             >
               {newsletter?.title && (
-                <div className={``}>{newsletter.title}</div>
+                <div className={`title-sm`}>{newsletter.title}</div>
               )}
               <div className="w-full bg-gradient-to-b from-[#CD1157] to-[#DA1961] text-white rounded-full shadow-[inset_0_4px_4px_0_rgba(0,0,0,0.25)]">
                 <div className="relative flex justify-between p-10 md:p-15">

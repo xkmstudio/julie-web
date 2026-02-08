@@ -91,6 +91,42 @@ const Site = ({ Component, pageProps, router }) => {
   // Handle scroll position on history change
   useScrollRestoration(router, pageTransitionSpeed)
 
+  // Handle anchor scroll on page load/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    // Get anchor from query params
+    const urlParams = new URLSearchParams(window.location.search)
+    const anchor = urlParams.get('anchor')
+    
+    if (anchor) {
+      // Small delay to ensure content is rendered
+      const scrollToAnchor = () => {
+        const element = document.querySelector(`[data-anchor="${anchor}"]`)
+        if (element) {
+          // Get header height for offset
+          const headerHeight = parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue('--headerHeight') || '80',
+            10
+          )
+          
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY
+          const offsetPosition = elementPosition - headerHeight - 20 // Extra 20px padding
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }
+      
+      // Try immediately, then with delays for dynamic content
+      scrollToAnchor()
+      setTimeout(scrollToAnchor, 100)
+      setTimeout(scrollToAnchor, 500)
+    }
+  }, [router.asPath])
+
   // Restore scroll position immediately if coming back from chat (before page renders)
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return

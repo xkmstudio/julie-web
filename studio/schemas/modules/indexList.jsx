@@ -1,4 +1,5 @@
 import { List } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
   title: 'Index List',
@@ -6,6 +7,7 @@ export default {
   type: 'object',
   icon: List,
   fields: [
+    anchorSlugField,
     {
       title: 'Title',
       name: 'title',

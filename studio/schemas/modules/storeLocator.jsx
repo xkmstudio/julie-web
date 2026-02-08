@@ -1,4 +1,5 @@
 import { MapPin } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
   title: 'Store Locator',
@@ -6,6 +7,7 @@ export default {
   type: 'object',
   icon: MapPin,
   fields: [
+    anchorSlugField,
     {
       title: 'Title',
       name: 'title',

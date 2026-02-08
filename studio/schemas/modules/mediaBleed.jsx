@@ -1,4 +1,5 @@
 import { Image } from 'phosphor-react'
+import { anchorSlugField } from '../../lib/fields'
 
 export default {
     title: 'Media Bleed',
@@ -6,6 +7,7 @@ export default {
     type: 'object',
     icon: Image,
     fields: [
+        anchorSlugField,
         {
             title: 'Media',
             name: 'media',

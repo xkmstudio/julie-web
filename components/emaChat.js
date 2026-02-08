@@ -1299,17 +1299,18 @@ const EmaChat = ({ onClose = null }) => {
                   {isThinking && (
                     <div className="flex max-w-[50rem] mx-auto justify-start">
                       <div className="max-w-[100%]md:max-w-[80%] p-15 md:p-20 rounded-[1rem] bg-transparent">
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-8">
+                          <span className="text-14 text-black/70">Thinking</span>
                           <span
-                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            className="w-[0.5rem] h-[0.5rem] bg-black/70 rounded-full ema-thinking-dot"
                             style={{ animationDelay: '0ms' }}
                           />
                           <span
-                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            className="w-[0.5rem] h-[0.5rem] bg-black/70 rounded-full ema-thinking-dot"
                             style={{ animationDelay: '200ms' }}
                           />
                           <span
-                            className="w-[0.6rem] h-[0.6rem] bg-black rounded-full ema-thinking-dot"
+                            className="w-[0.5rem] h-[0.5rem] bg-black/70 rounded-full ema-thinking-dot"
                             style={{ animationDelay: '400ms' }}
                           />
                         </div>
@@ -1450,16 +1451,23 @@ const EmaChat = ({ onClose = null }) => {
                                 ) : null}
 
                                 <div
-                                  className={cx('p-15 absolute bottom-0 left-0 w-full text-white', {
-                                    'bg-gradient-to-t from-black to-transparent': !article.useGradient,
+                                  className={cx('p-15 absolute bottom-0 left-0 w-full', {
+                                    'bg-gradient-to-t from-black to-transparent text-white': !article.useGradient,
+                                    'text-black': article.useGradient,
                                   })}
                                 >
                                   {article.authors && article.authors.length > 0 && (
-                                      <div className="text-12 text-gray-300 mb-5">
+                                      <div className={cx('text-12 mb-5', {
+                                        'text-gray-300': !article.useGradient,
+                                        'text-black/70': article.useGradient,
+                                      })}>
                                       by {article.authors[0]?.title || article.authors[0]?.name}
                                       </div>
                                     )}
-                                  <h4 className="text-16 font-lb text-white line-clamp-2">
+                                  <h4 className={cx('text-16 font-lb line-clamp-2', {
+                                    'text-white': !article.useGradient,
+                                    'text-black': article.useGradient,
+                                  })}>
                                     {article.title}
                                   </h4>
                                 </div>

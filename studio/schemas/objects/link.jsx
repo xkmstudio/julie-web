@@ -79,6 +79,21 @@ export default {
         return true
       })
     },
+    {
+      title: 'Anchor',
+      name: 'anchor',
+      type: 'string',
+      description: 'Optional: Link to a specific section on the page. Enter the same anchor slug used on the target module.',
+      hidden: ({ parent }) => !parent || parent.linkType !== 'navPage',
+      validation: Rule => Rule.custom((value) => {
+        if (!value) return true
+        // Only allow lowercase letters, numbers, and hyphens
+        if (!/^[a-z0-9-]+$/.test(value)) {
+          return 'Anchor must only contain lowercase letters, numbers, and hyphens (e.g., "my-section")'
+        }
+        return true
+      }),
+    },
   ],
   preview: {
     select: {
@@ -86,9 +101,10 @@ export default {
       linkType: 'linkType',
       url: 'url',
       pageSlug: 'page.slug.current',
-      pageTitle: 'page.title'
+      pageTitle: 'page.title',
+      anchor: 'anchor'
     },
-    prepare({ title, linkType, url, pageSlug, pageTitle }) {
+    prepare({ title, linkType, url, pageSlug, pageTitle, anchor }) {
       let subtitle = ''
       
       if (!linkType) {
@@ -98,7 +114,8 @@ export default {
       } else if (linkType === 'navLink') {
         subtitle = url || 'No URL'
       } else if (linkType === 'navPage') {
-        subtitle = pageSlug ? `/${pageSlug}` : (pageTitle || 'No page selected')
+        const pagePath = pageSlug ? `/${pageSlug}` : (pageTitle || 'No page selected')
+        subtitle = anchor ? `${pagePath}#${anchor}` : pagePath
       }
 
       return {

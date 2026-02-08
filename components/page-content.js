@@ -107,7 +107,7 @@ const PageContent = ({
             'w-full flex flex-col pb-20 section-padding relative',
             {
               'pt-[calc(var(--headerHeight)+2.5rem)]': !actuallyInFrame,
-              'md:h-screen': !actuallyInFrame,
+              'md:min-h-screen': !actuallyInFrame,
               'min-h-[50vh]': actuallyInFrame && useGradient && gradient,
               'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
               'gap-15': actuallyInFrame && image && !(useGradient && gradient),
@@ -144,6 +144,7 @@ const PageContent = ({
                 { 'min-h-[50vh]': actuallyInFrame }
               )}>
                 <Gradient gradient={gradient} />
+                <div className="absolute bottom-0 left-0 w-full h-[10%] bg-gradient-to-b from-transparent to-white pointer-events-none" />
               </div>
             )}
             <div className={cx('relative z-2 mx-auto flex flex-col items-center', {
@@ -339,7 +340,7 @@ const PageContent = ({
                   )}
                 </div>
                 {summary && (
-                  <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-10 bg-white rounded-[1.5rem] julie-gradient p-1 relative mt-30">
+                  <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-10 bg-white rounded-[1.5rem] julie-gradient p-1 relative mt-30 mb-30">
                     <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient has-blur"></div>
                     <div className="relative z-2 w-full flex flex-col gap-10 bg-white p-20 rounded-[1.5rem]">
                       <div className="flex items-center gap-10">
@@ -476,6 +477,7 @@ const PageContent = ({
             className={`mt-60 md:mt-100 flex flex-col items-center gap-30 md:gap-60 pb-60 md:pb-120 section-padding ${isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
               }`}
           >
+            <div className="title-2xl text-center">related articles</div>
             {isClient && (isMobile || actuallyInFrame) ? (
               <ProductCarousel
                 items={related}

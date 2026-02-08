@@ -123,7 +123,7 @@ const EmaWidget = () => {
                 initial={{ opacity: 1 }}
                 animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
-                className="text-slate text-12 absolute left-20 bottom-20 italic text-left pr-90"
+                className="text-slate text-10 absolute left-20 bottom-20 italic text-left max-w-[40rem]"
               >
                 {disclaimer}
               </m.div>

@@ -6,16 +6,18 @@ import Icon from '@components/icon'
 import EmaWidget from '@components/emaWidget'
 
 const Hero = ({ data = {} }) => {
-  const { backgroundMedia, title, subtitle, mobileTag, hasEma } = data
+  const { backgroundMedia, title, subtitle, mobileTag, hasEma, theme } = data
+
+  const textColor = theme === 'dark' ? 'text-black' : 'text-white'
 
   return (
     <div
       className={`hero-bleed w-full flex flex-col items-center relative z-3 mb-15${
         !backgroundMedia?.content
-          ? ' text-black justify-center'
+          ? ` ${textColor} justify-center`
           : mobileTag
-          ? ' h-[calc(var(--vh,1vh)*100-6.5rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center text-white'
-          : ' min-h-[100vw] md:min-h-[60rem] text-white justify-center py-20'
+          ? ` h-[calc(var(--vh,1vh)*100-6.5rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center ${textColor}`
+          : ` min-h-[100vw] md:min-h-[60rem] ${textColor} justify-center py-20`
       }`}
     >
       {backgroundMedia?.content && (
@@ -30,6 +32,7 @@ const Hero = ({ data = {} }) => {
               media={backgroundMedia?.content}
             />
           </div>
+          <div className={`absolute top-0 left-0 w-full h-[10rem] bg-gradient-to-b from-[rgba(0,0,0,0.5)] to-transparent`}></div>
         </div>
       )}
       <div
@@ -56,7 +59,7 @@ const Hero = ({ data = {} }) => {
         )}
       </div>
       {mobileTag && (
-        <div className="relative z-2 text-white flex items-center justify-center md:hidden">
+        <div className={`relative z-2 ${textColor} flex items-center justify-center md:hidden`}>
           <div className="tag-glass">
             <div className="text-14 text-center flex-shrink-0">{mobileTag}</div>
             <div className="w-[1.5rem] flex items-center justify-center flex-shrink-0">
