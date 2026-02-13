@@ -29,6 +29,23 @@ export const config = {
   },
 }
 
+// Debug logging: prefix all logs so you can filter in Netlify (e.g. "shopify-webhook")
+const log = {
+  step: (step, data = {}) => {
+    console.log('[shopify-webhook]', step, JSON.stringify(data))
+  },
+  error: (step, err) => {
+    console.error('[shopify-webhook]', step, err?.message || err, err?.response?.status, err?.responseBody || '')
+  },
+}
+
+// Helper to send JSON with optional debug info (no secrets)
+function sendJson(res, status, body) {
+  const payload = typeof body === 'object' ? body : { message: body }
+  payload.debug = { ...payload.debug, timestamp: new Date().toISOString() }
+  return res.status(status).json(payload)
+}
+
 export default async function send(req, res) {
   // GET: diagnostic endpoint (no secrets) to verify webhook URL and env
   if (req.method === 'GET') {
@@ -43,12 +60,17 @@ export default async function send(req, res) {
         hasShopifyAdminToken: !!process.env.SHOPIFY_ADMIN_API_TOKEN,
         hasShopifyStoreId: !!process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID,
       },
+      debug: {
+        logFilter: 'In Netlify: Functions → select deploy → Logs. Filter by "shopify-webhook" to see each step.',
+      },
     })
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+    return sendJson(res, 405, { error: 'Method not allowed', debug: { step: 'method' } })
   }
+
+  log.step('received', { method: req.method, hasBody: !!req.body, contentType: req.headers['content-type'], hasHmac: !!req.headers['x-shopify-hmac-sha256'] })
 
   /*  ------------------------------ */
   /*  1. Read raw body (once) for HMAC + parse
@@ -59,22 +81,26 @@ export default async function send(req, res) {
   try {
     if (process.env.NETLIFY && req.body instanceof Buffer) {
       rawBody = req.body
+      log.step('body_source', { source: 'netlify_buffer', length: rawBody?.length })
     } else {
       rawBody = await getRawBody(req, { limit: '1mb' })
+      log.step('body_source', { source: 'getRawBody', length: rawBody?.length })
     }
     if (!rawBody || (typeof rawBody === 'string' && !rawBody.length)) {
-      return res.status(200).json({ error: 'Missing request body' })
+      log.step('exit', { step: 'body_empty' })
+      return sendJson(res, 200, { error: 'Missing request body', debug: { step: 'body_empty' } })
     }
     const rawString = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody
     req.body = JSON.parse(rawString)
+    log.step('body_parsed', { productId: req.body?.id, title: req.body?.title })
   } catch (e) {
-    console.error('Failed to read/parse body:', e.message)
-    return res.status(200).json({ error: 'Invalid JSON body', detail: e.message })
+    log.error('body_parse', e)
+    return sendJson(res, 200, { error: 'Invalid JSON body', detail: e.message, debug: { step: 'body_parse' } })
   }
 
   if (!process.env.SHOPIFY_WEBHOOK_INTEGRITY) {
-    console.error('SHOPIFY_WEBHOOK_INTEGRITY is not set')
-    return res.status(500).json({ error: 'Server misconfiguration: webhook secret not set' })
+    log.step('exit', { step: 'missing_webhook_secret' })
+    return sendJson(res, 500, { error: 'Server misconfiguration: webhook secret not set', debug: { step: 'missing_webhook_secret' } })
   }
 
   const hmac = req.headers['x-shopify-hmac-sha256']
@@ -84,14 +110,16 @@ export default async function send(req, res) {
     .update(rawForHmac)
     .digest('base64')
 
-  // Add logging for debugging HMAC mismatches
   if (hmac !== generatedHash) {
-    console.error('Unable to verify from Shopify');
-    console.error('Received HMAC:', hmac);
-    console.error('Generated HMAC:', generatedHash);
-    console.error('Raw body (string):', rawBody.toString());
-    return res.status(200).json({ error: 'Unable to verify from Shopify' });
+    const bodyPreview = (Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : String(rawBody)).slice(0, 80)
+    log.step('exit', { step: 'hmac_fail', hasHmac: !!hmac, bodyPreview })
+    return sendJson(res, 200, {
+      error: 'Unable to verify from Shopify',
+      debug: { step: 'hmac_fail', hint: 'Check SHOPIFY_WEBHOOK_INTEGRITY matches the secret in Shopify webhook settings' },
+    })
   }
+
+  log.step('hmac_ok', {})
 
   // extract shopify data
   const {
@@ -99,10 +127,11 @@ export default async function send(req, res) {
   } = req
 
   if (!id || !title) {
-    return res.status(200).json({ error: 'Missing product id or title in body' })
+    log.step('exit', { step: 'missing_fields', id: !!id, title: !!title })
+    return sendJson(res, 200, { error: 'Missing product id or title in body', debug: { step: 'missing_fields' } })
   }
 
-  console.info(`Sync triggered for product: "${title}" (id: ${id})`)
+  log.step('sync_start', { productId: id, title, variantCount: variants?.length })
 
   /*  ------------------------------ */
   /*  Construct our product objects
@@ -197,7 +226,7 @@ export default async function send(req, res) {
   /*  Check for previous sync
   /*  ------------------------------ */
 
-  console.log('Checking for previous sync data...')
+  log.step('metafield_check', { productId: id })
 
   // Setup our Shopify connection
   const shopifyConfig = {
@@ -222,30 +251,27 @@ export default async function send(req, res) {
       (mf) => mf.key === 'product_sync'
     )
   } catch (error) {
-    // If metafields endpoint fails (404 or other error), log it and continue
-    // This can happen if the product doesn't have metafields yet or API version issues
-    console.warn('Could not fetch metafields, proceeding with sync:', error.response?.status || error.message)
+    log.error('metafield_fetch', error)
     previousSync = null
   }
 
+  log.step('metafield_result', { hadPreviousSync: !!previousSync })
+
   // Metafield found
   if (previousSync) {
-    console.log('Previous sync found, comparing differences...')
-
     const diff = jsondiffpatch.diff(JSON.parse(previousSync.value), productCompare)
     if (!diff) {
-      // No data changes — only skip if product actually exists in Sanity
       const existsInSanity = await sanity.fetch(
         `count(*[_type == "product" && _id == $id])`,
         { id: `product-${id}` }
       )
+      log.step('diff_check', { noDiff: true, existsInSanity: existsInSanity > 0 })
       if (existsInSanity > 0) {
-        console.info('No differences found, product exists in Sanity, skip.')
-        return res.status(200).json({ ok: true, skipped: true, reason: 'no changes' })
+        return sendJson(res, 200, { ok: true, skipped: true, reason: 'no changes', debug: { step: 'skip_no_changes' } })
       }
-      console.warn('No diff but product missing in Sanity — syncing.')
+      log.step('sync_reason', { reason: 'missing_in_sanity' })
     } else {
-      console.warn('Critical difference found! Start sync...')
+      log.step('sync_reason', { reason: 'data_changed' })
       axios({
         url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields/${previousSync.id}.json`,
         method: 'PUT',
@@ -257,12 +283,10 @@ export default async function send(req, res) {
             type: 'json',
           },
         },
-      }).catch((error) => {
-        console.error('Failed to update metafield:', error.response?.status || error.message)
-      })
+      }).catch((err) => log.error('metafield_put', err))
     }
   } else {
-    console.warn('No previous sync found, Start sync...')
+    log.step('sync_reason', { reason: 'new_product_no_metafield' })
     axios({
       url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields.json`,
       method: 'POST',
@@ -275,22 +299,15 @@ export default async function send(req, res) {
           type: 'json',
         },
       },
-    }).catch((error) => {
-      console.error('Failed to create metafield:', error.response?.status || error.message)
-    })
+    }).catch((err) => log.error('metafield_post', err))
   }
 
   /*  ------------------------------ */
   /*  Begin Sanity Product Sync
   /*  ------------------------------ */
 
-  console.log('Writing product to Sanity...')
-  console.log('Sanity config:', {
-    projectId: process.env.SANITY_PROJECT_ID,
-    dataset: process.env.SANITY_PROJECT_DATASET,
-    hasToken: !!process.env.SANITY_API_TOKEN,
-  })
-  
+  log.step('sanity_write_start', { productId: id, projectId: process.env.SANITY_PROJECT_ID, dataset: process.env.SANITY_PROJECT_DATASET, hasToken: !!process.env.SANITY_API_TOKEN })
+
   let stx = sanity.transaction()
 
   // create product if doesn't exist
@@ -346,25 +363,23 @@ export default async function send(req, res) {
 
   try {
     const result = await stx.commit()
-
-    console.info('Sync complete!')
-    console.log(result)
-
-    res.statusCode = 200
-    res.json(JSON.stringify(result))
-  } catch (error) {
-    console.error('Sanity sync error:', {
-      message: error.message,
-      statusCode: error.statusCode,
-      responseBody: error.responseBody,
-      details: error.details,
+    log.step('sanity_write_ok', { productId: id, transactionId: result?.transactionId })
+    return sendJson(res, 200, {
+      ok: true,
+      synced: true,
+      productId: id,
+      transactionId: result?.transactionId,
+      debug: { step: 'sanity_commit' },
     })
-    
-    res.statusCode = error.statusCode || 500
-    res.json({
+  } catch (error) {
+    log.error('sanity_commit', error)
+    return sendJson(res, error.statusCode || 500, {
       error: 'Failed to sync product to Sanity',
       message: error.message,
       statusCode: error.statusCode,
+      details: error.details,
+      responseBody: error.responseBody,
+      debug: { step: 'sanity_error', hint: 'Check SANITY_API_TOKEN has create+edit permissions' },
     })
   }
 }
