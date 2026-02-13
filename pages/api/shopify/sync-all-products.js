@@ -133,10 +133,18 @@ async function syncProductToSanity(productData) {
   }
 
   // Skip if no differences found (only if previous sync exists)
+  // But always sync if the product doesn't exist in Sanity (e.g. was deleted or never created)
   if (previousSync) {
     const diff = jsondiffpatch.diff(JSON.parse(previousSync.value), productCompare)
     if (!diff) {
-      return { id, title, status: 'skipped', reason: 'no changes' }
+      const existsInSanity = await sanity.fetch(
+        `count(*[_type == "product" && _id == $id])`,
+        { id: `product-${id}` }
+      )
+      if (existsInSanity > 0) {
+        return { id, title, status: 'skipped', reason: 'no changes' }
+      }
+      // Product missing in Sanity — fall through and sync
     }
   }
 

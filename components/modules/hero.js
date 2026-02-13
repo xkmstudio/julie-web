@@ -6,9 +6,9 @@ import Icon from '@components/icon'
 import EmaWidget from '@components/emaWidget'
 
 const Hero = ({ data = {} }) => {
-  const { backgroundMedia, title, subtitle, mobileTag, hasEma, theme } = data
+  const { backgroundMedia, backgroundMediaMobile, title, subtitle, mobileTag, hasEma, theme } = data
 
-  const textColor = theme === 'dark' ? 'text-black' : 'text-white'
+  const textColor = theme === 'dark' ? 'text-black' : theme === 'pink' ? 'text-pink' : 'text-white'
 
   return (
     <div
@@ -21,7 +21,7 @@ const Hero = ({ data = {} }) => {
       }`}
     >
       {backgroundMedia?.content && (
-        <div className="w-full h-full absolute top-0 left-0 z-1">
+        <div className={`w-full h-full absolute top-0 left-0 z-1${backgroundMediaMobile?.content ? ' hidden md:block' : ''}`}>
           <div className="w-full h-full">
             <Media
               width={1600}
@@ -33,6 +33,18 @@ const Hero = ({ data = {} }) => {
             />
           </div>
           <div className={`absolute top-0 left-0 w-full h-[10rem] bg-gradient-to-b from-[rgba(0,0,0,0.5)] to-transparent`}></div>
+        </div>
+      )}
+      {backgroundMediaMobile?.content && (
+        <div className="w-full h-full absolute top-0 left-0 z-1 md:hidden">
+          <Media
+            width={1600}
+            srcSizes={[800, 1000, 1200, 1600]}
+            sizes="100%"
+            layout={'fill'}
+            className={'absolute top-0 left-0 h-full w-full object-cover'}
+            media={backgroundMediaMobile?.content}
+          />
         </div>
       )}
       <div

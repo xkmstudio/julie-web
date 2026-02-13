@@ -36,14 +36,21 @@ export default {
       type: 'media'
     },
     {
+      title: 'Mobile Background Media',
+      name: 'backgroundMediaMobile',
+      type: 'media',
+      description: 'This will be displayed on mobile if present.'
+    },
+    {
       title: 'Theme',
       name: 'theme',
       type: 'string',
       description: 'Controls the text color',
       options: {
         list: [
-          { title: 'Light', value: 'light' },
-          { title: 'Dark', value: 'dark' }
+          { title: 'White', value: 'light' },
+          { title: 'Black', value: 'dark' },
+          { title: 'Pink', value: 'pink' }
         ],
         layout: 'radio',
         direction: 'horizontal'

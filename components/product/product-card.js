@@ -151,7 +151,7 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            Learn More
+            learn more
           </a>
         ) : (
           <NextLink
@@ -160,7 +160,7 @@ const ProductCard = ({
             })}
             href={productHref}
           >
-            Learn More
+            learn more
           </NextLink>
         )}
         {!hasMultipleVariants && (
@@ -251,14 +251,14 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            Learn More
+            learn more
           </a>
         ) : (
           <NextLink
             className="btn is-outline is-large flex-[1_1_0%] min-w-0"
             href={productHref}
           >
-            Learn More
+            learn more
           </NextLink>
         )}
         {!hasMultipleVariants && (

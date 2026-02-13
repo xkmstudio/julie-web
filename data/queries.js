@@ -292,6 +292,7 @@ export const modules = `
     title[]{${ptContent}},
     subtitle[]{${ptContent}},
     backgroundMedia{${mediaContent}},
+    backgroundMediaMobile{${mediaContent}},
     mobileTag,
     theme
   },

@@ -466,7 +466,7 @@ const PageContent = ({
               onFrameLinkClick={onFrameLinkClick}
               className="btn"
             >
-              {globalCta.link.title || 'Learn More'}
+              {globalCta.link.title || 'learn more'}
             </Link>
           </div>
         )}

@@ -175,7 +175,7 @@ const ProductShop = ({
                 className="btn is-outline is-large flex-shrink-0 w-full md:w-[unset]"
                 href={`/products/${product.slug}`}
               >
-                Learn More
+                learn more
               </NextLink>
               {activeVariant && (
                 product.disableAddToCart && product.additionalLinks && product.additionalLinks.length > 0 ? (
