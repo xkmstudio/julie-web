@@ -77,7 +77,8 @@ export default {
       name: 'includeInGallery',
       type: 'boolean',
       description: 'When enabled, this thumbnail will appear as the first image in the product gallery.',
-      initialValue: false
+      initialValue: false,
+      hidden: true
     }
   ],
   preview: {

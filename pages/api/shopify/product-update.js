@@ -29,61 +29,60 @@ export const config = {
   },
 }
 
-// Custom Middleware to parse Shopify's webhook payload
-const runMiddleware = (req, res, fn) => {
-  new Promise((resolve) => {
-    if (!req.body) {
-      let buffer = ''
-      req.on('data', (chunk) => {
-        buffer += chunk
-      })
-
-      req.on('end', () => {
-        resolve()
-        req.body = JSON.parse(Buffer.from(buffer).toString())
-      })
-    }
-  })
-}
-
 export default async function send(req, res) {
-  // bail if it's not a post request or it's missing an ID
+  // GET: diagnostic endpoint (no secrets) to verify webhook URL and env
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      ok: true,
+      endpoint: 'shopify/product-update',
+      env: {
+        hasSanityProjectId: !!process.env.SANITY_PROJECT_ID,
+        hasSanityDataset: !!process.env.SANITY_PROJECT_DATASET,
+        hasSanityToken: !!process.env.SANITY_API_TOKEN,
+        hasShopifyWebhookSecret: !!process.env.SHOPIFY_WEBHOOK_INTEGRITY,
+        hasShopifyAdminToken: !!process.env.SHOPIFY_ADMIN_API_TOKEN,
+        hasShopifyStoreId: !!process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID,
+      },
+    })
+  }
+
   if (req.method !== 'POST') {
-    console.error('Must be a POST request with a product ID')
-    return res
-      .status(200)
-      .json({ error: 'Must be a POST request with a product ID' })
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
   /*  ------------------------------ */
-  /*  1. Run our middleware
-  /*  2. check webhook integrity
+  /*  1. Read raw body (once) for HMAC + parse
+  /*  2. Check webhook integrity
   /*  ------------------------------ */
 
-  // Determine if running on Netlify
-  const isNetlify = !!process.env.NETLIFY;
-
-  // run our middleware to extract the "raw" body for matching the Shopify Integrity Key
-  let rawBody;
-  if (isNetlify && req.body instanceof Buffer) {
-    rawBody = req.body;
-    try {
-      req.body = JSON.parse(rawBody.toString());
-    } catch (e) {
-      console.error('Failed to parse body buffer on Netlify:', e);
-      return res.status(200).json({ error: 'Invalid JSON body' });
+  let rawBody
+  try {
+    if (process.env.NETLIFY && req.body instanceof Buffer) {
+      rawBody = req.body
+    } else {
+      rawBody = await getRawBody(req, { limit: '1mb' })
     }
-  } else {
-    await runMiddleware(req, res);
-    rawBody = await getRawBody(req);
+    if (!rawBody || (typeof rawBody === 'string' && !rawBody.length)) {
+      return res.status(200).json({ error: 'Missing request body' })
+    }
+    const rawString = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody
+    req.body = JSON.parse(rawString)
+  } catch (e) {
+    console.error('Failed to read/parse body:', e.message)
+    return res.status(200).json({ error: 'Invalid JSON body', detail: e.message })
   }
 
-  // get request integrity header
-  const hmac = req.headers['x-shopify-hmac-sha256'];
-  const generatedHash = await crypto
+  if (!process.env.SHOPIFY_WEBHOOK_INTEGRITY) {
+    console.error('SHOPIFY_WEBHOOK_INTEGRITY is not set')
+    return res.status(500).json({ error: 'Server misconfiguration: webhook secret not set' })
+  }
+
+  const hmac = req.headers['x-shopify-hmac-sha256']
+  const rawForHmac = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(String(rawBody), 'utf8')
+  const generatedHash = crypto
     .createHmac('sha256', process.env.SHOPIFY_WEBHOOK_INTEGRITY)
-    .update(rawBody, 'utf8', 'hex')
-    .digest('base64');
+    .update(rawForHmac)
+    .digest('base64')
 
   // Add logging for debugging HMAC mismatches
   if (hmac !== generatedHash) {
@@ -96,8 +95,12 @@ export default async function send(req, res) {
 
   // extract shopify data
   const {
-    body: { status, id, title, handle, options, variants },
+    body: { status, id, title, handle, options = [], variants = [] },
   } = req
+
+  if (!id || !title) {
+    return res.status(200).json({ error: 'Missing product id or title in body' })
+  }
 
   console.info(`Sync triggered for product: "${title}" (id: ${id})`)
 
@@ -123,18 +126,18 @@ export default async function send(req, res) {
         }))
       : []
 
-  // Define product fields
+  const firstVariant = variants[0]
   const productFields = {
     wasDeleted: false,
     isDraft: status === 'draft' ? true : false,
     productTitle: title,
     productID: id,
-    slug: { current: handle },
-    price: variants[0].price * 100,
-    comparePrice: variants[0].compare_at_price * 100,
-    sku: variants[0].sku || '',
+    slug: { current: handle || `product-${id}` },
+    price: firstVariant?.price != null ? Number(firstVariant.price) * 100 : 0,
+    comparePrice: firstVariant?.compare_at_price != null ? Number(firstVariant.compare_at_price) * 100 : 0,
+    sku: firstVariant?.sku || '',
     inStock: variants.some(
-      (v) => v.inventory_quantity > 0 || v.inventory_policy === 'continue'
+      (v) => (v.inventory_quantity ?? 0) > 0 || v.inventory_policy === 'continue'
     ),
     lowStock:
       variants.reduce((a, b) => a + (b.inventory_quantity || 0), 0) <= 10,
@@ -159,13 +162,13 @@ export default async function send(req, res) {
       productID: id,
       variantTitle: variant.title,
       variantID: variant.id,
-      price: variant.price * 100,
-      comparePrice: variant.compare_at_price * 100,
+      price: variant.price != null ? Number(variant.price) * 100 : 0,
+      comparePrice: variant.compare_at_price != null ? Number(variant.compare_at_price) * 100 : 0,
       sku: variant.sku || '',
       inStock:
-        variant.inventory_quantity > 0 ||
+        (variant.inventory_quantity ?? 0) > 0 ||
         variant.inventory_policy === 'continue',
-      lowStock: variant.inventory_quantity <= 5,
+      lowStock: (variant.inventory_quantity ?? 0) <= 5,
       options:
         variants.length > 1
           ? options.map((option) => ({
@@ -229,11 +232,20 @@ export default async function send(req, res) {
   if (previousSync) {
     console.log('Previous sync found, comparing differences...')
 
-    // Differences found
-    if (jsondiffpatch.diff(JSON.parse(previousSync.value), productCompare)) {
+    const diff = jsondiffpatch.diff(JSON.parse(previousSync.value), productCompare)
+    if (!diff) {
+      // No data changes — only skip if product actually exists in Sanity
+      const existsInSanity = await sanity.fetch(
+        `count(*[_type == "product" && _id == $id])`,
+        { id: `product-${id}` }
+      )
+      if (existsInSanity > 0) {
+        console.info('No differences found, product exists in Sanity, skip.')
+        return res.status(200).json({ ok: true, skipped: true, reason: 'no changes' })
+      }
+      console.warn('No diff but product missing in Sanity — syncing.')
+    } else {
       console.warn('Critical difference found! Start sync...')
-
-      // update our shopify metafield with the new data before continuing sync with Sanity
       axios({
         url: `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_ID}.myshopify.com/admin/api/2023-10/products/${id}/metafields/${previousSync.id}.json`,
         method: 'PUT',
@@ -248,15 +260,7 @@ export default async function send(req, res) {
       }).catch((error) => {
         console.error('Failed to update metafield:', error.response?.status || error.message)
       })
-
-      // No changes found
-    } else {
-      console.info('No differences found, sync complete!')
-      return res
-        .status(200)
-        .json({ error: 'nothing to sync, product up-to-date' })
     }
-    // No metafield created yet, let's do that
   } else {
     console.warn('No previous sync found, Start sync...')
     axios({
