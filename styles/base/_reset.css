@@ -119,6 +119,13 @@ select,
 textarea {
   margin: 0;
 }
+
+/* Prevent mobile zoom on focus: inputs must be at least 16px */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
  
 button {
   overflow: visible;

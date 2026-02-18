@@ -17,7 +17,7 @@
   &.standard {
     input,
     textarea {
-      @apply text-13;
+      @apply text-16;
     }
 
     .textRich {
@@ -51,7 +51,7 @@
   &.newsletter{
     input,
     textarea {
-      @apply bg-transparent font-normal font-vm w-full p-0 text-13 ;
+      @apply bg-transparent font-normal font-vm w-full p-0 text-16;
 
       outline: none;
       font-size: 16px;

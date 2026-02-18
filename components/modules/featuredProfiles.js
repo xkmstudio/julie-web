@@ -38,7 +38,7 @@ const ProfileCard = ({ profile }) => {
             <h3 className="text-18 font-bold">{profile.title}</h3>
           )}
           {profile.role && (
-            <div className="text-14 text-ash">{profile.role}</div>
+            <div className="text-14 text-black/60">{profile.role}</div>
           )}
         </div>
       </div>

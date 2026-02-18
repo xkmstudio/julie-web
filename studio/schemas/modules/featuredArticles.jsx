@@ -9,9 +9,22 @@ export default {
   fields: [
     anchorSlugField,
     {
+      title: 'Use List',
+      name: 'useList',
+      type: 'boolean',
+      description: 'If true, displays articles in a list format with gradient. If false, displays as a carousel.',
+      initialValue: false,
+    },
+    {
       title: 'Title',
       name: 'title',
       type: 'string',
+    },
+    {
+      title: 'CTA',
+      name: 'cta',
+      type: 'link', 
+      hidden: ({ parent }) => parent.useList,
     },
     {
       title: 'Articles',
@@ -23,13 +36,6 @@ export default {
           to: [{ type: 'article' }],
         }
       ],
-    },
-    {
-      title: 'Use List',
-      name: 'useList',
-      type: 'boolean',
-      description: 'If true, displays articles in a list format with gradient. If false, displays as a carousel.',
-      initialValue: false,
     },
     {
       title: 'Featured Card',

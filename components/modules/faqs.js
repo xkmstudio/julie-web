@@ -36,23 +36,18 @@ const Faqs = ({ data = {} }) => {
   return (
     <section ref={triggerRef} className="w-full md:px-25">
       <div
-        className="w-full h-full md:rounded-[1.5rem] overflow-hidden"
+        className="w-full h-full md:rounded-[1.5rem]"
         style={sectionStyle}
       >
         {hasHeroContent && (
           <div
-            className={`w-full flex flex-col items-center relative z-3${
-              hero.mobileTag
-                ? ' h-[calc(var(--vh,1vh)*100-6.5rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center'
-                : ' min-h-[100vw] md:min-h-[60rem] py-20 justify-center'
-            }`}
+            className={`w-full flex flex-col items-center relative z-3 py-20 justify-center`}
           >
             <div
-              className={`flex flex-col gap-20 w-full max-w-[78rem] px-20 text-center${
-                hero.mobileTag
-                  ? ' relative md:absolute z-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-                  : ' relative z-2 pt-[calc(var(--headerHeight)+2.5rem)] md:pt-[calc(var(--headerHeight)+2rem)] pb-[4rem]'
-              }`}
+              className={`flex flex-col gap-20 w-full max-w-[78rem] px-20 text-center${hero.mobileTag
+                ? ' relative md:absolute z-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+                : ' relative z-2 pt-[calc(var(--headerHeight)+2.5rem)] md:pt-[calc(var(--headerHeight)+2rem)] pb-[4rem]'
+                }`}
             >
               <div className="flex flex-col gap-15 md:gap-25">
                 {hero.title && (
@@ -66,11 +61,7 @@ const Faqs = ({ data = {} }) => {
                   </div>
                 )}
               </div>
-              {hero.hasEma && (
-                <div className="mt-20">
-                  <EmaWidget />
-                </div>
-              )}
+
             </div>
             {hero.mobileTag && (
               <div className="relative z-2 flex items-center justify-center md:hidden">
@@ -84,7 +75,7 @@ const Faqs = ({ data = {} }) => {
             )}
           </div>
         )}
-        <div className="mx-auto px-15 pt-30 md:pt-60 w-full max-w-[100rem]">
+        <div className="mx-auto px-15 pt-30 md:pt-0 w-full max-w-[100rem]">
           {/* Sections as Accordion Drawers */}
           <div className="flex flex-col gap-20 md:gap-30">
             {sections?.map((section, index) => {
@@ -119,12 +110,13 @@ const Faqs = ({ data = {} }) => {
           <div>
             <h2 className="title-2xl">{cta?.text}</h2>
           </div>
-          {cta?.link?.title && (
-            <div className="w-full flex justify-center">
-              <Link link={cta.link} className="btn is-large" />
+          {hero.hasEma && (
+            <div className="mt-20">
+              <EmaWidget />
             </div>
           )}
         </div>
+
       </div>
     </section>
   )

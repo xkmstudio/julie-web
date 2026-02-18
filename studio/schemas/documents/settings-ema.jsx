@@ -1,7 +1,7 @@
 import { ChatCircle } from 'phosphor-react'
 
 export default {
-  title: 'EMA Settings',
+  title: 'Ema Settings',
   name: 'emaSettings',
   type: 'document',
   icon: ChatCircle,
@@ -35,7 +35,7 @@ export default {
   preview: {
     prepare() {
       return {
-        title: 'EMA Settings',
+        title: 'Ema Settings',
       }
     },
   },

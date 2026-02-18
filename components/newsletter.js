@@ -92,7 +92,7 @@ const Newsletter = ({ newsletter, layout, type = 'general' }) => {
                     inputMode="text"
                     autoComplete="off"
                     className={`block px-15 py-10 text-14 flex-1 bg-transparent`}
-                    placeholder="Email Address"
+                    placeholder="email address"
                     {...register('email', {
                       required: 'This field is required.',
                       pattern: {

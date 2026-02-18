@@ -252,7 +252,7 @@ export default (S) =>
                 .icon(GlobeSimple),
               S.divider(),
               S.listItem()
-                .title('EMA')
+                .title('Ema')
                 .child(
                   S.editor()
                     .id('emaSettings')

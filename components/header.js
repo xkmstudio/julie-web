@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter, Router } from 'next/router'
 import cx from 'classnames'
+
+import { pageTransitionSpeed } from '@lib/animate'
 
 import NextLink from 'next/link'
 import { Marqy } from 'marqy'
@@ -23,7 +25,7 @@ const Header = ({ data, work, pages }) => {
 
   const { width } = useWindowSize()
 
-  const { nav, navSecondary, enableBanner, banner } = data
+  const { nav, navSecondary, enableBanner, banner, disableCart } = data
   const menuPages = pages || work?.pages || []
   const router = useRouter()
   const headerRef = useRef()
@@ -56,40 +58,62 @@ const Header = ({ data, work, pages }) => {
   }, [router])
 
   // Check for hero-bleed element and update header transparency based on scroll
+  // Product pages always use solid header
+  // Must account for page transition + AnimatePresence - new DOM appears after Layout exit (~300ms)
   useEffect(() => {
-    const checkScrollAndHeroBleed = () => {
+    const checkScrollAndHeroBleed = (pathnameOverride) => {
+      const pathname = pathnameOverride ?? router.pathname
+      const isProductPage = pathname.startsWith('/products/')
       const hasHeroBleed = document.querySelector('.hero-bleed') !== null
       const scrollY = window.scrollY || window.pageYOffset
 
-      if (hasHeroBleed && scrollY < 100) {
+      if (!isProductPage && hasHeroBleed && scrollY < 100) {
         setIsTransparent(true)
       } else {
         setIsTransparent(false)
       }
     }
 
-    // Check on mount and route changes
+    // Check on mount
     checkScrollAndHeroBleed()
 
     // Add scroll listener
-    window.addEventListener('scroll', checkScrollAndHeroBleed, {
+    const scrollHandler = () => checkScrollAndHeroBleed()
+    window.addEventListener('scroll', scrollHandler, {
       passive: true,
     })
 
-    // Re-check when route changes (after a short delay to allow DOM to update)
-    const handleRouteChange = () => {
-      setTimeout(() => {
-        checkScrollAndHeroBleed()
-      }, 100)
+    // Immediately set solid when navigating TO product page (before DOM updates)
+    const handleRouteChangeStart = (url) => {
+      const pathname = url?.split('?')[0] ?? ''
+      if (pathname.startsWith('/products/')) {
+        setIsTransparent(false)
+      }
     }
 
-    router.events.on('routeChangeComplete', handleRouteChange)
+    // Re-check after route change - use multiple delays to catch when AnimatePresence swaps DOM
+    // Pass url so we use destination pathname (avoid stale closure from previous route)
+    const handleRouteChangeComplete = (url) => {
+      const pathname = url?.split('?')[0] ?? ''
+      const delays = [
+        0,
+        pageTransitionSpeed + 100,  // ~400ms - after Layout exit
+        pageTransitionSpeed + 600,  // ~900ms - extra buffer for slow renders
+      ]
+      delays.forEach((delay) => {
+        setTimeout(() => checkScrollAndHeroBleed(pathname), delay)
+      })
+    }
+
+    Router.events.on('routeChangeStart', handleRouteChangeStart)
+    Router.events.on('routeChangeComplete', handleRouteChangeComplete)
 
     return () => {
-      window.removeEventListener('scroll', checkScrollAndHeroBleed)
-      router.events.off('routeChangeComplete', handleRouteChange)
+      window.removeEventListener('scroll', scrollHandler)
+      Router.events.off('routeChangeStart', handleRouteChangeStart)
+      Router.events.off('routeChangeComplete', handleRouteChangeComplete)
     }
-  }, [router])
+  }, [router.pathname])
 
   // Setup Banner
   useEffect(() => {
@@ -186,9 +210,9 @@ const Header = ({ data, work, pages }) => {
               { 'is-transparent': isTransparent && !menuOpen }
             )}
           >
-            <div className="hidden md:flex gap-15 items-center font-lxb">
+            <div className="hidden md:flex gap-25 items-center font-lxb">
               {nav?.map((item, index) => (
-                <div key={index} className={`flex`}>
+                <div key={index} className={`flex btn-text`}>
                   <Link key={index} link={item} className={``} />
                 </div>
               ))}
@@ -248,14 +272,14 @@ const Header = ({ data, work, pages }) => {
                     </svg>
                   </div>
                 </button>
-                <div className="hidden md:flex gap-15 items-center font-lxb">
+                <div className="hidden md:flex gap-25 items-center font-lxb">
                   {navSecondary?.map((item, index) => (
-                    <div key={index} className={`flex`}>
+                    <div key={index} className={`flex btn-text`}>
                       <Link key={index} link={item} className={``} />
                     </div>
                   ))}
                 </div>
-                <CartToggle />
+                {!disableCart && <CartToggle />}
               </div>
             </div>
           </div>
@@ -298,7 +322,7 @@ const Header = ({ data, work, pages }) => {
                           setMenuOpen(false)
                         }}
                         className={
-                          'title-2xl leading-100 w-full flex items-center justify-center text-center px-35 border-white'
+                          'title-2xl  leading-100 w-full flex items-center justify-center text-center px-35 border-white'
                         }
                         hasArrow={false}
                         key={key}

@@ -26,6 +26,12 @@ export default {
       initialValue: false
     },
     {
+      name: 'disableCart',
+      title: 'Disable Cart',
+      type: 'boolean',
+      initialValue: false
+    },
+    {
       name: 'banner',
       title: 'Banner',
       type: 'object',

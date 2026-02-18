@@ -443,6 +443,7 @@ export const modules = `
     anchorSlug,
     title,
     useList,
+    cta{${link}},
     featuredCard{
       logo{${assetMeta}},
       media{${mediaContent}},
@@ -635,6 +636,7 @@ export const site = `
     },
     "header": *[_type == "headerSettings"][0]{
       enableBanner,
+      disableCart,
       banner{
         text,
         link
@@ -672,7 +674,9 @@ export const site = `
     "ema": *[_type == "emaSettings"][0]{
       suggestions,
       chatPlaceholder,
-      disclaimer
+      disclaimer[]{
+        ${ptContent}
+      }
     },
     "gtmID": *[_type == "generalSettings"][0].gtmID,
     "pages": *[_type == "page" && wasDeleted != true && isDraft != true] | order(_updatedAt desc) {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import cx from 'classnames'
 
 import { AnimatePresence, m } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -138,6 +139,36 @@ const Testimonials = ({ data = {} }) => {
             </div>
           </div>
         </div>
+        <button
+          onClick={() => embla?.scrollNext()}
+          className={cx(
+            'absolute top-1/2 left-25 md:left-35 -translate-y-1/2 z-[99999] bg-pink text-white rounded-full flex items-center justify-center hover:bg-pink/90 transition-colors focus:outline-none flex-shrink-0 w-40 h-40 flex items-center justify-center',
+          )}
+          aria-label="Close frame"
+          type="button"
+        >
+          <div className='w-[1.6rem] rotate-180 h-[1.6rem] flex items-center justify-center'>
+            <Icon
+              name={'Arrow'}
+              viewBox={'0 0 14 14'}
+            />
+          </div>
+        </button>
+        <button
+          onClick={() => embla?.scrollNext()}
+          className={cx(
+            'absolute top-1/2 right-15 md:right-35 -translate-y-1/2 z-[99999] bg-pink rounded-full text-white hidden md:flex items-center justify-center hover:bg-pink/90 transition-colors focus:outline-none flex-shrink-0 w-40 h-40 flex items-center justify-center',
+          )}
+          aria-label="Close frame"
+          type="button"
+        >
+          <div className='w-[1.6rem] h-[1.6rem] flex items-center justify-center'>
+            <Icon
+              name={'Arrow'}
+              viewBox={'0 0 14 14'}
+            />
+          </div>
+        </button>
       </div>
     </section>
   )

@@ -11,6 +11,7 @@ import Icon from '@components/icon'
 import BlockContent from '@components/block-content'
 import Gradient from '@components/gradient'
 import ScrollingTitle from '@components/scrolling-title'
+import Link from '@components/link'
 
 const Jewels = () => {
   return (
@@ -50,14 +51,14 @@ const Jewels = () => {
 }
 
 const FeaturedArticles = ({ data = {} }) => {
-  const { articles, useList, featuredCard, title } = data
+  const { articles, useList, featuredCard, title, cta } = data
 
   const CardType = featuredCard?.link ? 'a' : 'div';
 
   // List view (gradient style)
   if (useList) {
     return (
-      <section className="w-full section-padding">
+      <section className="w-full section-padding relative z-[4] md:z-auto">
         {articles && articles.length > 0 && (
           <div className="w-full hidden md:flex gap-15 md:gap-25">
             <div className="w-2/3">
@@ -206,10 +207,10 @@ const FeaturedArticles = ({ data = {} }) => {
   }
 
   // Carousel view
-  return <FeaturedArticlesCarousel articles={articles} />
+  return <FeaturedArticlesCarousel articles={articles} title={title} cta={cta} />
 }
 
-const FeaturedArticlesCarousel = ({ articles }) => {
+const FeaturedArticlesCarousel = ({ articles, title, cta }) => {
   const [target, setTarget] = useState(undefined)
   const scrollRef = useRef(null)
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -245,10 +246,20 @@ const FeaturedArticlesCarousel = ({ articles }) => {
 
   return (
     <section
-      className="w-full pl-15 md:pl-25 py-20 overflow-hidden"
+      className="w-full pl-15 md:pl-25 py-20 relative z-[4] md:z-auto"
       ref={triggerRef}
     >
-      <div ref={scrollRef} className="overflow-hidden">
+      {title && 
+      <div className="w-full flex justify-between items-end mb-20 pr-15 md:pr-20">
+        <h2 className="title-xl">
+          {title}
+        </h2>
+        {cta && (
+          <Link link={cta} className="btn" />
+        )}
+      </div>
+      }
+      <div ref={scrollRef} className="">
         <div ref={emblaRef} className="">
           <div className="flex">
             {articles.map((article, key) => {
@@ -319,6 +330,36 @@ const FeaturedArticlesCarousel = ({ articles }) => {
             })}
           </div>
         </div>
+        <button
+          onClick={() => emblaApi?.scrollNext()}
+          className={cx(
+            'absolute top-1/2 left-25 md:left-35 -translate-y-1/2 z-[99999] bg-pink text-white rounded-full hidden md:flex items-center justify-center hover:bg-pink/90 transition-colors focus:outline-none flex-shrink-0 w-40 h-40',
+          )}
+          aria-label="Close frame"
+          type="button"
+        >
+          <div className='w-[1.6rem] rotate-180 h-[1.6rem] flex items-center justify-center'>
+            <Icon
+              name={'Arrow'}
+              viewBox={'0 0 14 14'}
+            />
+          </div>
+        </button>
+        <button
+          onClick={() => emblaApi?.scrollNext()}
+          className={cx(
+            'absolute top-1/2 right-15 md:right-35 -translate-y-1/2 z-[99999] bg-pink rounded-full text-white hidden md:flex items-center justify-center hover:bg-pink/90 transition-colors focus:outline-none flex-shrink-0 w-40 h-40',
+          )}
+          aria-label="Close frame"
+          type="button"
+        >
+          <div className='w-[1.6rem] h-[1.6rem] flex items-center justify-center'>
+            <Icon
+              name={'Arrow'}
+              viewBox={'0 0 14 14'}
+            />
+          </div>
+        </button>
       </div>
     </section>
   )

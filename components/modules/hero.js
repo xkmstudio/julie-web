@@ -50,7 +50,7 @@ const Hero = ({ data = {} }) => {
       <div
         className={`flex flex-col gap-20 w-full max-w-[78rem] px-20 text-center${
           mobileTag && backgroundMedia?.content
-            ? ' relative md:absolute z-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+            ? ' relative md:absolute z-10 md:z-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
             : ' relative z-2 pt-[calc(var(--headerHeight)+2.5rem)] md:pt-[calc(var(--headerHeight)+2rem)] pb-[4rem]'
         }`}
       >
@@ -71,7 +71,7 @@ const Hero = ({ data = {} }) => {
         )}
       </div>
       {mobileTag && (
-        <div className={`relative z-2 ${textColor} flex items-center justify-center md:hidden`}>
+        <div className={`relative z-[1] ${textColor} flex items-center justify-center md:hidden`}>
           <div className="tag-glass">
             <div className="text-14 text-center flex-shrink-0">{mobileTag}</div>
             <div className="w-[1.5rem] flex items-center justify-center flex-shrink-0">

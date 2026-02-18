@@ -122,7 +122,7 @@ const ProductShop = ({
           </div>
         )}
 
-        <div className="col-span-12 md:col-span-3 pr-20 flex items-center justify-center p-20 md:p-0">
+        <NextLink href={`/products/${product.slug}`} className="col-span-12 md:col-span-3 pr-20 flex items-center justify-center p-20 md:p-0">
           {productImage && (
             <div className="relative w-full pb-[100%]">
               <Media
@@ -135,7 +135,7 @@ const ProductShop = ({
               />
             </div>
           )}
-        </div>
+        </NextLink>
 
         <div className="col-span-12 md:col-span-9 flex flex-col items-center md:items-start justify-center gap-20 md:gap-30 mt-20 md:mt-0">
           <div>
@@ -300,7 +300,7 @@ const ProductShop = ({
                           href={externalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0"
+                          className="h-[2.5rem] md:h-[3rem] flex-1 flex items-center justify-center min-w-0 transition-opacity duration-300 hover:opacity-50"
                         >
                           {logoContent}
                         </a>

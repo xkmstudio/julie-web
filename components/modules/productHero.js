@@ -157,7 +157,7 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame 
                     {product.icons.map((icon, key) => (
                   <React.Fragment key={key}>
                         <ProductIcon
-                          className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain"
+                          className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain transition-opacity duration-300 hover:opacity-50"
                           item={icon}
                           index={key}
                         />

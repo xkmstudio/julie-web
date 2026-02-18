@@ -1,36 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import { m, AnimatePresence } from 'framer-motion'
 import Icon from '@components/icon'
 import cx from 'classnames'
-import { getSanityClient } from '@lib/sanity'
+import Content from '@components/block-content'
+import { useSiteContext } from '@lib/context'
 
 const EmaWidget = () => {
   const router = useRouter()
+  const { ema: emaSettings } = useSiteContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [initialInputText, setInitialInputText] = useState('')
-  const [emaSettings, setEmaSettings] = useState(null)
   const [isInputFocused, setIsInputFocused] = useState(false)
-
-  // Fetch EMA settings
-  useEffect(() => {
-    const fetchEmaSettings = async () => {
-      try {
-        const settings = await getSanityClient().fetch(
-          `*[_type == "emaSettings"][0]{
-            suggestions,
-            chatPlaceholder,
-            disclaimer
-          }`
-        )
-        setEmaSettings(settings)
-      } catch (error) {
-        console.error('Error fetching EMA settings:', error)
-      }
-    }
-    fetchEmaSettings()
-  }, [])
 
   const {
     register,
@@ -98,7 +80,7 @@ const EmaWidget = () => {
   return (
     <>
       {/* Initial Form */}
-      <div className="ema-widget w-full max-w-[600px] mx-auto julie-gradient rounded-[1.5rem] relative">
+      <div className="ema-widget w-full max-w-[600px] mx-auto julie-gradient rounded-[1.5rem] relative z-[91]">
         <div className="rounded-[1.5rem] absolute top-0 left-0 w-full h-full blur-[5px] md:blur-[10px] julie-gradient has-blur"></div>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -118,14 +100,14 @@ const EmaWidget = () => {
                 className="w-[1.5rem] h-[1.5rem] text-pink absolute left-15 top-20"
               />
             </m.div>
-            {disclaimer && (
+            {disclaimer?.length > 0 && (
               <m.div
                 initial={{ opacity: 1 }}
                 animate={{ opacity: initialInputText.trim().length > 0 ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
-                className="text-slate text-10 absolute left-20 bottom-20 italic text-left max-w-[40rem]"
+                className="text-slate text-10 absolute left-20 bottom-20 italic text-left max-w-[46rem] pr-60 [&_.rc]:italic [&_.rc]:text-inherit [&_.rc]:text-10"
               >
-                {disclaimer}
+                <Content blocks={disclaimer} />
               </m.div>
             )}
             <textarea
@@ -223,7 +205,7 @@ const EmaWidget = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute z-[4] top-full left-0 right-0 mt-10 hidden md:block"
+                className="absolute z-[91] top-full left-0 right-0 mt-10 block"
               >
                 <div className="bg-white border border-pink rounded-[1.5rem] p-20 shadow-lg" >
                   <div className="flex flex-col gap-5">

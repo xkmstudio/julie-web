@@ -68,7 +68,7 @@ const ProductCardAlternate = ({ product, index, className }) => {
           className="btn is-add is-block flex items-center gap-5 w-full justify-center"
         >
           <div className="flex items-center gap-5">
-            <span>Shop Now</span>
+            <span>shop now</span>
             &mdash;
             <ProductPrice
               price={activeVariant?.price || product.price}

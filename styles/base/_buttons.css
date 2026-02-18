@@ -4,10 +4,10 @@ button{
 
 .btn{
 
-  @apply flex items-center justify-center text-center rounded-full border border-pink bg-pink hover:bg-magenta hover:border-magenta transition-colors duration-300 text-white font-lb flex-shrink-0 px-20 py-10;
+  @apply flex items-center justify-center text-center rounded-full border border-pink bg-pink hover:bg-magenta hover:border-magenta transition-[background-color,border-color,opacity] duration-300 text-white font-lb flex-shrink-0 px-20 py-10;
 
   &.is-outline{
-    @apply bg-transparent text-pink hover:text-magenta;
+    @apply bg-transparent text-pink hover:bg-pink/10;
 
     &.is-white{
       @apply text-white hover:text-[#FFACCB] border-white hover:border-[#FFACCB];
@@ -23,7 +23,7 @@ button{
   }
   
   &-text{
-    @apply text-16 hover:opacity-80 transition-opacity duration-300;
+    @apply text-16 hover:underline;
   }
 
   &-gradient{

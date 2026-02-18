@@ -47,7 +47,7 @@
       }
       
       input {
-        @apply relative bg-transparent border-0 rounded-none appearance-none p-5 w-full h-full text-center text-current text-14 outline-none;
+        @apply relative bg-transparent border-0 rounded-none appearance-none p-5 w-full h-full text-center text-current text-16 outline-none;
       }
     }
   }
