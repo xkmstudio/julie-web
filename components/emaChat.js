@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/router'
+import useEmblaCarousel from 'embla-carousel-react'
 import Icon from '@components/icon'
 import Image from 'next/image'
 import { useWindowSize } from '@lib/helpers'
@@ -321,6 +322,75 @@ const preventIosFocusScrollJump = () => {
   return () => window.removeEventListener('focusin', onFocusIn)
 }
 
+/** Mobile-only horizontal carousel of Algolia articles, shown after the first assistant message */
+function EmaArticlesCarousel({ articles, onOpenFrame }) {
+  const [emblaRef] = useEmblaCarousel({
+    align: 'start',
+    containScroll: 'trimSnaps',
+    dragFree: false,
+    skipSnaps: false,
+  })
+
+  return (
+    <div className="w-full overflow-hidden mt-20 md:mt-0">
+      <div ref={emblaRef} className="overflow-hidden touch-pan-x px-15">
+        <div className="flex gap-15">
+          {articles.map((article, index) => (
+            <button
+              key={article.slug || index}
+              onClick={() => onOpenFrame(`/blog/${article.slug}`)}
+              className="article-card-container flex-[0_0_75%] min-w-0 flex-shrink-0 block group w-full text-left"
+              type="button"
+            >
+              <div className="article-card relative w-full pb-[80%] rounded-[1rem] overflow-hidden">
+                {!article.useGradient && article.image ? (
+                  <div className="absolute inset-0">
+                    <Image
+                      src={article.image.url || article.image}
+                      alt={article.image.alt || article.title}
+                      fill
+                      className="object-cover"
+                      sizes="75vw"
+                      placeholder={article.image.lqip ? 'blur' : undefined}
+                      blurDataURL={article.image.lqip}
+                    />
+                  </div>
+                ) : article.useGradient ? (
+                  <div className="absolute inset-0">
+                    <Gradient gradient={article.gradient} />
+                  </div>
+                ) : null}
+
+                <div
+                  className={cx('p-15 absolute bottom-0 left-0 w-full', {
+                    'bg-gradient-to-t from-black to-transparent text-white': !article.useGradient,
+                    'text-black': article.useGradient,
+                  })}
+                >
+                  {article.authors && article.authors.length > 0 && (
+                    <div className={cx('text-12 mb-5', {
+                      'text-gray-300': !article.useGradient,
+                      'text-black/70': article.useGradient,
+                    })}>
+                      by {article.authors[0]?.title || article.authors[0]?.name}
+                    </div>
+                  )}
+                  <h4 className={cx('text-16 font-lb line-clamp-2', {
+                    'text-white': !article.useGradient,
+                    'text-black': article.useGradient,
+                  })}>
+                    {article.title}
+                  </h4>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const EmaChat = ({ onClose = null }) => {
   // Local state for chat - not using context since this is a dedicated page
   // Initialize with empty state to avoid hydration mismatches
@@ -456,6 +526,7 @@ const EmaChat = ({ onClose = null }) => {
   const titleRef = useRef(null)
   const titleContainerRef = useRef(null)
   const lastSentQueryRef = useRef(null) // Track last sent query to avoid duplicates
+  const firstResponseIdOfThisSessionRef = useRef(null) // First assistant message created this visit (for mobile article carousel)
 
   // -------- Frame open/close ----------
   const handleOpenFrame = async (url, updateUrl = true) => {
@@ -821,25 +892,7 @@ const EmaChat = ({ onClose = null }) => {
 
     setMessages((prev) => [...prev, userMessage])
 
-    // Fetch Algolia search results for this query
-    try {
-      const searchResponse = await fetch('/api/ema/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: message.trim() }),
-      })
-      if (searchResponse.ok) {
-        const searchData = await searchResponse.json()
-        const hits = searchData.hits || []
-        setSearchResults(hits)
-      } else {
-        const errorData = await searchResponse.json().catch(() => ({}))
-        console.error('Search response not ok:', searchResponse.status, errorData)
-      }
-    } catch (error) {
-      console.error('Error fetching search results:', error)
-    }
-
+    // Algolia articles are only fetched on first entry (router.query.q); keep existing results for follow-up messages
     setIsThinking(true)
 
     try {
@@ -868,6 +921,11 @@ const EmaChat = ({ onClose = null }) => {
           messageId: null, // Will be set when received from API
           userId: emaUserId, // Store the userId used to create this message
           flag: null, // Track feedback state
+        }
+
+        // Track first response of this session so we show article carousel after it (mobile)
+        if (!firstResponseIdOfThisSessionRef.current) {
+          firstResponseIdOfThisSessionRef.current = assistantMessage.id
         }
 
         setMessages((prev) => [...prev, assistantMessage])
@@ -961,7 +1019,7 @@ const EmaChat = ({ onClose = null }) => {
     overflowY: 'auto',
     WebkitOverflowScrolling: 'touch',
     // Reserve space for the composer + safe area + keyboard translation doesn’t affect layout
-    paddingBottom: `calc(110px + ${composerHeightPx}px + env(safe-area-inset-bottom))`,
+    paddingBottom: `${isMobile ? 'calc(110px + ${composerHeightPx}px +env(safe-area-inset-bottom))' : '60px'})`,
   }
 
   const composerStyle = {
@@ -1041,17 +1099,11 @@ const EmaChat = ({ onClose = null }) => {
             className="relative w-full h-full flex flex-col overflow-visible"
           >
             {/* Header */}
-            <div className="absolute z-3 top-0 left-0 w-full flex items-center justify-between p-15 md:p-30 pl-15 md:pl-0 pr-15 flex-shrink-0">
+            <div className="absolute z-[101] top-0 left-0 w-full flex items-center justify-between p-15 md:p-30 pl-15 md:pl-0 pr-15 flex-shrink-0">
               <div className="flex items-center gap-10 flex-1 min-w-0 bg-pink md:bg-transparent rounded-full py-20 md:py-0 px-10 md:px-0">
                 <div
                   ref={titleContainerRef}
-                  className="flex-1 min-w-0 overflow-hidden max-w-full md:max-w-[]max-w-[calc(50vw-35rem)] relative px-10 md:px-25"
-                  style={{
-                    maskImage:
-                      'linear-gradient(to right, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%)',
-                    WebkitMaskImage:
-                      'linear-gradient(to right, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%)',
-                  }}
+                  className="flex-1 min-w-0 overflow-hidden max-w-full md:max-w-[calc(50vw-35rem)] relative px-10 md:px-25"
                 >
                   <h2
                     ref={titleRef}
@@ -1091,7 +1143,7 @@ const EmaChat = ({ onClose = null }) => {
             {/* Messages (only scrollable region) */}
             <div
               ref={chatContainerRef}
-              className="ema-chat-messages space-y-20 pt-80 md:pt-25 px-15 md:px-0"
+              className="ema-chat-messages space-y-20 pt-80 md:pt-25"
               style={messagesStyle}
             >
               {messages.length === 0 && (
@@ -1100,37 +1152,39 @@ const EmaChat = ({ onClose = null }) => {
                 </div>
               )}
 
-              {messages.map((msg) => (
+              {messages.map((msg, msgIndex) => (
                 <div
                   key={msg.id}
                   className={`flex flex-col max-w-[50rem] mx-auto ${msg.sender === 'user' ? 'items-end' : 'items-start'
                     }`}
                 >
-                  <div
-                    className={cx(
-                      'max-w-[100%] md:max-w-[80%] p-15 md:p-20 rounded-[1rem] rc',
-                      {
-                        'bg-white text-black': msg.sender === 'user',
-                        'bg-transparent': msg.sender === 'assistant',
-                      }
-                    )}
-                  >
-                    <div className="text-14 md:text-16 whitespace-pre-wrap leading-relaxed">
-                      {processMessageLinks(msg.message, handleOpenFrame)}
-                    </div>
-
-                    {isStreaming &&
-                      msg.sender === 'assistant' &&
-                      msg.id === messages[messages.length - 1]?.id && (
-                        <span className="inline-block w-[0.5rem] h-[1rem] bg-current ml-5 animate-pulse" />
+                  <div className='px-15 md:px-0 max-w-[100%] md:max-w-[80%]'>
+                    <div
+                      className={cx(
+                        'w-full p-15 md:p-20 rounded-[1rem] rc',
+                        {
+                          'bg-white text-black': msg.sender === 'user',
+                          'bg-transparent': msg.sender === 'assistant',
+                        }
                       )}
+                    >
+                      <div className="text-14 md:text-16 whitespace-pre-wrap leading-relaxed">
+                        {processMessageLinks(msg.message, handleOpenFrame)}
+                      </div>
+  
+                      {isStreaming &&
+                        msg.sender === 'assistant' &&
+                        msg.id === messages[messages.length - 1]?.id && (
+                          <span className="inline-block w-[0.5rem] h-[1rem] bg-current ml-5 animate-pulse" />
+                        )}
+                    </div>
                   </div>
 
                   {/* Feedback buttons for assistant messages */}
                   {msg.sender === 'assistant' &&
                     msg.messageId &&
                     !isStreaming && (
-                      <div className="flex items-center gap-10 mt-10">
+                      <div className="flex items-center gap-10 mt-10 px-15 md:px-0">
                         <button
                           onClick={() => handleFeedback(msg.messageId, 'good', msg.userId)}
                           disabled={isSubmittingFeedback || msg.flag?.value === 'good'}
@@ -1298,6 +1352,17 @@ const EmaChat = ({ onClose = null }) => {
                             </button>
                           </div>
                         </form>
+                      </div>
+                    )}
+
+                  {/* Mobile-only: article carousel after the first response of this visit (each time user enters chat) */}
+                  {msg.sender === 'assistant' &&
+                    msg.id === firstResponseIdOfThisSessionRef.current &&
+                    searchResults.length > 0 &&
+                    (msg.messageId || !isStreaming) && (
+                      <div className="md:hidden w-full mt-20">
+                        <div className='title-sm px-15'>suggested articles:</div>
+                        <EmaArticlesCarousel articles={searchResults} onOpenFrame={handleOpenFrame} />
                       </div>
                     )}
                 </div>

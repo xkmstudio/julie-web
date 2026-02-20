@@ -174,7 +174,16 @@ button.ema-gradient-placeholder {
   flex: 1 1 auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(20px + var(--composer-h, 88px) + env(safe-area-inset-bottom));
+  
+  @media screen and (max-width: 849px) {
+    padding-bottom: calc(20px + var(--composer-h, 88px) + env(safe-area-inset-bottom));
+  }
+}
+
+@screen md {
+  .ema-chat-messages {
+    padding-bottom: 90px;
+  }
 }
 
 /* Ema Chat Composer - fixed to viewport bottom, moves above keyboard via --composer-bottom */
