@@ -324,12 +324,22 @@ const preventIosFocusScrollJump = () => {
 
 /** Mobile-only horizontal carousel of Algolia articles, shown after the first assistant message */
 function EmaArticlesCarousel({ articles, onOpenFrame }) {
-  const [emblaRef] = useEmblaCarousel({
+  const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: false,
     skipSnaps: false,
   })
+
+  const handleArticleClick = (e, slug) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // Only open frame on real tap, not when Embla treats it as drag (e.g. after swipe)
+    if (emblaApi && typeof emblaApi.clickAllowed === 'function' && !emblaApi.clickAllowed()) return
+    onOpenFrame(`/blog/${slug}`)
+    console.log('clicked article', slug);
+    
+  }
 
   return (
     <div className="w-full overflow-hidden mt-20 md:mt-0">
@@ -338,7 +348,7 @@ function EmaArticlesCarousel({ articles, onOpenFrame }) {
           {articles.map((article, index) => (
             <button
               key={article.slug || index}
-              onClick={() => onOpenFrame(`/blog/${article.slug}`)}
+              onClick={(e) => handleArticleClick(e, article.slug)}
               className="article-card-container flex-[0_0_75%] min-w-0 flex-shrink-0 block group w-full text-left"
               type="button"
             >
@@ -1551,7 +1561,7 @@ const EmaChat = ({ onClose = null }) => {
           </div>
         </div>
 
-        {/* Page Frame Popup */}
+        {/* Page Frame Popup - on mobile use fixed to overlay entire viewport above chat */}
         <AnimatePresence>
           {frameOpen && frameUrl && (
             <m.div
@@ -1560,13 +1570,13 @@ const EmaChat = ({ onClose = null }) => {
               exit={isMobile ? { x: '100%', opacity: 0 } : { width: 0, opacity: 0 }}
               transition={frameTransition}
               className={cx(
-                'relative top-0 h-full z-[1002] flex flex-col flex-shrink-0',
+                'top-0 h-full z-[1002] flex flex-col flex-shrink-0',
                 {
-                  'absolute right-0 w-full': isMobile,
-                  'p-25': !isMobile,
+                  'fixed inset-0 w-full': isMobile,
+                  'relative p-25': !isMobile,
                 }
               )}
-              style={!isMobile ? { minWidth: 0 } : undefined}
+              style={isMobile ? { minHeight: '100%' } : { minWidth: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Desktop close button: outside frame, so not inside overflow wrapper */}
