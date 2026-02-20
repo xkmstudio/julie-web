@@ -27,9 +27,8 @@ export default {
     {
       title: 'Disclaimer',
       name: 'disclaimer',
-      type: 'text',
+      type: 'simplePortableText',
       description: 'Disclaimer text that renders at the bottom of the hero chat input',
-      rows: 3,
     },
   ],
   preview: {

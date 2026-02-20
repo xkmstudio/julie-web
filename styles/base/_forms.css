@@ -1,3 +1,10 @@
+/* Prevent iOS/mobile browser zoom on input focus (requires font-size >= 16px) */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+}
+
 .form {
   @apply w-full;
 
@@ -54,7 +61,7 @@
       @apply bg-transparent font-normal font-vm w-full p-0 text-16;
 
       outline: none;
-      font-size: 16px;
+      font-size: 20px;
 
       &.is-small {
         @apply p-10;

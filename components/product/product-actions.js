@@ -34,9 +34,8 @@ const ProductActions = ({
           <Link
             key={link._key || index}
             link={link}
-            className={`btn is-large flex items-center justify-center gap-5 ${
-              type === 'feature' ? 'flex-[1_1_0%] min-w-0' : 'w-full'
-            } ${index === 0 ? 'is-add' : 'is-outline'}`}
+            className={`btn is-large flex items-center justify-center gap-5 ${type === 'feature' ? 'flex-[1_1_0%] min-w-0' : 'w-full'
+              } ${index === 0 ? 'is-add' : 'is-outline'}`}
           />
         ))}
       </div>
@@ -60,8 +59,40 @@ const ProductActions = ({
             toolkitProductID={toolkitProductID}
             className="btn is-add is-large flex items-center justify-center gap-5 flex-[1_1_0%] min-w-0"
           >
+            <div className="flex items-center gap-5 min-w-0">
+              <span>{product?.preOrder ? 'pre-order' : 'add to cart'}</span>{' '}
+              &mdash;{' '}
+              <ProductPrice
+                price={activeVariant?.price || product.price}
+                comparePrice={
+                  activeVariant?.comparePrice || product.comparePrice
+                }
+              />
+            </div>
+          </ProductAdd>
+        ) : (
+          <div className="btn is- is-large flex flex-col gap-10 flex-[1_1_0%] min-w-0">
+            Out of Stock
+          </div>
+        )
+      ) : (
+        <div className="product--actions">
+          {activeVariant?.inStock && !activeVariant?.forceOutOfStock ? (
+            <ProductAdd
+              type={type}
+              slug={product.slug}
+              productID={activeVariant.id}
+              quantity={quantity}
+              waitlist={product.waitlist}
+              preOrder={product.preOrder}
+              product={product}
+              onAddToCart={onAddToCart}
+              toolkitIncluded={toolkitIncluded}
+              toolkitProductID={toolkitProductID}
+              className="btn is-add is-large flex items-center justify-center gap-5 w-full"
+            >
               <div className="flex items-center gap-5 min-w-0">
-                <span>{product?.preOrder ? 'Pre-Order' : 'Add to Cart'}</span>{' '}
+                <span>{product?.preOrder ? 'pre-order' : 'add to cart'}</span>{' '}
                 &mdash;{' '}
                 <ProductPrice
                   price={activeVariant?.price || product.price}
@@ -72,44 +103,12 @@ const ProductActions = ({
               </div>
             </ProductAdd>
           ) : (
-            <div className="btn is-add is-large flex flex-col gap-10 flex-[1_1_0%] min-w-0">
+            <div className="btn is-add is-large flex flex-col gap-10 w-full">
               Out of Stock
             </div>
-          )
-        ) : (
-          <div className="product--actions">
-            {activeVariant?.inStock && !activeVariant?.forceOutOfStock ? (
-              <ProductAdd
-                type={type}
-                slug={product.slug}
-                productID={activeVariant.id}
-                quantity={quantity}
-                waitlist={product.waitlist}
-                preOrder={product.preOrder}
-                product={product}
-                onAddToCart={onAddToCart}
-                toolkitIncluded={toolkitIncluded}
-                toolkitProductID={toolkitProductID}
-                className="btn is-add is-large flex items-center justify-center gap-5 w-full"
-              >
-                <div className="flex items-center gap-5 min-w-0">
-                  <span>{product?.preOrder ? 'Pre-Order' : 'Add to Cart'}</span>{' '}
-                  &mdash;{' '}
-                  <ProductPrice
-                    price={activeVariant?.price || product.price}
-                    comparePrice={
-                      activeVariant?.comparePrice || product.comparePrice
-                    }
-                  />
-                </div>
-              </ProductAdd>
-            ) : (
-              <div className="btn is-add is-large flex flex-col gap-10 w-full">
-                Out of Stock
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
+      )}
     </>
   )
 }

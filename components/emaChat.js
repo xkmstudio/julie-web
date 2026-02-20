@@ -1258,7 +1258,7 @@ const EmaChat = ({ onClose = null }) => {
                               value={feedbackReason}
                               onChange={(e) => setFeedbackReason(e.target.value)}
                               placeholder="e.g., Inaccurate, Unhelpful, Off-topic"
-                              className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-14 outline-none focus:ring-2 focus:ring-pink"
+                              className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-16 outline-none focus:ring-2 focus:ring-pink"
                             />
                           </div>
 
@@ -1271,7 +1271,7 @@ const EmaChat = ({ onClose = null }) => {
                               onChange={(e) => setFeedbackDescription(e.target.value)}
                               placeholder="Tell us more about what was wrong..."
                               rows={3}
-                              className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-14 outline-none focus:ring-2 focus:ring-pink resize-none"
+                              className="w-full px-10 py-8 border border-pink rounded-[0.5rem] text-16 outline-none focus:ring-2 focus:ring-pink resize-none"
                             />
                           </div>
 
@@ -1447,7 +1447,7 @@ const EmaChat = ({ onClose = null }) => {
                 value={chatInputText}
                 onChange={(e) => setChatInputText(e.target.value)}
                 className={cx(
-                  'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-14 md:text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
+                  'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
                   {
                     'pl-35': chatInputText.trim().length === 0,
                     'pl-15': chatInputText.trim().length > 0,

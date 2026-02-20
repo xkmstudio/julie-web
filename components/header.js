@@ -312,7 +312,7 @@ const Header = ({ data, work, pages }) => {
                 exit="closed"
                 variants={menuAnim}
                 transition={{ duration: 0.5, ease: [0.19, 1.0, 0.22, 1.0] }}
-                className="w-full bg-pink text-white pt-100"
+                className="w-full bg-pink text-white pt-100 h-full flex flex-col justify-center"
               >
                 <div className="flex flex-col gap-10 pb-30">
                   {nav?.map((link, key) => {
@@ -322,7 +322,7 @@ const Header = ({ data, work, pages }) => {
                           setMenuOpen(false)
                         }}
                         className={
-                          'title-2xl  leading-100 w-full flex items-center justify-center text-center px-35 border-white'
+                          'title-xl  leading-100 w-full flex items-center justify-center text-center px-35 border-white'
                         }
                         hasArrow={false}
                         key={key}
@@ -337,7 +337,7 @@ const Header = ({ data, work, pages }) => {
                           setMenuOpen(false)
                         }}
                         className={
-                          'title-2xl leading-100 w-full flex items-center justify-center text-center px-35 border-white'
+                          'title-xl leading-100 w-full flex items-center justify-center text-center px-35 border-white'
                         }
                         hasArrow={false}
                         key={key}

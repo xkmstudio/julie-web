@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { m, AnimatePresence } from 'framer-motion'
 import Icon from '@components/icon'
 import cx from 'classnames'
-import Content from '@components/block-content'
+import BlockContent from '@components/block-content'
 import { useSiteContext } from '@lib/context'
 
 const EmaWidget = () => {
@@ -68,7 +68,7 @@ const EmaWidget = () => {
   }
 
   const placeholderText = emaSettings?.chatPlaceholder || 'How can Julie help?'
-  const disclaimer = emaSettings?.disclaimer
+  const disclaimer = emaSettings?.disclaimer // simplePortableText array from settings-ema
   const suggestions = emaSettings?.suggestions || []
   
   // Show suggestions when input is focused or user has typed something
@@ -107,7 +107,7 @@ const EmaWidget = () => {
                 transition={{ duration: 0.2 }}
                 className="text-slate text-10 absolute left-20 bottom-20 italic text-left max-w-[46rem] pr-60 [&_.rc]:italic [&_.rc]:text-inherit [&_.rc]:text-10"
               >
-                <Content blocks={disclaimer} />
+                <BlockContent blocks={disclaimer} />
               </m.div>
             )}
             <textarea
@@ -130,7 +130,7 @@ const EmaWidget = () => {
               placeholder={isSubmitting ? "Thinking..." : placeholderText}
               rows={1}
               className={cx(
-                'transition-all duration-300 py-[1.6rem] w-full border-none outline-none text-14 md:text-16 text-black resize-none overflow-y-auto font-lm ema-gradient-placeholder',
+                'transition-all duration-300 py-[1.6rem] w-full border-none outline-none text-16 text-black resize-none overflow-y-auto font-lm ema-gradient-placeholder',
                 {
                   'pl-40': (initialInputText.trim().length === 0 && !isSubmitting),
                   'pl-15': (initialInputText.trim().length > 0 || isSubmitting),
@@ -191,11 +191,11 @@ const EmaWidget = () => {
             anonymous.
           </m.p> */}
 
-          {errors.question && (
+          {/* {errors.question && (
             <p className="text-12 text-red-500 px-20 pb-10">
               {errors.question.message}
             </p>
-          )}
+          )} */}
 
           {/* Suggestions Modal - Absolutely positioned below input */}
           <AnimatePresence>
@@ -217,7 +217,7 @@ const EmaWidget = () => {
                           // Prevent blur from firing before click
                           e.preventDefault()
                         }}
-                        className="text-left italic ema-gradient-placeholder rounded-[1rem] hover:bg-pink/10 text-14 md:text-16 text-black border border-transparent hover:opacity-70 transition-opacity duration-300"
+                        className="text-left italic ema-gradient-placeholder rounded-[1rem] hover:bg-pink/10 text-16 text-black border border-transparent hover:opacity-70 transition-opacity duration-300"
                         type="button"
                       >
                         {suggestion}

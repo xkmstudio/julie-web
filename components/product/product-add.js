@@ -70,10 +70,10 @@ const ProductAdd = ({
             <div className="flex items-center gap-5 group-hover:opacity-100">
               {isAvailable
                 ? isAdding
-                  ? 'Adding...'
+                  ? 'adding...'
                   : product?.preOrder
-                  ? `Pre-Order — $${centsToPrice(product?.price)}`
-                  : `Add to Cart — $${centsToPrice(product?.price)}`
+                  ? `pre-order — $${centsToPrice(product?.price)}`
+                  : `add to cart — $${centsToPrice(product?.price)}`
                 : 'Unavailable'}
             </div>
           </button>

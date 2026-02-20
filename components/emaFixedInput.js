@@ -167,7 +167,7 @@ const EmaFixedInput = () => {
                   }
                 }}
                 className={cx(
-                  'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-14 md:text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
+                  'transition-all duration-300 flex-1 border border-pink rounded-[3rem] pr-[4.5rem] py-15 text-16 outline-none resize-none overflow-y-auto min-h-[4.5rem] max-h-[30rem] font-lm ema-gradient-placeholder bg-white',
                   {
                     'pl-35': fixedInputText.trim().length === 0 && !isSubmitting,
                     'pl-15': fixedInputText.trim().length > 0 || isSubmitting,
