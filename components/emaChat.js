@@ -1029,7 +1029,7 @@ const EmaChat = ({ onClose = null }) => {
     overflowY: 'auto',
     WebkitOverflowScrolling: 'touch',
     // Reserve space for the composer + safe area + keyboard translation doesn’t affect layout
-    paddingBottom: `${isMobile ? 'calc(110px + ${composerHeightPx}px +env(safe-area-inset-bottom))' : '60px'})`,
+    paddingBottom: `${isMobile ? `calc(110px + ${composerHeightPx}px +env(safe-area-inset-bottom))` : '60px'})`,
   }
 
   const composerStyle = {
