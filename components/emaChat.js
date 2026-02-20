@@ -1631,7 +1631,7 @@ const EmaChat = ({ onClose = null }) => {
                       <div className="text-16 text-gray-500">Loading...</div>
                     </div>
                   ) : frameContent && frameContent.data && frameContent.data.page ? (
-                    <div className="ema-frame-mobile pt-[1.5rem] md:pt-[2rem]">
+                    <div className="ema-frame-mobile pt-0 md:pt-[2rem]">
                       <PageContent
                         page={frameContent.data.page}
                         type={frameContent.type}

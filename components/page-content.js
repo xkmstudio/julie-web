@@ -164,7 +164,7 @@ const PageContent = ({
                           e.preventDefault()
                           onFrameLinkClick(`/blog?tag=${tag.slug}`)
                         }}
-                        className="tag"
+                        className="tag mt-15"
                       >
                         {tag.title}
                       </a>
