@@ -116,7 +116,7 @@ const PageContent = ({
           )}
         >
           <div className={cx('w-full flex flex-col relative', {
-            'md:flex-row gap-15 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
+            'md:flex-row gap-0 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
             'gap-15': actuallyInFrame && image && !(useGradient && gradient),
             'justify-center items-center h-full': useGradient && gradient,
           })}>
@@ -149,12 +149,12 @@ const PageContent = ({
             )}
             <div className={cx('relative z-2 mx-auto flex flex-col items-center', {
               'gap-15': actuallyInFrame,
-              'gap-15 md:gap-25 md:p-25 mt-10 md:mt-0': !actuallyInFrame,
+              'gap-15 md:gap-25 md:p-25 mt-20 md:mt-0': !actuallyInFrame,
               'w-full': actuallyInFrame && image && !(useGradient && gradient),
               'w-full md:w-1/2': !actuallyInFrame && image && !(useGradient && gradient),
               'w-full h-full': useGradient && gradient,
             })}>
-              <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full">
+              <div className="w-full max-w-[62rem] mx-auto flex flex-col gap-15 md:gap-25 h-full px-15 md:px-0">
                 <div className="w-full text-center flex-1 flex flex-col justify-center gap-20 items-center">
                   {tag &&
                     (actuallyInFrame && onFrameLinkClick ? (

@@ -2,12 +2,12 @@
     @apply w-full max-w-[65rem] mx-auto;
 
     p{
-        @apply indent-25 text-18;
+        @apply indent-25 text-16 md:text-18;
     }
 
     ul,
     ol{
-        @apply text-18;
+        @apply text-16 md:text-18;
     }
 
     ul{
