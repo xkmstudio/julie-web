@@ -34,7 +34,7 @@ const Faqs = ({ data = {} }) => {
   }
 
   return (
-    <section ref={triggerRef} className="w-full md:px-25">
+    <section ref={triggerRef} className="w-full md:px-25 relative z-3">
       <div
         className="w-full h-full md:rounded-[1.5rem]"
         style={sectionStyle}
@@ -111,7 +111,7 @@ const Faqs = ({ data = {} }) => {
             <h2 className="title-2xl">{cta?.text}</h2>
           </div>
           {hero.hasEma && (
-            <div className="mt-20">
+            <div className="mt-20 relative">
               <EmaWidget />
             </div>
           )}

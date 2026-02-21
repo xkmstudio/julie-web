@@ -206,7 +206,7 @@ const Header = ({ data, work, pages }) => {
         >
           <div
             className={cx(
-              `header relative w-full flex justify-between items-center px-15 py-10 rounded-full`,
+              `header relative w-full flex justify-between items-center px-15 py-10 rounded-full min-h-[5rem]`,
               { 'is-transparent': isTransparent && !menuOpen }
             )}
           >

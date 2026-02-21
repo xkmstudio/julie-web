@@ -1414,6 +1414,7 @@ const EmaChat = ({ onClose = null }) => {
                     'linear-gradient(to bottom, transparent 0px, black 100px, black 100%)',
                 }}
               >
+                <div className='px-25 mb-15 font-plaid text-white text-14 uppercase'>Suggested articles:</div>
                 {/* Wrapper to align content to bottom when not overflowing */}
                 <div className="min-h-full flex flex-col justify-end pointer-events-none">
                   <div className="w-full max-w-[50rem] mx-auto px-15 md:px-25">

@@ -38,7 +38,7 @@ const MarqueeIcon = ({ item, index, className }) => {
   return item.link ? (
     <NextLink
       href={item.link}
-      className="flex items-center justify-center"
+      className="flex items-center justify-center hover:opacity-50 transition-opacity duration-300"
       rel="noopener noreferrer"
       target="_blank"
       key={index}

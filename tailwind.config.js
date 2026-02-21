@@ -150,6 +150,10 @@ module.exports = {
       index: 'calc((var(--vh, 1vh) * 100) - var(--headerHeight))',
       hero: 'calc((var(--vh, 1vh) * 100) - var(--headerHeight) - 5rem)',
     },
+    minHeight: {
+      hero: 'calc((var(--vh, 1vh) * 100) - var(--headerHeight) - 5rem)',
+      screen: 'calc(var(--vh, 1vh) * 100)',
+    },
     extend: {
       fontFamily: {
         inherit: 'inherit',

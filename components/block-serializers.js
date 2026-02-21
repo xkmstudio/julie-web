@@ -105,22 +105,27 @@ export const portableRichText = {
     photo: ({ value }) => {
       return <Photo photo={value} />;
     },
-    // Image component for Sanity image type
+    // Image component for Sanity image type (articlePortableText)
+    // Uses intrinsic dimensions from asset, no object-fit
     image: ({ value }) => {
       if (!value?.asset) {
         console.warn('Image missing asset data:', value);
         return null;
       }
-      
+
+      const width = value.width || 800
+      const height = value.height || 600
+
       return (
         <div className="content-image my-40">
-          <Photo 
-            photo={value} 
-            width={800}
-            height={800}
-            srcSizes={[400, 600, 800]}
-            sizes="(max-width: 768px) 100vw, 800px"
-            className="rounded-[1.5rem] overflow-hidden"
+          <Photo
+            photo={value}
+            width={width}
+            height={height}
+            layout="intrinsic"
+            srcSizes={[400, 600, 800, 1200]}
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="rounded-[1.5rem] w-full"
           />
           {value.caption && (
             <div className="caption w-full text-center mt-15">

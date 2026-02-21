@@ -118,7 +118,7 @@ const PageContent = ({
           <div className={cx('w-full flex flex-col relative', {
             'md:flex-row gap-0 md:gap-25': image && !(useGradient && gradient) && !actuallyInFrame,
             'gap-15': actuallyInFrame && image && !(useGradient && gradient),
-            'justify-center items-center h-full': useGradient && gradient,
+            'justify-center items-center h-full min-h-hero': useGradient && gradient,
           })}>
             {image && !(useGradient && gradient) && (
               <div className={cx('w-full relative rounded-[1.5rem] overflow-hidden', {
@@ -409,51 +409,58 @@ const PageContent = ({
             className={`w-full section-padding mt-60 ${isClient && (isMobile || actuallyInFrame) ? 'overflow-hidden' : ''
               }`}
           >
-            {isClient && (isMobile || actuallyInFrame) ? (
-              <ProductCarousel
-                items={[
-                  ...(authors?.map((author) => ({
-                    ...author,
-                    type: 'author',
-                  })) || []),
-                  ...(reviewers?.map((reviewer) => ({
-                    ...reviewer,
-                    type: 'reviewer',
-                  })) || []),
-                ]}
-                renderSlide={(person, key) => (
-                  <AuthorCard
-                    key={key}
-                    person={person}
-                    className="w-full"
-                    onFrameLinkClick={onFrameLinkClick}
-                  />
-                )}
-                slideClassName="w-[83.333%] min-w-[83.333%] ml-15"
-                enabled={isClient && (isMobile || actuallyInFrame)}
+            {(authors?.length == 1 && !reviewers) ? (
+              <AuthorCard
+                person={authors[0]}
+                onFrameLinkClick={onFrameLinkClick}
+                className="w-full max-w-[65rem] mx-auto"
               />
-            ) : (
-              <div className="w-full flex gap-15 md:gap-25">
-                {[
-                  ...(authors?.map((author) => ({
-                    ...author,
-                    type: 'author',
-                  })) || []),
-                  ...(reviewers?.map((reviewer) => ({
-                    ...reviewer,
-                    type: 'reviewer',
-                  })) || []),
-                ].map((person, key) => {
-                  return (
+            )
+              : isClient && (isMobile || actuallyInFrame) ? (
+                <ProductCarousel
+                  items={[
+                    ...(authors?.map((author) => ({
+                      ...author,
+                      type: 'author',
+                    })) || []),
+                    ...(reviewers?.map((reviewer) => ({
+                      ...reviewer,
+                      type: 'reviewer',
+                    })) || []),
+                  ]}
+                  renderSlide={(person, key) => (
                     <AuthorCard
                       key={key}
                       person={person}
+                      className="w-full"
                       onFrameLinkClick={onFrameLinkClick}
                     />
-                  )
-                })}
-              </div>
-            )}
+                  )}
+                  slideClassName="w-[83.333%] min-w-[83.333%] ml-15"
+                  enabled={isClient && (isMobile || actuallyInFrame)}
+                />
+              ) : (
+                <div className="w-full flex gap-15 md:gap-25">
+                  {[
+                    ...(authors?.map((author) => ({
+                      ...author,
+                      type: 'author',
+                    })) || []),
+                    ...(reviewers?.map((reviewer) => ({
+                      ...reviewer,
+                      type: 'reviewer',
+                    })) || []),
+                  ].map((person, key) => {
+                    return (
+                      <AuthorCard
+                        key={key}
+                        person={person}
+                        onFrameLinkClick={onFrameLinkClick}
+                      />
+                    )
+                  })}
+                </div>
+              )}
           </div>
         )}
 
@@ -555,14 +562,14 @@ const PageContent = ({
       <div className="w-full">
         <div className={cx(
           'w-full flex gap-15 pt-0 pb-20 section-padding',
-          useMobileLayout 
-            ? 'flex-col min-h-[50rem]' 
+          useMobileLayout
+            ? 'flex-col min-h-[50rem]'
             : 'flex-col md:flex-row md:h-screen md:gap-25 min-h-[50rem]'
         )}>
           <div className={cx(
             'relative rounded-[1.5rem] overflow-hidden',
-            useMobileLayout 
-              ? 'w-full aspect-square' 
+            useMobileLayout
+              ? 'w-full aspect-square'
               : 'w-full md:w-1/2 aspect-square md:aspect-auto md:h-full'
           )}>
             {image && (
@@ -578,8 +585,8 @@ const PageContent = ({
           </div>
           <div className={cx(
             'flex flex-col items-center p-25',
-            useMobileLayout 
-              ? 'w-full gap-15' 
+            useMobileLayout
+              ? 'w-full gap-15'
               : 'w-full md:w-1/2 gap-15 md:gap-25'
           )}>
             <div className={cx(
@@ -605,8 +612,8 @@ const PageContent = ({
         {articles && articles.length > 0 && (
           <div className={cx(
             'w-full flex flex-col items-center section-padding',
-            useMobileLayout 
-              ? 'gap-30 mt-30 mb-90' 
+            useMobileLayout
+              ? 'gap-30 mt-30 mb-90'
               : 'gap-30 md:gap-50 mt-30 mb-90 md:my-90'
           )}>
             <div className="title-lg text-center">Articles with {title}</div>

@@ -11,13 +11,14 @@ const Photo = ({
   srcSizes = [400, 600, 800, 1000, 1200],
   layout = 'intrinsic',
   quality = 100,
-  fill = false,
+  fill: fillProp = false,
   className,
   force = false,
 }) => {
   if (!photo?.asset) return null
 
   const imageRef = useRef()
+  const useFill = fillProp || layout === 'fill' || layout === 'contain'
 
   // Define our src and srcset
   const src = buildSrc(photo, {
@@ -38,6 +39,7 @@ const Photo = ({
       className={cx(
         className,
         { 'w-full': layout === 'intrinsic' },
+        { 'w-auto max-w-full': layout === 'natural' },
         { 'h-full w-[auto]': layout === 'height' },
         {
           'w-full md:h-full md:object-cover md:absolute md:left-0 md:top-0 h-[auto]':
@@ -45,6 +47,9 @@ const Photo = ({
         },
         {
           'h-full w-full object-cover absolute left-0 top-0': layout === 'fill',
+        },
+        {
+          'h-full w-full object-contain absolute left-0 top-0': layout === 'contain',
         }
       )}
     >
@@ -52,16 +57,17 @@ const Photo = ({
         ref={imageRef}
         src={src}
         srcSet={srcSet}
-        width={!fill ? width || photo.width : undefined}
-        height={!fill ? height || photo.height : undefined}
-        sizes={srcSizes}
+        width={!useFill ? width || photo.width : undefined}
+        height={!useFill ? height || photo.height : undefined}
+        sizes={useFill ? '100%' : undefined}
         placeholder={photo.lqip ? "blur" : undefined}
-        fill={fill}
+        fill={useFill}
         quality={80}
         priority={force}
         className={cx(
           className,
           { 'w-full h-[auto]': layout === 'intrinsic' },
+          { 'w-auto max-w-full h-auto': layout === 'natural' },
           { 'h-full w-[auto]': layout === 'height' },
           {
             'w-full md:h-full md:object-cover md:absolute md:left-0 md:top-0 h-[auto]':
@@ -70,6 +76,10 @@ const Photo = ({
           {
             'h-full w-full object-cover absolute left-0 top-0':
               layout === 'fill',
+          },
+          {
+            'h-full w-full object-contain absolute left-0 top-0':
+              layout === 'contain',
           }
         )}
         alt={photo.asset?.altText || 'Julie'}

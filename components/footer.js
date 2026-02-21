@@ -28,7 +28,7 @@ const Footer = ({ data }) => {
             >
               <div className="flex flex-col gap-5">
                 {item.items?.map((link, index) => (
-                  <Link key={index} link={link} className={`btn-text`} />
+                  <Link key={index} link={link} className={`btn-text text-left`} />
                 ))}
               </div>
             </div>
