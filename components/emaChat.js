@@ -33,6 +33,12 @@ const isInternalLink = (url) => {
   }
 }
 
+// Convert markdown-style dash list items to bullet points (•)
+const toBulletPoints = (text) => {
+  if (!text || typeof text !== 'string') return text
+  return text.replace(/(^|\n)(\s*)-\s+/g, '$1$2• ')
+}
+
 // Bold processing
 const processBold = (text, startKey = 0) => {
   if (!text || typeof text !== 'string') return text
@@ -1179,7 +1185,7 @@ const EmaChat = ({ onClose = null }) => {
                       )}
                     >
                       <div className="text-14 md:text-16 whitespace-pre-wrap leading-relaxed">
-                        {processMessageLinks(msg.message, handleOpenFrame)}
+                        {processMessageLinks(toBulletPoints(msg.message), handleOpenFrame)}
                       </div>
   
                       {isStreaming &&
