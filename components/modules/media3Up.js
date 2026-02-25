@@ -110,7 +110,7 @@ const Media3Up = ({ data = {} }) => {
               <div className="text-20 font-lb mb-5">{subtitle}</div>
             )}
             {title && (
-              <div className="text-32 md:text-48 font-lxb leading-110">
+              <div className="text-32 md:text-48 font-lxb leading-110 max-w-[75rem] mx-auto">
                 {title}
               </div>
             )}

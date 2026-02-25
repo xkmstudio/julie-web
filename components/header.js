@@ -36,6 +36,7 @@ const Header = ({ data, work, pages }) => {
   const [bannerVisible, setBannerVisible] = useState(false)
   const [isTransparent, setIsTransparent] = useState(false)
   const [bannerHeight, setBannerHeight] = useState(0)
+  const [hideEma, setHideEma] = useState(false)
 
   useEffect(() => {
     document.body.style.setProperty(
@@ -55,6 +56,8 @@ const Header = ({ data, work, pages }) => {
   //handle menu state on navigation
   useEffect(() => {
     setMenuOpen(false)
+    setHideEma(router.asPath.includes('/pages/faqs'))
+    console.log('router', router);
   }, [router])
 
   // Check for hero-bleed element and update header transparency based on scroll
@@ -150,6 +153,7 @@ const Header = ({ data, work, pages }) => {
     }
   }, [router])
 
+
   return (
     <>
       <a href="#content" className="skip-link">
@@ -194,13 +198,13 @@ const Header = ({ data, work, pages }) => {
             </Marqy>
           </div>
         )}
-        <div 
+        <div
           className={cx(
             "w-full px-15 md:px-25 pt-20 transition-transform duration-300"
           )}
           style={{
-            transform: !bannerVisible && enableBanner && bannerHeight > 0 
-              ? `translateY(-${bannerHeight}px)` 
+            transform: !bannerVisible && enableBanner && bannerHeight > 0
+              ? `translateY(-${bannerHeight}px)`
               : 'translateY(0)'
           }}
         >
@@ -353,7 +357,7 @@ const Header = ({ data, work, pages }) => {
       </AnimatePresence>
 
       {/* Ema Fixed Input - Appears after scrolling 500px */}
-      <EmaFixedInput />
+      {!hideEma && <EmaFixedInput />}
     </>
   )
 }

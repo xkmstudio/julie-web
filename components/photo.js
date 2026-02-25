@@ -65,7 +65,6 @@ const Photo = ({
         quality={80}
         priority={force}
         className={cx(
-          className,
           { 'w-full h-[auto]': layout === 'intrinsic' },
           { 'w-auto max-w-full h-auto': layout === 'natural' },
           { 'h-full w-[auto]': layout === 'height' },

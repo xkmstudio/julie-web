@@ -4,7 +4,7 @@ import BlockContent from '@components/block-content'
 import Photo from '@components/photo'
 import Icon from '@components/icon'
 import { Module } from '@components/modules'
-import { useIsInFrame, useWindowSize, hasObject } from '@lib/helpers'
+import { useIsInFrame, useWindowSize } from '@lib/helpers'
 import cx from 'classnames'
 import AuthorCard from '@components/author-card'
 import ArticleCard from '@components/related-card'
@@ -42,19 +42,14 @@ const PageContent = ({
     setIsClient(true)
   }, [])
 
-  // Initialize product variant on mount
+  // Initialize product variant on mount - default to first in-stock variant
   useEffect(() => {
     if (type === 'product' && page?.product?.variants?.length > 0) {
-      // Find default variant
-      const defaultVariant = page.product.variants.find((v) => {
-        const option = {
-          name: page.product.options?.[0]?.name,
-          value: page.product.options?.[0]?.values[0],
-          position: page.product.options?.[0]?.position,
-        }
-        return hasObject(v.options, option)
-      })
-      setActiveVariantID(defaultVariant?.id ?? page.product.variants[0].id)
+      const variants = page.product.variants
+      const defaultVariant =
+        variants.find((v) => (v.quantity ?? 0) > 0 || v.inStock) ??
+        variants[0]
+      setActiveVariantID(defaultVariant?.id ?? variants[0].id)
       setProduct(page.product)
     }
   }, [type, page])

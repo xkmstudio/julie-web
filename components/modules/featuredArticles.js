@@ -330,7 +330,7 @@ const FeaturedArticlesCarousel = ({ articles, title, cta }) => {
             })}
           </div>
         </div>
-        <button
+        {/* <button
           onClick={() => emblaApi?.scrollNext()}
           className={cx(
             'absolute top-1/2 left-25 md:left-35 -translate-y-1/2 z-[99999] bg-pink text-white rounded-full hidden md:flex items-center justify-center hover:bg-pink/90 transition-colors focus:outline-none flex-shrink-0 w-40 h-40',
@@ -359,7 +359,7 @@ const FeaturedArticlesCarousel = ({ articles, title, cta }) => {
               viewBox={'0 0 14 14'}
             />
           </div>
-        </button>
+        </button> */}
       </div>
     </section>
   )

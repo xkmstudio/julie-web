@@ -17,7 +17,7 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
   const productCount = products?.length || 0
 
   // Show carousel on mobile, always in frame, or on desktop if more than 3 products
-  const showCarousel = isClient && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
+  const showCarousel = isClient && (products?.length > 2) && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
 
   useEffect(() => {
     setIsClient(true)

@@ -69,9 +69,9 @@ const Marquee = ({ data = {} }) => {
         </div>
         {icon && (
           <div className="marquee-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="h-[28rem] md:h-[35rem]">
+            <div className="h-[28rem] md:h-[35rem] w-[28rem] md:w-[35rem] relative">
               <Photo
-                photo={icon}
+                photo={icon?.image || icon}
                 width={1600}
                 srcSizes={[800, 1000, 1200, 1600]}
                 sizes="100%"

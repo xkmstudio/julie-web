@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { getProduct } from '@data'
 
-import { useParams, usePrevious, centsToPrice, hasObject } from '@lib/helpers'
+import { useParams, usePrevious, centsToPrice } from '@lib/helpers'
 
 import { useSiteContext } from '@lib/context'
 
@@ -38,17 +38,12 @@ const Product = ({ data }) => {
   // set our Product state
   const [product, setProduct] = useState(page.product)
 
-  // find the default variant for this product by matching against the first product option
-  const defaultVariant = page.product.variants?.find((v) => {
-    const option = {
-      name: page.product.options?.[0]?.name,
-      value: page.product.options?.[0]?.values[0],
-      position: page.product.options?.[0]?.position,
-    }
-    return hasObject(v.options, option)
-  })
-
-  const defaultVariantID = defaultVariant?.id ?? page.product.variants[0].id
+  // find the default variant: first that has quantity (is in stock), otherwise first variant
+  const variantsToUse = product?.variants ?? page.product.variants ?? []
+  const defaultVariant =
+    variantsToUse.find((v) => (v.quantity ?? 0) > 0 || v.inStock) ??
+    variantsToUse[0]
+  const defaultVariantID = defaultVariant?.id ?? page.product.variants?.[0]?.id
 
   // set up our variant URL params
   const [currentParams, setCurrentParams] = useParams([
