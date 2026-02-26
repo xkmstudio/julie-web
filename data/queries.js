@@ -512,43 +512,6 @@ export const modules = `
       ${product}
     }
   },
-  _type == 'indexList' => {
-    _type,
-    _key,
-    anchorSlug,
-    title,
-    subtitle,
-    content[]{${ptContent}},
-    cta[0]{${link}}
-  },
-  _type == 'indexTutorials' => {
-    _type,
-    _key,
-    anchorSlug,
-    title,
-    subtitle,
-    products[]->{
-      title,
-      "slug": slug.current,
-      subtitle,
-      productType,
-      tutorial{
-        ${videoTutorialContent},
-        "duration": video.asset->metadata.duration
-      }
-    },
-    cta[0]{${link}}
-  },
-  _type == 'productContents' => {
-    _type,
-    _key,
-    anchorSlug,
-    title,
-    contents[]{
-      title,
-      media{${mediaContent}}
-    }
-  },
   _type == 'slideshow' => {
     _type,
     _key,

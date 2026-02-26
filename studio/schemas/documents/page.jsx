@@ -61,7 +61,6 @@ export default {
         { type: 'media3Up' },
         { type: 'faqs' },
         { type: 'storeLocator' },
-        { type: 'productContents' },
         { type: 'productRelated' },
         { type: 'slideshow' },
         { type: 'generalText' },

@@ -29,12 +29,8 @@ import textBlock from './modules/textBlock'
 import mediaFeature from './modules/mediaFeature'
 import mediaBleed from './modules/mediaBleed'
 import faqs from './modules/faqs'
-import indexList from './modules/indexList'
-import indexTutorials from './modules/indexTutorials'
-import productContents from './modules/productContents'
 import productRelated from './modules/productRelated'
 import productCollection from './modules/productCollection'
-import productConstruction from './modules/productConstruction'
 import slideshow from './modules/slideshow'
 import generalText from './modules/generalText'
 import marqueeIcons from './modules/marqueeIcons'
@@ -118,12 +114,8 @@ export default [
     mediaBleed,
     mediaText,
     faqs,
-    indexList,
-    indexTutorials,
-    productContents,
     productRelated,
     productCollection,
-    productConstruction,
     slideshow,
     generalText,
     marqueeIcons,

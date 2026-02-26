@@ -16,13 +16,12 @@ const ProductCard = ({
 }) => {
   const isInFrame = useIsInFrame()
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
-  const productHref = `/products/${product.slug}`
+  const productHref = product ? `/products/${product.slug}` : '#'
   const addItem = useAddItem()
-
-  if (!product) return null
 
   // Determine activeVariant - use first variant if available, otherwise create fallback from product data
   const activeVariant = useMemo(() => {
+    if (!product) return null
     if (product.variants && product.variants.length > 0) {
       return product.variants[0]
     }
@@ -34,16 +33,18 @@ const ProductCard = ({
       price: product.price,
       comparePrice: product.comparePrice,
       inStock: product.inStock !== undefined ? product.inStock : true, // Default to true if not specified
-      forceOutOfStock: product.forceOutOfStock || false,
+      forceOutOfStock:     product.forceOutOfStock || false,
     }
   }, [
-    product.variants,
-    product.id,
-    product.price,
-    product.comparePrice,
-    product.inStock,
-    product.forceOutOfStock,
+    product?.variants,
+    product?.id,
+    product?.price,
+    product?.comparePrice,
+    product?.inStock,
+    product?.forceOutOfStock,
   ])
+
+  if (!product) return null
 
   const handleAddToCart = async () => {
     if (!activeVariant?.id) return
@@ -151,7 +152,7 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            learn more
+            shop now
           </a>
         ) : (
           <NextLink
@@ -160,7 +161,7 @@ const ProductCard = ({
             })}
             href={productHref}
           >
-            learn more
+            shop now
           </NextLink>
         )}
         {!hasMultipleVariants && (
@@ -251,14 +252,14 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            learn more
+            shop now
           </a>
         ) : (
           <NextLink
             className="btn is-outline is-large flex-[1_1_0%] min-w-0"
             href={productHref}
           >
-            learn more
+            shop now
           </NextLink>
         )}
         {!hasMultipleVariants && (

@@ -2,7 +2,7 @@ import { ShoppingBag } from 'phosphor-react'
 import { anchorSlugField } from '../../lib/fields'
 
 export default {
-  title: 'Product Related',
+  title: 'Related Product',
   name: 'productRelated',
   type: 'object',
   icon: ShoppingBag,
