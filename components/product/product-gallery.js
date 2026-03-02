@@ -94,11 +94,8 @@ const ProductGallery = ({
                     width={1600}
                     srcSizes={[600, 800, 1200, 1600]}
                     sizes="100vw"
-                    layout="fill"
-                    className={cx(
-                      'absolute inset-0 w-full h-full',
-                      slide.forceContain ? '!object-contain' : '!object-cover'
-                    )}
+                    layout={slide.forceContain ? 'contain' : 'fill'}
+                    className="absolute inset-0 w-full h-full"
                   />
                 </div>
               </div>

@@ -31,7 +31,7 @@ const ProductIcon = ({ item, index, className }) => {
   const isSVG = mimeType?.includes('svg') || mimeType === 'image/svg+xml'
 
   // Get the URL - for SVGs use direct URL, for others use Photo component
-  const iconUrl = isSVG && icon?.url 
+  const iconUrl = isSVG && icon?.url
     ? icon.url
     : null
 
@@ -103,16 +103,17 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame 
               const baseSlides = activeVariant?.galleryImages?.length > 0
                 ? activeVariant.galleryImages
                 : product.defaultGallery || []
-              
-              // Check if thumbnail should be included in gallery
+
+              // Use thumbnailContent as first slide when product is primary productType
               const thumbnailContent = product.productThumbnail?.content
-              const includeInGallery = product.productThumbnail?.includeInGallery
-              
-              // Build final slides array
-              const slides = includeInGallery && thumbnailContent
+              const useThumbnailAsFirstSlide =
+                product.productType === 'primary' && thumbnailContent
+
+              // Build final slides array (thumbnail first with object-contain, rest with object-cover)
+              const slides = useThumbnailAsFirstSlide
                 ? [{ ...thumbnailContent, forceContain: true }, ...baseSlides]
                 : baseSlides
-              
+
               return slides.length > 0 && (
                 <ProductGallery
                   slides={slides}
@@ -155,7 +156,7 @@ const ProductHero = ({ product, activeVariant, onVariantChange, type, isInFrame 
                 {product.icons && product.icons.length > 0 && (
                   <div className="my-10 w-full flex gap-15 md:gap-30 items-center justify-center">
                     {product.icons.map((icon, key) => (
-                  <React.Fragment key={key}>
+                      <React.Fragment key={key}>
                         <ProductIcon
                           className="h-[1.5rem] md:h-[2rem] w-auto max-w-full max-h-full object-contain transition-opacity duration-300 hover:opacity-50"
                           item={icon}

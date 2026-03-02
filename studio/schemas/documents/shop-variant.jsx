@@ -29,7 +29,7 @@ export default {
       group: 'settings',
       initialValue: false,
       description:
-        'This will force the product to display as Out of Stock',
+        'This will force the product to display as sold out',
     },
     {
       title: 'Display Title',

@@ -73,7 +73,7 @@ const Accordion = ({
                 'text-left leading-100',
                 titleClassName ||
                   (type === 'faqs'
-                    ? 'title-md'
+                    ? 'title-sm md:title-md'
                     : ' font-lb uppercase text-12')
               )}
             >
@@ -110,8 +110,10 @@ const Accordion = ({
         onAnimationComplete={(v) => setHasFocus(v === 'open')}
       >
         <div
-          className={cx('accordion--inner text-18', {
+          className={cx('accordion--inner max-w-[90rem]', {
             'faqs-inner': iconName !== 'Chevron Down',
+            'text-16 md:text-18': type === 'faqs',
+            'text-14': type === 'product',
           })}
           hidden={!isOpen && !hasFocus}
         >

@@ -9,6 +9,12 @@ export default {
   fields: [
     anchorSlugField,
     {
+      title: 'Title',
+      name: 'title',
+      type: 'string',
+      description: 'Section title (optional)'
+    },
+    {
       title: 'Products',
       name: 'products',
       type: 'array',

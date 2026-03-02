@@ -34,16 +34,6 @@ const ProductCollection = ({ data }) => {
                   layout={'fill'}
                   className={'absolute top-0 left-0 h-full w-full object-cover'}
                 />
-                <img
-                  className={cx(`pointer-events-none absolute -top-1`, {
-                    '-left-1 w-[36%]': key == 0,
-                    '-right-1 w-[33%]': key == 1,
-                    '-left-1 w-[33%]': key == 2,
-                    '-right-1': key == 3,
-                  })}
-                  src={`/icons/tear_${key + 1}.svg`}
-                  alt={`Tear ${key + 1}`}
-                />
                 <div className='absolute z-2 bottom-0 left-0 w-full h-full flex items-end justify-between p-10 text-white mix-blend-difference'>
                   <div>[</div>
                   <div>{product.subtitle}</div>

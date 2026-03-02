@@ -143,7 +143,7 @@ const ProductFaqs = ({ data = {} }) => {
               ref={(el) => {
                 sectionRefs.current[activeSectionIndex] = el
               }}
-              className="w-full flex flex-col gap-30 scroll-mt-20"
+              className="w-full flex flex-col gap-30 scroll-mt-20 rounded-[1.5rem] overflow-hidden"
             >
               {activeSection.drawers && activeSection.drawers.length > 0 && (
                 <AccordionList type="faqs" items={activeSection.drawers} />

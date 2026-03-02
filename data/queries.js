@@ -293,6 +293,8 @@ export const modules = `
     subtitle[]{${ptContent}},
     backgroundMedia{${mediaContent}},
     backgroundMediaMobile{${mediaContent}},
+    useGradientOnMobile,
+    mobileBackgroundGradient{${gradient}},
     mobileTag,
     theme
   },
@@ -300,6 +302,7 @@ export const modules = `
     _type,
     _key,
     anchorSlug,
+    title,
     products[]->{
       productType,
       title,

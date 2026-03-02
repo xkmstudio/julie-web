@@ -210,7 +210,7 @@
       @apply my-0 leading-110 tracking-[-.02em] text-24 md:text-[3rem] font-lxb;
     }
     &-sm{
-      @apply my-0 leading-110 tracking-[-.02em] text-24 font-lxb;
+      @apply my-0 leading-110 tracking-[-.02em] text-20 md:text-24 font-lxb;
     }
     &-index{
       @apply my-0 leading-110 text-16 md:text-[1.4vw] 2xl:text-[1.2vw];

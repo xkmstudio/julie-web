@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import ProductCard from '@components/product/product-card'
+import ProductCardAlternate from '@components/product/product-card-alternate'
 import ProductCarousel from '@components/product-carousel'
 import { useWindowSize, useIsInFrame } from '@lib/helpers'
 
@@ -8,13 +9,21 @@ const MOBILE_BREAKPOINT = 850
 const DESKTOP_CAROUSEL_THRESHOLD = 3
 
 const ProductFeature = ({ data, onFrameLinkClick }) => {
-  const { products } = data
+  const { products, title } = data
   const { width } = useWindowSize()
   const [isClient, setIsClient] = useState(false)
   const isInFrame = useIsInFrame()
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const isDesktop = width >= MOBILE_BREAKPOINT
   const productCount = products?.length || 0
+
+  console.log(products)
+
+  if (!products) return null
+
+  const isAlternative = products[0]?.productType === 'alternate'
+  const CardComponent = isAlternative ? ProductCardAlternate : ProductCard
+
 
   // Show carousel on mobile, always in frame, or on desktop if more than 3 products
   const showCarousel = isClient && (products?.length > 2) && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
@@ -34,11 +43,16 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
 
     return (
       <section className="px-10 md:px-15 overflow-hidden section-padding">
+        {title && (
+          <div className="mb-10 text-center">
+            <h2 className="title-xl">{title}</h2>
+          </div>
+        )}
         <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
         <ProductCarousel
           items={products}
           renderSlide={(product, index) => (
-            <ProductCard
+            <CardComponent
               product={product}
               index={index}
               className="block w-full"
@@ -55,10 +69,15 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
   // Desktop with 3 or fewer products: use flex layout
   return (
     <section className="px-10 md:px-15 overflow-hidden section-padding">
+      {title && (
+        <div className="mb-30 text-center">
+          <h2 className="title-xl">{title}</h2>
+        </div>
+      )}
       <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
       <div className="w-full h-full flex gap-15 md:gap-25 relative z-2">
         {products?.map((product, key) => (
-          <ProductCard
+          <CardComponent
             key={key}
             index={key}
             className="flex-1"

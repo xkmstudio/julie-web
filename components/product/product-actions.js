@@ -72,7 +72,7 @@ const ProductActions = ({
           </ProductAdd>
         ) : (
           <div className="btn is- is-large flex flex-col gap-10 flex-[1_1_0%] min-w-0">
-            out of stock
+            sold out
           </div>
         )
       ) : (
@@ -104,7 +104,7 @@ const ProductActions = ({
             </ProductAdd>
           ) : (
             <div className="btn is-add is-large flex flex-col gap-10 w-full">
-              out of stock
+              sold out
             </div>
           )}
         </div>

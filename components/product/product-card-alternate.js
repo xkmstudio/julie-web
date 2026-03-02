@@ -52,32 +52,34 @@ const ProductCardAlternate = ({ product, index, className }) => {
         </div>
       </NextLink>
 
-      {/* Title */}
-      {product?.title && (
-        <NextLink href={`/products/${product.slug}`} className="w-full mt-20">
-          <div className="w-full text-center title-md">
-            {product?.title}
-          </div>
-        </NextLink>
-      )}
-
-      {/* Shop Now Link */}
-      <div className="mt-20">
-        <NextLink 
-          href={`/products/${product.slug}`}
-          className="btn is-add is-block flex items-center gap-5 w-full justify-center"
-        >
-          <div className="flex items-center gap-5">
-            <span>shop now</span>
-            &mdash;
-            <ProductPrice
-              price={activeVariant?.price || product.price}
-              comparePrice={
-                activeVariant?.comparePrice || product.comparePrice
-              }
-            />
-          </div>
-        </NextLink>
+      <div className="flex-1 flex flex-col justify-between">
+        {/* Title */}
+        {product?.title && (
+          <NextLink href={`/products/${product.slug}`} className="w-full mt-20">
+            <div className="w-full text-center title-md flex-1">
+              {product?.title}
+            </div>
+          </NextLink>
+        )}
+  
+        {/* Shop Now Link */}
+        <div className="mt-20">
+          <NextLink 
+            href={`/products/${product.slug}`}
+            className="btn is-add is-block flex items-center gap-5 w-full justify-center"
+          >
+            <div className="flex items-center gap-5">
+              <span>shop now</span>
+              &mdash;
+              <ProductPrice
+                price={activeVariant?.price || product.price}
+                comparePrice={
+                  activeVariant?.comparePrice || product.comparePrice
+                }
+              />
+            </div>
+          </NextLink>
+        </div>
       </div>
     </div>
   )

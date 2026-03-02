@@ -42,6 +42,19 @@ export default {
       description: 'This will be displayed on mobile if present.'
     },
     {
+      title: 'Use Gradient on Mobile',
+      name: 'useGradientOnMobile',
+      type: 'boolean',
+      description: 'When enabled, displays the custom gradient as the mobile background instead of background media.',
+      initialValue: false,
+    },
+    {
+      title: 'Mobile Background Gradient',
+      name: 'mobileBackgroundGradient',
+      type: 'gradient',
+      hidden: ({ parent }) => !parent?.useGradientOnMobile,
+    },
+    {
       title: 'Theme',
       name: 'theme',
       type: 'string',
