@@ -35,29 +35,33 @@ const Header = ({ data, work, pages }) => {
   const [hasFocus, setHasFocus] = useState(false)
   const [bannerVisible, setBannerVisible] = useState(false)
   const [isTransparent, setIsTransparent] = useState(false)
-  const [bannerHeight, setBannerHeight] = useState(0)
   const [hideEma, setHideEma] = useState(false)
 
-  useEffect(() => {
-    document.body.style.setProperty(
-      '--headerHeight',
-      `${headerRef?.current?.offsetHeight}px`
-    )
-  }, [width])
+  const isHomepage = router.pathname === '/'
+  const showBanner = enableBanner && isHomepage
 
-  // Measure banner height for header content transform
   useEffect(() => {
-    if (enableBanner && bannerRef.current) {
-      const height = bannerRef.current.offsetHeight
-      setBannerHeight(height)
+    const updateHeaderHeight = () => {
+      if (headerRef?.current) {
+        document.body.style.setProperty(
+          '--headerHeight',
+          `${headerRef.current.offsetHeight}px`
+        )
+      }
     }
-  }, [enableBanner, width, bannerVisible])
+    updateHeaderHeight()
+    // Re-measure after banner collapse/expand animation (300ms)
+    if (showBanner) {
+      const t = setTimeout(updateHeaderHeight, 350)
+      return () => clearTimeout(t)
+    }
+  }, [width, bannerVisible, showBanner])
+
 
   //handle menu state on navigation
   useEffect(() => {
     setMenuOpen(false)
     setHideEma(router.asPath.includes('/pages/faqs'))
-    console.log('router', router);
   }, [router])
 
   // Check for hero-bleed element and update header transparency based on scroll
@@ -118,19 +122,21 @@ const Header = ({ data, work, pages }) => {
     }
   }, [router.pathname])
 
-  // Setup Banner
+  // Setup Banner - only on homepage, only when at top (scrollY < 100)
+  // On other pages: banner not rendered. On homepage: collapse banner height on scroll.
   useEffect(() => {
     const checkBanner = () => {
       const scrollY = window.scrollY || window.pageYOffset
+      const isHomepage = router.pathname === '/'
 
-      if (router.pathname === '/' && scrollY < 100) {
+      if (isHomepage && scrollY < 100) {
         setBannerVisible(true)
       } else {
         setBannerVisible(false)
       }
     }
 
-    // Check on mount and route changes
+    // Check on mount
     checkBanner()
 
     // Add scroll listener
@@ -138,20 +144,35 @@ const Header = ({ data, work, pages }) => {
       passive: true,
     })
 
-    // Re-check when route changes (after a short delay to allow DOM to update)
-    const handleRouteChange = () => {
-      setTimeout(() => {
-        checkBanner()
-      }, 100)
+    // Re-check when route changes - multiple delays to account for scroll restoration
+    const handleRouteChangeComplete = (url) => {
+      const pathname = url?.split('?')[0] ?? ''
+      if (pathname !== '/') {
+        setBannerVisible(false)
+        return
+      }
+      const delays = [0, 100, pageTransitionSpeed + 150]
+      delays.forEach((delay) => {
+        setTimeout(checkBanner, delay)
+      })
     }
 
-    router.events.on('routeChangeComplete', handleRouteChange)
+    const handleRouteChangeStart = (url) => {
+      const pathname = url?.split('?')[0] ?? ''
+      if (pathname !== '/') {
+        setBannerVisible(false)
+      }
+    }
+
+    Router.events.on('routeChangeStart', handleRouteChangeStart)
+    Router.events.on('routeChangeComplete', handleRouteChangeComplete)
 
     return () => {
       window.removeEventListener('scroll', checkBanner)
-      router.events.off('routeChangeComplete', handleRouteChange)
+      Router.events.off('routeChangeStart', handleRouteChangeStart)
+      Router.events.off('routeChangeComplete', handleRouteChangeComplete)
     }
-  }, [router])
+  }, [router.pathname])
 
 
   return (
@@ -166,14 +187,16 @@ const Header = ({ data, work, pages }) => {
           'fixed z-[91] top-0 left-0 justify-between w-full text-white'
         )}
       >
-        {enableBanner && (
+        {showBanner && (
           <div
             ref={bannerRef}
             className={cx(
-              `w-full py-5 bg-pink text-white border-b border-pink transition-transform duration-300 ${bannerVisible ? ' -translate-y-0' : '-translate-y-full'}`,
+              'w-full overflow-hidden transition-[max-height] duration-300 ease-out',
+              bannerVisible ? 'max-h-[200px]' : 'max-h-0'
             )}
           >
-            <Marqy
+            <div className="w-full py-5 bg-pink text-white border-b border-pink">
+              <Marqy
               speed={0.5}
               direction="left"
               pauseOnHover={banner.link ? true : false}
@@ -196,18 +219,10 @@ const Header = ({ data, work, pages }) => {
                 </div>
               )}
             </Marqy>
+            </div>
           </div>
         )}
-        <div
-          className={cx(
-            "w-full px-15 md:px-25 pt-20 transition-transform duration-300"
-          )}
-          style={{
-            transform: !bannerVisible && enableBanner && bannerHeight > 0
-              ? `translateY(-${bannerHeight}px)`
-              : 'translateY(0)'
-          }}
-        >
+        <div className="w-full px-15 md:px-25 pt-20">
           <div
             className={cx(
               `header relative w-full flex justify-between items-center px-15 py-10 rounded-full min-h-[5rem]`,
