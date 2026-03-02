@@ -416,14 +416,16 @@ const EmaChat = ({ onClose = null }) => {
   const [isHydrated, setIsHydrated] = useState(false)
   const { ema: emaSettings } = useSiteContext()
 
-  // Load persisted state from localStorage after hydration
+  // Load persisted state from sessionStorage after hydration
   useEffect(() => {
     setIsHydrated(true)
 
     try {
-      const savedMessages = localStorage.getItem('emaChatMessages')
-      const savedUserId = localStorage.getItem('emaChatUserId')
-      const savedQuery = localStorage.getItem('emaChatInitialQuery')
+      if (typeof window === 'undefined') return
+      const storage = window.sessionStorage
+      const savedMessages = storage.getItem('emaChatMessages')
+      const savedUserId = storage.getItem('emaChatUserId')
+      const savedQuery = storage.getItem('emaChatInitialQuery')
 
       if (savedMessages) {
         setMessages(JSON.parse(savedMessages))
@@ -440,7 +442,6 @@ const EmaChat = ({ onClose = null }) => {
   }, [])
   const [isStreaming, setIsStreaming] = useState(false)
   const [isThinking, setIsThinking] = useState(false)
-  const [shouldAnimateTitle, setShouldAnimateTitle] = useState(false)
   const [frameOpen, setFrameOpen] = useState(false)
   const [frameUrl, setFrameUrl] = useState(null)
   const [frameContent, setFrameContent] = useState(null)
@@ -458,33 +459,36 @@ const EmaChat = ({ onClose = null }) => {
   const isMobile = width > 0 && width < MOBILE_BREAKPOINT
   const router = useRouter()
 
-  // Persist messages to localStorage whenever they change
+  // Persist messages to sessionStorage whenever they change
   useEffect(() => {
     if (typeof window === 'undefined') return
     try {
-      localStorage.setItem('emaChatMessages', JSON.stringify(messages))
+      const storage = window.sessionStorage
+      storage.setItem('emaChatMessages', JSON.stringify(messages))
     } catch (error) {
-      console.error('Error saving messages to localStorage:', error)
+      console.error('Error saving messages to sessionStorage:', error)
     }
   }, [messages])
 
-  // Persist userId to localStorage whenever it changes
+  // Persist userId to sessionStorage whenever it changes
   useEffect(() => {
     if (typeof window === 'undefined' || !emaUserId) return
     try {
-      localStorage.setItem('emaChatUserId', emaUserId)
+      const storage = window.sessionStorage
+      storage.setItem('emaChatUserId', emaUserId)
     } catch (error) {
-      console.error('Error saving userId to localStorage:', error)
+      console.error('Error saving userId to sessionStorage:', error)
     }
   }, [emaUserId])
 
-  // Persist initial search query to localStorage
+  // Persist initial search query to sessionStorage
   useEffect(() => {
     if (typeof window === 'undefined' || !initialSearchQuery) return
     try {
-      localStorage.setItem('emaChatInitialQuery', initialSearchQuery)
+      const storage = window.sessionStorage
+      storage.setItem('emaChatInitialQuery', initialSearchQuery)
     } catch (error) {
-      console.error('Error saving initial query to localStorage:', error)
+      console.error('Error saving initial query to sessionStorage:', error)
     }
   }, [initialSearchQuery])
 
@@ -508,7 +512,7 @@ const EmaChat = ({ onClose = null }) => {
       // Mark this query as sent to avoid duplicates
       lastSentQueryRef.current = q
 
-      // Fetch Algolia search results
+      // Fetch Algolia search results for this new question
       const fetchSearchResults = async () => {
         try {
           const searchResponse = await fetch('/api/ema/search', {
@@ -535,14 +539,54 @@ const EmaChat = ({ onClose = null }) => {
     }
   }, [router.isReady, router.query, emaUserId, isHydrated])
 
+  // When entering chat without a new question param, use the last user question to render articles
+  useEffect(() => {
+    if (!router.isReady || !isHydrated || !emaUserId) return
+
+    const { q } = router.query
+    // If there's a new query param, let the effect above handle fetching/search
+    if (q && typeof q === 'string') return
+
+    // If we already have search results, don't refetch
+    if (searchResults.length > 0) return
+
+    // Find the last user message in the existing conversation
+    const lastUserMessage = [...messages]
+      .slice()
+      .reverse()
+      .find((msg) => msg.sender === 'user' && typeof msg.message === 'string' && msg.message.trim().length > 0)
+
+    if (!lastUserMessage) return
+
+    const fetchSearchResultsForLastQuestion = async () => {
+      try {
+        const searchResponse = await fetch('/api/ema/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: lastUserMessage.message }),
+        })
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json()
+          const hits = searchData.hits || []
+          setSearchResults(hits)
+        } else {
+          const errorData = await searchResponse.json().catch(() => ({}))
+          console.error('Search response (last question) not ok:', searchResponse.status, errorData)
+        }
+      } catch (error) {
+        console.error('Error fetching search results for last question:', error)
+      }
+    }
+
+    fetchSearchResultsForLastQuestion()
+  }, [router.isReady, router.query, emaUserId, isHydrated, messages, searchResults.length])
+
   const chatContainerRef = useRef(null)
   const overlayRef = useRef(null)
   const chatInputRef = useRef(null)
   const composerRef = useRef(null)
-  const titleRef = useRef(null)
-  const titleContainerRef = useRef(null)
   const lastSentQueryRef = useRef(null) // Track last sent query to avoid duplicates
-  const firstResponseIdOfThisSessionRef = useRef(null) // First assistant message created this visit (for mobile article carousel)
+  const firstResponseIdOfThisSessionRef = useRef(null) // Assistant message used to anchor mobile article carousel
 
   // -------- Frame open/close ----------
   const handleOpenFrame = async (url, updateUrl = true) => {
@@ -692,28 +736,20 @@ const EmaChat = ({ onClose = null }) => {
     return () => clearTimeout(t)
   }, [])
 
-  // Check if title overflows and needs animation
+  // When hydrating an existing conversation, pick a reasonable assistant message
+  // to anchor the mobile article carousel (usually the last assistant message).
   useEffect(() => {
-    if (!titleRef.current || !titleContainerRef.current) return
+    if (firstResponseIdOfThisSessionRef.current || !messages || messages.length === 0) return
 
-    const checkOverflow = () => {
-      const titleWidth = titleRef.current?.scrollWidth || 0
-      const containerWidth = titleContainerRef.current?.offsetWidth || 0
-      const needsAnimation = titleWidth > containerWidth
-      setShouldAnimateTitle(needsAnimation)
+    const lastAssistantMessage = [...messages]
+      .slice()
+      .reverse()
+      .find((msg) => msg.sender === 'assistant')
 
-      if (needsAnimation && titleRef.current) {
-        titleRef.current.style.setProperty('--marquee-container-width', `${containerWidth}px`)
-      }
+    if (lastAssistantMessage) {
+      firstResponseIdOfThisSessionRef.current = lastAssistantMessage.id
     }
-
-    const r = setTimeout(checkOverflow, 100)
-    window.addEventListener('resize', checkOverflow)
-    return () => {
-      clearTimeout(r)
-      window.removeEventListener('resize', checkOverflow)
-    }
-  }, [initialSearchQuery])
+  }, [messages])
 
   const handleFeedback = async (messageId, flagValue, messageUserId = null) => {
     // Use the userId from the message if available, otherwise use current emaUserId
@@ -1117,15 +1153,11 @@ const EmaChat = ({ onClose = null }) => {
             {/* Header */}
             <div className="absolute z-[101] top-0 left-0 w-full flex items-center justify-between p-15 md:p-30 pl-15 md:pl-0 pr-15 flex-shrink-0">
               <div className="flex items-center gap-10 flex-1 min-w-0 bg-pink md:bg-transparent rounded-full py-20 md:py-0 px-10 md:px-0">
-                <div
-                  ref={titleContainerRef}
-                  className="flex-1 min-w-0 overflow-hidden max-w-full md:max-w-[calc(50vw-35rem)] relative px-10 md:px-25"
-                >
+                <div className="flex-1 min-w-0 overflow-hidden max-w-full md:max-w-[calc(50vw-35rem)] relative px-10 pr-40 md:px-25">
                   <h2
-                    ref={titleRef}
                     id="ema-chat-title"
-                    className={`font-plaid text-white font-normal uppercase text-14 whitespace-nowrap ${shouldAnimateTitle ? 'animate-marquee' : ''
-                      }`}
+                    className="font-plaid text-white font-normal uppercase text-14 whitespace-nowrap"
+                    style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                   >
                     {initialSearchQuery &&
                       `new chat for: ${initialSearchQuery.toUpperCase()}`}
@@ -1143,7 +1175,7 @@ const EmaChat = ({ onClose = null }) => {
                       onClose()
                     }
                   }}
-                  className="absolute top-18 md:top-25 right-15 md:right-25 z-[110] w-[4.5rem] md:w-[6rem] h-[4.5rem] md:h-[6rem] rounded-full bg-pink text-white flex items-center justify-center hover:bg-pink transition-colors focus:outline-none"
+                  className="absolute top-19 md:top-25 right-15 md:right-25 z-[110] w-[4.5rem] md:w-[6rem] h-[4.5rem] md:h-[6rem] rounded-full bg-pink text-white flex items-center justify-center hover:bg-pink transition-colors focus:outline-none"
                   aria-label="Close chat"
                   type="button"
                 >
@@ -1371,7 +1403,7 @@ const EmaChat = ({ onClose = null }) => {
                       </div>
                     )}
 
-                  {/* Mobile-only: article carousel after the first response of this visit (each time user enters chat) */}
+                  {/* Mobile-only: article carousel anchored to a chosen assistant message */}
                   {msg.sender === 'assistant' &&
                     msg.id === firstResponseIdOfThisSessionRef.current &&
                     searchResults.length > 0 &&
