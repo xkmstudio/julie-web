@@ -342,9 +342,7 @@ function EmaArticlesCarousel({ articles, onOpenFrame }) {
     e.stopPropagation()
     // Only open frame on real tap, not when Embla treats it as drag (e.g. after swipe)
     if (emblaApi && typeof emblaApi.clickAllowed === 'function' && !emblaApi.clickAllowed()) return
-    onOpenFrame(`/blog/${slug}`)
-    console.log('clicked article', slug);
-    
+    onOpenFrame(`/blog/${slug}`)    
   }
 
   return (

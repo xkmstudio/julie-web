@@ -17,8 +17,6 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
   const isDesktop = width >= MOBILE_BREAKPOINT
   const productCount = products?.length || 0
 
-  console.log(products)
-
   if (!products) return null
 
   const isAlternative = products[0]?.productType === 'alternate'
