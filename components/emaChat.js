@@ -1194,7 +1194,7 @@ const EmaChat = ({ onClose = null }) => {
             >
               {messages.length === 0 && (
                 <div className="max-w-[50rem] mx-auto">
-                  Start a conversation with Julie AI...
+                  ask Julie anything...
                 </div>
               )}
 

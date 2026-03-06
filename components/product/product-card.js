@@ -59,6 +59,7 @@ const ProductCard = ({
 
   // Hide ProductActions if product has more than 1 variant
   const hasMultipleVariants = product.variants && product.variants.length > 1
+  const isSoldOut = !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
 
   return type == 'feature' ? (
     <div
@@ -152,7 +153,7 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            shop now
+            {isSoldOut ? 'sold out' : 'shop now'}
           </a>
         ) : (
           <NextLink
@@ -161,7 +162,7 @@ const ProductCard = ({
             })}
             href={productHref}
           >
-            shop now
+            {isSoldOut ? 'sold out' : 'shop now'}
           </NextLink>
         )}
         {!hasMultipleVariants && (
@@ -252,14 +253,14 @@ const ProductCard = ({
               onFrameLinkClick(productHref)
             }}
           >
-            shop now
+            {isSoldOut ? 'sold out' : 'shop now'}
           </a>
         ) : (
           <NextLink
             className="btn is-outline is-large flex-[1_1_0%] min-w-0"
             href={productHref}
           >
-            shop now
+            {isSoldOut ? 'sold out' : 'shop now'}
           </NextLink>
         )}
         {!hasMultipleVariants && (

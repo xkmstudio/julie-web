@@ -81,6 +81,7 @@ const PageContent = ({
       title,
       content,
       image,
+      slug,
       tag,
       summary,
       content: articleContent,
@@ -93,6 +94,8 @@ const PageContent = ({
       editorialStandards,
       globalCta,
     } = page
+
+    const articleHref = slug ? `/blog/${slug}` : null
 
     return (
       <div className="w-full">
@@ -121,15 +124,33 @@ const PageContent = ({
                 'h-[100vw] md:w-1/2 md:h-full': !actuallyInFrame && !(useGradient && gradient),
                 'hidden md:block': useGradient && gradient,
               })}>
-                {image && (
-                  <Photo
-                    photo={image}
-                    width={2400}
-                    srcSizes={[800, 1200, 1600, 2400]}
-                    sizes="100%"
-                    layout="fill"
-                    className="object-cover h-full w-full"
-                  />
+                {image && actuallyInFrame && articleHref ? (
+                  <a
+                    href={articleHref}
+                    target="_top"
+                    rel="noopener noreferrer"
+                    className="block w-full h-full"
+                  >
+                    <Photo
+                      photo={image}
+                      width={2400}
+                      srcSizes={[800, 1200, 1600, 2400]}
+                      sizes="100%"
+                      layout="fill"
+                      className="object-cover h-full w-full"
+                    />
+                  </a>
+                ) : (
+                  image && (
+                    <Photo
+                      photo={image}
+                      width={2400}
+                      srcSizes={[800, 1200, 1600, 2400]}
+                      sizes="100%"
+                      layout="fill"
+                      className="object-cover h-full w-full"
+                    />
+                  )
                 )}
               </div>
             )}

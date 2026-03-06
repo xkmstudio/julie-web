@@ -29,6 +29,8 @@ const ProductCardAlternate = ({ product, index, className }) => {
     product.forceOutOfStock,
   ])
 
+  const isSoldOut = !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
+
   return (
     <div
       className={cx(
@@ -62,21 +64,25 @@ const ProductCardAlternate = ({ product, index, className }) => {
           </NextLink>
         )}
   
-        {/* Shop Now Link */}
+        {/* Shop Now / Sold Out Link */}
         <div className="mt-20">
           <NextLink 
             href={`/products/${product.slug}`}
             className="btn is-add is-block flex items-center gap-5 w-full justify-center"
           >
             <div className="flex items-center gap-5">
-              <span>shop now</span>
-              &mdash;
-              <ProductPrice
-                price={activeVariant?.price || product.price}
-                comparePrice={
-                  activeVariant?.comparePrice || product.comparePrice
-                }
-              />
+              <span>{isSoldOut ? 'sold out' : 'shop now'}</span>
+              {!isSoldOut && (
+                <>
+                  &mdash;
+                  <ProductPrice
+                    price={activeVariant?.price || product.price}
+                    comparePrice={
+                      activeVariant?.comparePrice || product.comparePrice
+                    }
+                  />
+                </>
+              )}
             </div>
           </NextLink>
         </div>
