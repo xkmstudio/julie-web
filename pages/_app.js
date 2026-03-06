@@ -180,6 +180,61 @@ const Site = ({ Component, pageProps, router }) => {
     })
   }, [])
 
+  // Initialize Klaviyo popup form after scripts & consent tools load
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    // Don't show popup on ema-chat route
+    if (router.pathname === '/ema-chat') return
+
+    const KLAVIYO_FORM_ID = 'RQXCNA'
+    let cancelled = false
+
+    const initKlaviyoPopup = (attempt = 1) => {
+      if (cancelled || typeof window === 'undefined') return
+
+      try {
+        const onsite = window._klOnsite || []
+        window._klOnsite = onsite
+
+        const klaviyoReady = Array.isArray(onsite)
+
+        if (klaviyoReady) {
+          // Primary: queue openForm command
+          onsite.push(['openForm', KLAVIYO_FORM_ID])
+
+          // Fallback: direct method if Klaviyo exposes it
+          if (typeof onsite.openForm === 'function') {
+            try {
+              onsite.openForm(KLAVIYO_FORM_ID)
+            } catch (e) {
+              console.warn('[Klaviyo] openForm method failed', e)
+            }
+          }
+
+          return
+        }
+
+        // Retry up to 10 times while Klaviyo script loads
+        if (attempt < 10) {
+          setTimeout(() => initKlaviyoPopup(attempt + 1), 1000)
+        }
+      } catch (error) {
+        console.error('[Klaviyo] Error initializing popup', error)
+      }
+    }
+
+    // Start initialization after a short delay to allow GTM / consent scripts
+    const timer = setTimeout(() => {
+      initKlaviyoPopup(1)
+    }, 4000)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [router.pathname])
+
   // intelligently add focus states if keyboard is used
   const handleFirstTab = (event) => {
     if (event.keyCode === 9) {
