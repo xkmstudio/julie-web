@@ -8,6 +8,7 @@ import NotFoundPage from '@pages/404'
 
 import Layout from '@components/layout'
 import { Module } from '@components/modules'
+import { buildPageSchemas } from '@lib/schema'
 
 const Page = ({ data }) => {
   const router = useRouter()
@@ -17,11 +18,16 @@ const Page = ({ data }) => {
   }
 
   const { site, page } = data
+  const schema = buildPageSchemas({
+    modules: page.modules,
+    site,
+    currentPath: router.asPath,
+  })
 
   return (
     <>
       {!router.isFallback && (
-        <Layout site={site} page={page}>
+        <Layout site={site} page={page} schema={schema}>
           {page.modules?.map((module, key) => (
             <Module key={key} index={key} module={module} />
           ))}

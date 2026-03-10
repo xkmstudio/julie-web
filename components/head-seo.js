@@ -54,6 +54,10 @@ const HeadSEO = ({ site = {}, page = {}, schema }) => {
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
       <meta name="format-detection" content="telephone=no" />
+      <meta
+        name="google-site-verification"
+        content="8DpLQFDULOfGJ-BP13gTGyJkt3aFSqahSbIg3HYc-Pc"
+      />
       {router?.asPath?.includes('capabilities') ? (
         <meta
           name="robots"

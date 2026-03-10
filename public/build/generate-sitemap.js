@@ -12,6 +12,7 @@ const client = createClient({
 })
 
 const SITEMAP_PATH = path.resolve(process.cwd(), 'public', 'sitemap.xml')
+const DEFAULT_SITE_ROOT = 'https://juliecare.co'
 
 //
 // === Queries ===
@@ -32,6 +33,20 @@ const pagesQuery = groq`*[
   defined(slug.current)
 ]{
   "_id": _id,
+  "slug": slug.current
+}`
+
+// Query for pages that contain FAQ modules (under /pages/[slug])
+const faqPagesQuery = groq`*[
+  _type == "page" &&
+  wasDeleted != true &&
+  isDraft != true &&
+  defined(slug.current) &&
+  (
+    count(modules[_type == "faqs"]) > 0 ||
+    count(modules[]->content[0][_type == "faqs"]) > 0
+  )
+]{
   "slug": slug.current
 }`
 
@@ -83,17 +98,22 @@ const generateSitemap = async () => {
   try {
     console.log('Fetching content from Sanity...')
     
-    const [siteSettings, pages, articles, products, profiles, collections] = await Promise.all([
+    const [siteSettings, pages, faqPages, articles, products, profiles, collections] = await Promise.all([
       client.fetch(siteSettingsQuery),
       client.fetch(pagesQuery),
+      client.fetch(faqPagesQuery),
       client.fetch(articlesQuery),
       client.fetch(productsQuery),
       client.fetch(profilesQuery),
       client.fetch(collectionsQuery),
     ])
 
-    // Get site root URL, fallback to hardcoded value
-    const SITE_ROOT = siteSettings?.siteURL || 'https://juliecare.co'
+    // Prefer the production domain if Sanity is configured with a preview host.
+    const configuredSiteUrl = siteSettings?.siteURL
+    const SITE_ROOT =
+      configuredSiteUrl && !configuredSiteUrl.includes('netlify.app')
+        ? configuredSiteUrl
+        : DEFAULT_SITE_ROOT
     const homePageId = siteSettings?.homePageId
     
     // Filter out the home page from pages (it's served at /, not /pages/)
@@ -102,7 +122,7 @@ const generateSitemap = async () => {
       : pages
     
     console.log(`Using site URL: ${SITE_ROOT}`)
-    console.log(`Found ${pagesExcludingHome.length} pages (excluding home), ${articles.length} articles, ${products.length} products, ${profiles.length} profiles, ${collections.length} collections`)
+    console.log(`Found ${pagesExcludingHome.length} pages (excluding home), ${faqPages.length} FAQ pages, ${articles.length} articles, ${products.length} products, ${profiles.length} profiles, ${collections.length} collections`)
 
     // Static pages
     const staticPages = [
@@ -132,6 +152,15 @@ const generateSitemap = async () => {
       priority: '0.8'
     }))
 
+    // FAQ pages
+    const faqPageLocations = faqPages.map(page => {
+      const slug = page.slug.startsWith('/') ? page.slug.slice(1) : page.slug
+      return {
+        url: `${SITE_ROOT}/pages/${slug}`,
+        priority: '0.8'
+      }
+    })
+
     // Profiles
     const profilesLocations = profiles.map(profile => ({
       url: `${SITE_ROOT}/profiles/${profile.slug}`,
@@ -148,14 +177,20 @@ const generateSitemap = async () => {
     const allUrls = [
       ...staticPages,
       ...pagesLocations,
+      ...faqPageLocations,
       ...articlesLocations,
       ...productsLocations,
       ...profilesLocations,
       ...collectionsLocations,
     ]
 
+    // Remove any duplicate URLs while preserving the first occurrence
+    const uniqueUrls = Array.from(
+      new Map(allUrls.map((entry) => [entry.url, entry])).values()
+    )
+
     // Generate XML
-    const urlEntries = allUrls.map(({ url, priority }) => 
+    const urlEntries = uniqueUrls.map(({ url, priority }) => 
       `  <url>
     <loc>${url}</loc>
     <priority>${priority}</priority>
@@ -168,7 +203,7 @@ ${urlEntries}
 </urlset>`
 
     fs.writeFileSync(SITEMAP_PATH, sitemap)
-    console.log(`✅ Sitemap generated successfully with ${allUrls.length} URLs`)
+    console.log(`✅ Sitemap generated successfully with ${uniqueUrls.length} URLs`)
     console.log(`   Saved to: ${SITEMAP_PATH}`)
   } catch (error) {
     console.error('❌ Error generating sitemap:', error)

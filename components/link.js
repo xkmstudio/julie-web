@@ -95,9 +95,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
       // Build the URL with query params
       const currentPath = router.asPath || (typeof window !== 'undefined' ? window.location.pathname : '/')
       const chatUrl = `/ema-chat?from=${encodeURIComponent(currentPath)}`
-      
-      console.log('Navigating to:', chatUrl)
-      
+            
       // Navigate immediately - use window.location as primary method for reliability
       if (typeof window !== 'undefined') {
         window.location.href = chatUrl
@@ -141,9 +139,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
     const handleClick = (e) => {
       e.preventDefault()
       e.stopPropagation()
-      
-      console.log('Nav Julie link clicked, navigating to chat page')
-      
+            
       // Save current scroll position for restoration on back
       const scrollY = typeof window !== 'undefined' ? window.scrollY : 0
       if (typeof window !== 'undefined') {
@@ -153,9 +149,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
       // Build the URL with query params
       const currentPath = router.asPath || (typeof window !== 'undefined' ? window.location.pathname : '/')
       const chatUrl = `/ema-chat?from=${encodeURIComponent(currentPath)}`
-      
-      console.log('Navigating to:', chatUrl)
-      
+            
       // Navigate immediately - use window.location as primary method for reliability
       if (typeof window !== 'undefined') {
         window.location.href = chatUrl

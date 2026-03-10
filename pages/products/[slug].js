@@ -5,7 +5,8 @@ import useSWR from 'swr'
 
 import { getProduct } from '@data'
 
-import { useParams, usePrevious, centsToPrice } from '@lib/helpers'
+import { useParams, usePrevious } from '@lib/helpers'
+import { buildPageSchemas } from '@lib/schema'
 
 import { useSiteContext } from '@lib/context'
 
@@ -88,9 +89,6 @@ const Product = ({ data }) => {
     { errorRetryCount: 3 }
   )
 
-  // rehydrate our product after inventory is fetched
-  const [currentInventory, setCurrentInventory] = useState(null)
-
   useEffect(() => {
     if (page.product && productInventory) {
       setProduct({
@@ -109,13 +107,21 @@ const Product = ({ data }) => {
     }
   }, [page.product, productInventory])
 
+  const schema = buildPageSchemas({
+    modules: page.modules,
+    site,
+    currentPath: router.asPath,
+    product,
+    activeVariantID,
+  })
+
   return (
     <>
       {!router.isFallback && (
         <Layout
           site={site}
           page={page}
-          schema={getProductSchema(product, activeVariantID, site)}
+          schema={schema}
         >
           <ProductHero
             product={product}
@@ -141,38 +147,6 @@ const Product = ({ data }) => {
       )}
     </>
   )
-}
-
-function getProductSchema(product, activeVariantID, site) {
-  if (!product) return null
-
-  const router = useRouter()
-  const { query } = router
-
-  const variant = product.variants.find((v) => v.id == activeVariantID)
-
-  return {
-    '@context': 'http://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    price: centsToPrice(query.variant ? variant.price : product.price),
-    sku: query.variant ? variant.sku : product.sku,
-    offers: {
-      '@type': 'Offer',
-      url: `${site.rootDomain}/products/${product.slug}${
-        query.variant ? `?variant=${variant.id}` : ''
-      }`,
-      availability: query.variant
-        ? `http://schema.org/${variant.inStock ? 'InStock' : 'SoldOut'}`
-        : `http://schema.org/${product.inStock ? 'InStock' : 'SoldOut'}`,
-      price: centsToPrice(query.variant ? variant.price : product.price),
-      priceCurrency: 'USD',
-    },
-    brand: {
-      '@type': 'Brand',
-      name: site.title,
-    },
-  }
 }
 
 export async function getServerSideProps({ params, res, preview, previewData }) {
