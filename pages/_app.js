@@ -180,25 +180,22 @@ const Site = ({ Component, pageProps, router }) => {
     })
   }, [])
 
-  // Initialize Klaviyo popup form globally (once per session).
-  // Relies on Pandectes to block/unblock the Klaviyo script itself.
+  // Initialize Klaviyo popup form only after user interacts with Pandectes
+  // and allows targeting/marketing cookies. Fires once per browser session,
+  // with at least a 3 second delay after consent.
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     // Don't show popup on ema-chat route
     if (router.pathname === '/ema-chat') return
 
-    // Ensure we only ever initialize once per browser session
-    if (window.__klaviyoPopupInitialized) return
-    window.__klaviyoPopupInitialized = true
-
     const KLAVIYO_FORM_ID = 'RQXCNA'
     let cancelled = false
-    let attempts = 0
-    const maxAttempts = 12 // ~12 seconds of polling after initial delay
+    let opened = false
 
-    const initKlaviyoPopup = () => {
+    const triggerKlaviyoPopup = () => {
       if (cancelled || typeof window === 'undefined') return
+      if (opened) return
 
       try {
         const onsite = window._klOnsite || []
@@ -206,7 +203,7 @@ const Site = ({ Component, pageProps, router }) => {
 
         if (!Array.isArray(onsite)) return
 
-        // Queue the openForm command – Klaviyo will process this when its script is ready.
+        // Queue the openForm command – Klaviyo will process this when its script is ready
         onsite.push(['openForm', KLAVIYO_FORM_ID])
 
         // If Klaviyo has already attached a helper, try that too.
@@ -218,36 +215,53 @@ const Site = ({ Component, pageProps, router }) => {
           }
         }
 
-        // If the onsite array exists at all, treat this as a successful attempt
-        // and stop further polling to avoid duplicate popups.
-        cancelled = true
+        opened = true
+        // Mark on window for extra safety across route changes
+        window.__klaviyoPopupOpened = true
       } catch (error) {
         console.error('[Klaviyo] Error initializing popup', error)
       }
     }
 
-    const pollForKlaviyo = () => {
+    const handlePandectesConsent = (event) => {
       if (cancelled) return
+      if (window.__klaviyoPopupOpened) return
 
-      attempts += 1
-      initKlaviyoPopup()
+      try {
+        const detail = event?.detail
+        const preferences = detail?.preferences
+        const consentType = detail?.consentType
 
-      if (!cancelled && attempts < maxAttempts) {
-        setTimeout(pollForKlaviyo, 1000)
+        // Only react to real user interaction (new or changed consent),
+        // not default/initial state.
+        if (consentType !== 'new' && consentType !== 'stored' && consentType !== 'revoke') {
+          return
+        }
+
+        // If preferences is not defined, don't run anything
+        if (typeof preferences !== 'number') return
+
+        // In Pandectes, (preferences & 4) === 0 means targeting/marketing cookies are allowed
+        const targetingAllowed = (preferences & 4) === 0
+
+        if (!targetingAllowed) return
+
+        // Wait at least 3 seconds after consent interaction before showing popup
+        setTimeout(() => {
+          if (!cancelled && !window.__klaviyoPopupOpened) {
+            triggerKlaviyoPopup()
+          }
+        }, 3000)
+      } catch (error) {
+        console.error('[Pandectes] Error handling consent event', error)
       }
     }
 
-    // Start initialization after a short delay to give Pandectes time
-    // to inject/unblock any Klaviyo scripts based on cookie consent.
-    const startTimer = setTimeout(() => {
-      if (!cancelled) {
-        pollForKlaviyo()
-      }
-    }, 4000)
+    window.addEventListener('PandectesEvent_OnConsent', handlePandectesConsent)
 
     return () => {
       cancelled = true
-      clearTimeout(startTimer)
+      window.removeEventListener('PandectesEvent_OnConsent', handlePandectesConsent)
     }
   }, [router.pathname])
 
