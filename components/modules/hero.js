@@ -7,6 +7,7 @@ import EmaWidget from '@components/emaWidget'
 import Gradient from '@components/gradient'
 
 const Hero = ({ data = {} }) => {
+  
   const { backgroundMedia, backgroundMediaMobile, useGradientOnMobile, mobileBackgroundGradient, title, subtitle, mobileTag, hasEma, theme } = data
 
   const textColor = theme === 'dark' ? 'text-black' : theme === 'pink' ? 'text-pink' : 'text-white'
