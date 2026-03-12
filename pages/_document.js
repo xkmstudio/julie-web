@@ -25,6 +25,11 @@ class MyDocument extends Document {
             id="pandectes-core"
             src="https://s.pandect.es/scripts/pandectes-core.js"
           />
+          {/* Klaviyo onsite script for forms & popup */}
+          <script
+            async
+            src="https://static.klaviyo.com/onsite/js/TqnjxU/klaviyo.js"
+          />
         </Head>
         <body className="bg-white">           
           <Main />
