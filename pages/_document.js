@@ -1,5 +1,4 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
-import Script from 'next/script'
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -15,10 +14,10 @@ class MyDocument extends Document {
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
           {/* Pandectes cookie consent - load before app for consent banner */}
-          <Script
+          <script
             id="pandectes-rules"
             src="https://st.pandect.es/julie-products-inc/pandectes-rules.js"
-            strategy="beforeInteractive"
+            defer
           />
         </Head>
         <body className="bg-white">           
