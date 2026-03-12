@@ -16,10 +16,14 @@ class MyDocument extends Document {
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
           />
-          {/* Pandectes cookie consent - load before app for consent banner */}
+          {/* Pandectes cookie consent - rules and core, loaded globally before app */}
           <script
             id="pandectes-rules"
             src="https://st.pandect.es/julie-products-inc/pandectes-rules.js"
+          />
+          <script
+            id="pandectes-core"
+            src="https://s.pandect.es/scripts/pandectes-core.js"
           />
         </Head>
         <body className="bg-white">           
