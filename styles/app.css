@@ -26,6 +26,17 @@
 @import "components/_testimonials";
 @import "components/_scrolling-title";
 
+/* Global text selection color */
+::selection {
+  background-color: #ED0E6A; /* Tailwind pink */
+  color: #FFFFFF; /* White text */
+}
+
+::-moz-selection {
+  background-color: #ED0E6A;
+  color: #FFFFFF;
+}
+
 /* EMA Chat iOS Keyboard Fix */
 :root {
   --kbd: 0px;

@@ -88,6 +88,17 @@ export default function FindJulieInStores() {
             error: event.error,
             stack: event.error?.stack,
           })
+
+          // Prevent LuckyLabs errors from bubbling up and breaking the Next.js dev overlay
+          try {
+            event.preventDefault?.()
+            event.stopImmediatePropagation?.()
+            event.stopPropagation?.()
+            // Some environments look at returnValue to determine if the error is handled
+            event.returnValue = false
+          } catch (e) {
+            // Ignore
+          }
         }
       }
       

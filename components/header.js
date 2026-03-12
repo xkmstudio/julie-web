@@ -184,7 +184,7 @@ const Header = ({ data, work, pages }) => {
       <header
         ref={headerRef}
         className={cx(
-          'fixed z-[91] top-0 left-0 justify-between w-full text-white'
+          'fixed z-[99999991] top-0 left-0 justify-between w-full text-white'
         )}
       >
         {showBanner && (
@@ -313,7 +313,7 @@ const Header = ({ data, work, pages }) => {
             }}
             active={menuOpen}
           >
-            <div className="fixed top-0 left-0 w-full h-full z-9">
+            <div className="fixed top-0 left-0 w-full h-full z-[99991]">
               <m.button
                 key={'navmenu'}
                 initial={'closed'}

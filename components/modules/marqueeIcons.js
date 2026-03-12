@@ -1,9 +1,51 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useIntersection } from 'use-intersection'
 import { Marqy } from 'marqy'
 import Link from '@components/link'
 import NextLink from 'next/link'
 import Photo from '@components/photo'
+
+const InlineSvg = ({ src, alt, className }) => {
+  const [svgContent, setSvgContent] = useState(null)
+
+  useEffect(() => {
+    if (!src) return
+
+    let cancelled = false
+
+    fetch(src)
+      .then((res) => res.text())
+      .then((text) => {
+        if (!cancelled) {
+          const sizedSvg = text.replace(
+            '<svg',
+            '<svg class="h-full w-auto" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"'
+          )
+          setSvgContent(sizedSvg)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSvgContent(null)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [src])
+
+  if (!svgContent) return null
+
+  return (
+    <span
+      role={alt ? 'img' : undefined}
+      aria-label={alt || undefined}
+      className={`inline-flex items-center ${className || ''}`.trim()}
+      dangerouslySetInnerHTML={{ __html: svgContent }}
+    />
+  )
+}
 
 const MarqueeIcon = ({ item, index, className }) => {
   const icon = item.icon
@@ -18,8 +60,8 @@ const MarqueeIcon = ({ item, index, className }) => {
     ? icon.url
     : null
 
-  const iconContent = isSVG ? (
-    <img
+  const iconContent = isSVG && iconUrl ? (
+    <InlineSvg
       src={iconUrl}
       alt={icon?.alt || ''}
       className={className}
