@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 
 import Media from '@components/media'
 import BlockContent from '@components/block-content'
@@ -17,7 +17,7 @@ const Hero = ({ data = {} }) => {
         !backgroundMedia?.content
           ? ` ${textColor} justify-center`
           : mobileTag
-          ? ` h-[calc(var(--vh,1vh)*100-6.5rem)] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center ${textColor}`
+          ? ` h-[calc(var(--vh,1vh)*100-6.5rem)] min-h-[60rem] md:min-h-[unset] md:h-screen md:max-h-[60rem] py-20 justify-between md:justify-center ${textColor}`
           : ` min-h-[100vw] md:min-h-[60rem] ${textColor} justify-center py-20`
       }`}
     >
