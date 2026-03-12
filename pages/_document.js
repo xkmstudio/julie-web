@@ -12,12 +12,14 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+          />
           {/* Pandectes cookie consent - load before app for consent banner */}
           <script
             id="pandectes-rules"
             src="https://st.pandect.es/julie-products-inc/pandectes-rules.js"
-            defer
           />
         </Head>
         <body className="bg-white">           
