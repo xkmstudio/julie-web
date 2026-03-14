@@ -500,6 +500,18 @@ const EmaChat = ({ onClose = null }) => {
     }
   }, [router.isReady, router.query])
 
+  // Sync initial query to URL when we have it (e.g. from sessionStorage) but URL has no q — for GTM tracking
+  useEffect(() => {
+    if (!router.isReady || !isHydrated || !initialSearchQuery) return
+    const { q, ...rest } = router.query
+    if (q && typeof q === 'string') return
+    router.replace(
+      { pathname: router.pathname, query: { ...rest, q: initialSearchQuery } },
+      undefined,
+      { shallow: true }
+    )
+  }, [router.isReady, isHydrated, initialSearchQuery])
+
   // Auto-send question from query parameter (even if messages exist - continuous thread)
   useEffect(() => {
     if (!router.isReady || !isHydrated) return
@@ -933,10 +945,22 @@ const EmaChat = ({ onClose = null }) => {
   const sendMessage = async (message) => {
     if (!message?.trim() || !emaUserId) return
 
+    const trimmed = message.trim()
+
+    // Put initial query in URL for GTM tracking when user sends first message without q in URL
+    const { q, ...rest } = router.query
+    if (!q || typeof q !== 'string') {
+      router.replace(
+        { pathname: router.pathname, query: { ...rest, q: trimmed } },
+        undefined,
+        { shallow: true }
+      )
+    }
+
     const userMessage = {
       id: Date.now(),
       sender: 'user',
-      message: message.trim(),
+      message: trimmed,
       timestamp: new Date().toISOString(),
     }
 
