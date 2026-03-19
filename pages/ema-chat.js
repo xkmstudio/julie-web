@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import Layout from '@components/layout'
 import EmaChat from '@components/emaChat'
 import { getServerSideProps as getPageServerSideProps } from './index'
 
@@ -7,9 +8,11 @@ import { getServerSideProps as getPageServerSideProps } from './index'
  * Dedicated EMA Chat page
  * Clean full-screen chat experience without overlay positioning issues
  */
-export default function EmaChatPage() {
+export default function EmaChatPage({ data }) {
   const router = useRouter()
   const scrollPositionRef = useRef(0)
+  const site = data?.site || {}
+  const page = data?.page || {}
 
   // Store scroll position before navigating away, then restore it
   const handleNavigateBack = () => {
@@ -46,11 +49,24 @@ export default function EmaChatPage() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-      {/* The EmaChat component handles all the chat UI */}
-      {/* We pass a close handler to it */}
-      <ChatPageWrapper onClose={handleNavigateBack} />
-    </div>
+    <Layout site={site} page={page}>
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          overflow: 'hidden',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      >
+        {/* The EmaChat component handles all the chat UI */}
+        {/* We pass a close handler to it */}
+        <ChatPageWrapper onClose={handleNavigateBack} />
+      </div>
+    </Layout>
   )
 }
 
