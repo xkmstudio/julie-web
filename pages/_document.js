@@ -30,6 +30,13 @@ class MyDocument extends Document {
             async
             src="https://static.klaviyo.com/onsite/js/TqnjxU/klaviyo.js"
           />
+          {/* Accessibe accessibility widget */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "(function(){ var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function(){ acsbJS.init(); }; h.appendChild(s); })();",
+            }}
+          />
         </Head>
         <body className="bg-white">           
           <Main />
