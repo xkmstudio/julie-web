@@ -367,9 +367,9 @@ const PageContent = ({
                         </div>
                       )}
                       {(publishedDate || modifiedDate) && (
-                        <div className="w-full flex flex-col justify-center items-center gap-2 text-14 md:text-16">
-                          {publishedDate && <div>Published: {publishedDate}</div>}
-                          {modifiedDate && <div>Last updated: {modifiedDate}</div>}
+                        <div className="w-full flex flex-col justify-center items-center gap-2 text-14 md:text-14">
+                          {/* {publishedDate && <div>Published: {publishedDate}</div>} */}
+                          {modifiedDate && <div className="text-black/50">Last updated: {modifiedDate}</div>}
                         </div>
                       )}
                     </div>
