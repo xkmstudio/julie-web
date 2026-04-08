@@ -39,6 +39,8 @@ const ProductIcon = ({ item, index, className }) => {
     <img
       src={iconUrl}
       alt={icon?.alt || ''}
+      width={icon?.width || 120}
+      height={icon?.height || 40}
       className={className}
     />
   ) : (

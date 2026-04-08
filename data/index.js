@@ -123,6 +123,8 @@ export async function getArticle(slug, preview) {
         slugs
       )}] | order(date desc)[0]{
         _type,
+        _createdAt,
+        _updatedAt,
         title,
         subtitle,
         'slug': slug.current,

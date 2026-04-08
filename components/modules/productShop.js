@@ -224,6 +224,8 @@ const ProductShop = ({
                           <img
                             src={logoUrl}
                             alt={assetData?.alt || ''}
+                            width={assetData?.width || 200}
+                            height={assetData?.height || 48}
                             className="w-auto h-full object-contain"
                           />
                         ) : (
@@ -280,6 +282,8 @@ const ProductShop = ({
                       <img
                         src={logoUrl}
                         alt={assetData?.alt || ''}
+                        width={assetData?.width || 200}
+                        height={assetData?.height || 48}
                         className="w-full h-full object-contain"
                       />
                     ) : (

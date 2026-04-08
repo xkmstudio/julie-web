@@ -15,6 +15,18 @@ import Link from '@components/link'
 
 const MOBILE_BREAKPOINT = 850
 
+function formatArticleDate(dateString) {
+  if (!dateString) return null
+  const parsed = new Date(dateString)
+  if (Number.isNaN(parsed.getTime())) return null
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(parsed)
+}
+
 /**
  * Reusable component to render page or article content
  * This ensures we only write the rendering logic once
@@ -94,6 +106,8 @@ const PageContent = ({
       editorialStandards,
       globalCta,
     } = page
+    const publishedDate = formatArticleDate(page.date || page._createdAt)
+    const modifiedDate = formatArticleDate(page._updatedAt || page.date || page._createdAt)
 
     const articleHref = slug ? `/blog/${slug}` : null
 
@@ -350,6 +364,12 @@ const PageContent = ({
                               })}
                             </div>
                           </div>
+                        </div>
+                      )}
+                      {(publishedDate || modifiedDate) && (
+                        <div className="w-full flex flex-col justify-center items-center gap-2 text-14 md:text-16">
+                          {publishedDate && <div>Published: {publishedDate}</div>}
+                          {modifiedDate && <div>Last updated: {modifiedDate}</div>}
                         </div>
                       )}
                     </div>

@@ -3,12 +3,13 @@
   "version": "2.0.0",
   "scripts": {
     "dev": "cross-env NODE_ENV=development next dev",
-    "build": "echo 'Building sitemap' && node ./public/build/generate-sitemap.js && next build",
+    "build": "next build",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "map": "echo 'Building sitemap' && node ./public/build/generate-sitemap.js"
+    "map": "echo 'Building sitemap' && node ./public/build/generate-sitemap.js",
+    "images:audit": "node ./scripts/audit-oversized-images.js"
   },
   "sideEffects": false,
   "license": "MIT",

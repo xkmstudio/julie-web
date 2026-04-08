@@ -2,6 +2,7 @@ import React from 'react'
 import { useRouter } from 'next/router'
 
 import { getArticle } from '@data'
+import { buildArticleSchema } from '@lib/schema'
 
 import NotFoundPage from '@pages/404'
 
@@ -16,11 +17,16 @@ const Article = ({ data, sanityConfig }) => {
   }
 
   const { site, page } = data
+  const schema = buildArticleSchema({
+    page,
+    site,
+    currentPath: router.asPath,
+  })
   
   return (
     <>
       {!router.isFallback && (
-        <Layout site={site} page={page}>
+        <Layout site={site} page={page} schema={schema}>
           <PageContent
             page={page}
             type="article"

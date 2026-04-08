@@ -22,7 +22,13 @@ const Swatch = ({ label, color, children }) => {
   // )
   return (
     <div className='swatch'>
-      <img className='absolute left-0 top-0 w-full h-full object-cover scale-[1.1]' src={color} alt="product swatch"/>
+      <img
+        className='absolute left-0 top-0 w-full h-full object-cover scale-[1.1]'
+        src={color}
+        alt="product swatch"
+        width="64"
+        height="64"
+      />
     </div>
   )
 }

@@ -70,6 +70,69 @@ const processBold = (text, startKey = 0) => {
   return parts.length > 0 ? parts : [text]
 }
 
+const normalizeAnnotatedText = (item) => {
+  const textValue = item?.text?.value
+  if (!textValue || typeof textValue !== 'string') return ''
+
+  const annotations = Array.isArray(item?.text?.annotations)
+    ? item.text.annotations
+    : Array.isArray(item?.annotations)
+      ? item.annotations
+      : []
+
+  if (annotations.length === 0) return textValue
+
+  const normalized = annotations
+    .map((annotation) => {
+      const url =
+        annotation?.url ||
+        annotation?.href ||
+        annotation?.link?.url ||
+        annotation?.link?.href ||
+        annotation?.data?.url ||
+        annotation?.data?.href ||
+        null
+
+      if (!url || typeof url !== 'string') return null
+
+      const explicitStart =
+        annotation?.start_index ??
+        annotation?.startIndex ??
+        annotation?.start ??
+        annotation?.offset
+      const explicitEnd =
+        annotation?.end_index ??
+        annotation?.endIndex ??
+        annotation?.end
+
+      const start = Number.isInteger(explicitStart) ? explicitStart : null
+      const end = Number.isInteger(explicitEnd)
+        ? explicitEnd
+        : Number.isInteger(annotation?.length) && start != null
+          ? start + annotation.length
+          : null
+
+      if (start == null || end == null || start < 0 || end <= start || end > textValue.length) {
+        return null
+      }
+
+      return { start, end, url: url.trim() }
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.start - a.start)
+
+  if (normalized.length === 0) return textValue
+
+  let result = textValue
+  normalized.forEach(({ start, end, url }) => {
+    const linkText = result.slice(start, end)
+    if (!linkText.trim()) return
+    result = `${result.slice(0, start)}[${linkText}](${url})${result.slice(end)}`
+  })
+
+  return result
+}
+
 // Convert markdown links + bare urls into clickable elements
 const processMessageLinks = (text, onOpenFrame) => {
   if (!text || typeof text !== 'string') return [text]
@@ -1029,7 +1092,7 @@ const EmaChat = ({ onClose = null }) => {
               }
 
               if (parsed.content && Array.isArray(parsed.content)) {
-                const textContent = parsed.content.map((item) => item.text?.value || '').join('')
+                const textContent = parsed.content.map((item) => normalizeAnnotatedText(item)).join('')
 
                 if (textContent) {
                   setMessages((prev) => {

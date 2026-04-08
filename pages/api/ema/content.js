@@ -1,4 +1,4 @@
-import { getPage, getArticle, getProduct, getProfile } from '@data'
+import { getPage, getArticle, getProduct, getProfile, getCollection } from '@data'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,20 +12,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse URL to get pathname
-    let pathname = url
-    if (url.startsWith('http')) {
-      const urlObj = new URL(url)
-      pathname = urlObj.pathname
-    }
-
+    // Parse URL safely for both absolute and relative URLs
+    const parsedUrl = new URL(url, 'https://juliecare.co')
     // Remove leading/trailing slashes
-    pathname = pathname.replace(/^\/+|\/+$/g, '')
+    let pathname = parsedUrl.pathname.replace(/^\/+|\/+$/g, '')
 
     // Determine content type based on pathname
     const isArticle = pathname.startsWith('blog/')
     const isProduct = pathname.startsWith('products/')
     const isProfile = pathname.startsWith('profiles/')
+    const isCollection = pathname.startsWith('collections/')
+    const isPageRoute = pathname.startsWith('pages/')
     
     let data = null
     let contentType = 'page'
@@ -45,9 +42,20 @@ export default async function handler(req, res) {
       const slug = pathname.replace('profiles/', '')
       data = await getProfile(slug, { active: false })
       contentType = 'profile'
+    } else if (isCollection) {
+      // Fetch collection
+      const slug = pathname.replace('collections/', '')
+      data = await getCollection(slug, { active: false })
+      contentType = 'collection'
+    } else if (isPageRoute) {
+      // Fetch dynamic pages route (/pages/[...slug])
+      const slug = pathname.replace('pages/', '')
+      data = await getPage(slug, { active: false })
+      contentType = 'page'
     } else {
       // Fetch regular page
-      data = await getPage(pathname || '/', { active: false })
+      // Empty string maps to homepage slugs in getPage
+      data = await getPage(pathname, { active: false })
       contentType = 'page'
     }
 

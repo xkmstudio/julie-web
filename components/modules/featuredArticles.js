@@ -19,31 +19,43 @@ const Jewels = () => {
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute left-[5%] top-[-1rem] w-[1.5rem] z-2 jewel-float-1"
       />
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute left-[18%] top-[8%] w-[1.5rem] z-2 jewel-float-2"
       />
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute right-[-1rem] top-[13%] w-[1.5rem] z-2 jewel-float-3"
       />
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute right-[4%] bottom-[45%] w-[1.5rem] z-2 jewel-float-4"
       />
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute right-[calc(5%+3rem)] bottom-[40%] w-[1.5rem] z-2 jewel-float-5"
       />
       <img
         src="/icons/jewel.png"
         alt="Jewel"
+        width="24"
+        height="24"
         className="absolute left-[2rem] bottom-[-1rem] w-[1.5rem] z-2 jewel-float-6"
       />
     </>

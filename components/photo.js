@@ -10,8 +10,9 @@ const Photo = ({
   height,
   srcSizes = [400, 600, 800, 1000, 1200],
   layout = 'intrinsic',
-  quality = 100,
+  quality = 75,
   fill: fillProp = false,
+  sizes,
   className,
   force = false,
 }) => {
@@ -31,7 +32,7 @@ const Photo = ({
   const srcSet = buildSrcSet(photo, {
     srcSizes: srcSizes,
     quality,
-    format: 'webp', // Force Next-Gen format
+    format: 'webp',
   })
 
   return (
@@ -59,10 +60,10 @@ const Photo = ({
         srcSet={srcSet}
         width={!useFill ? width || photo.width : undefined}
         height={!useFill ? height || photo.height : undefined}
-        sizes={useFill ? '100%' : undefined}
+        sizes={sizes || (useFill ? '100vw' : undefined)}
         placeholder={photo.lqip ? "blur" : undefined}
         fill={useFill}
-        quality={80}
+        quality={quality}
         priority={force}
         className={cx(
           { 'w-full h-[auto]': layout === 'intrinsic' },
