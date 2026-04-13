@@ -71,10 +71,13 @@ const Header = ({ data, work, pages }) => {
     const checkScrollAndHeroBleed = (pathnameOverride) => {
       const pathname = pathnameOverride ?? router.pathname
       const isProductPage = pathname.startsWith('/products/')
-      const hasHeroBleed = document.querySelector('.hero-bleed') !== null
+      const firstModule = document.querySelector('[data-module-index="0"]')
+      const firstModuleIsHero =
+        firstModule?.getAttribute('data-module-type') === 'hero' ||
+        firstModule?.querySelector('.hero-bleed') !== null
       const scrollY = window.scrollY || window.pageYOffset
 
-      if (!isProductPage && hasHeroBleed && scrollY < 100) {
+      if (!isProductPage && firstModuleIsHero && scrollY < 100) {
         setIsTransparent(true)
       } else {
         setIsTransparent(false)

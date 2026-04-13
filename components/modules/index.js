@@ -31,17 +31,19 @@ const FeaturedProfiles = dynamic(() => import('./featuredProfiles'))
 const StoreLocator = dynamic(() => import('./storeLocator'))
 
 // Wrapper component that adds data-anchor attribute for anchor linking
-const ModuleWrapper = ({ anchorSlug, children }) => {
-  if (!anchorSlug) return children
-  
+const ModuleWrapper = ({ anchorSlug, type, index, children }) => {
   return (
-    <div data-anchor={anchorSlug}>
+    <div
+      data-anchor={anchorSlug}
+      data-module-type={type}
+      data-module-index={index}
+    >
       {children}
     </div>
   )
 }
 
-export const Module = ({ module, product, activeVariant, onVariantChange, onFrameLinkClick }) => {
+export const Module = ({ module, index, product, activeVariant, onVariantChange, onFrameLinkClick }) => {
   const type = module._type
   const anchorSlug = module.anchorSlug
 
@@ -99,7 +101,7 @@ export const Module = ({ module, product, activeVariant, onVariantChange, onFram
   }
 
   return (
-    <ModuleWrapper anchorSlug={anchorSlug}>
+    <ModuleWrapper anchorSlug={anchorSlug} type={type} index={index}>
       {renderModule()}
     </ModuleWrapper>
   )

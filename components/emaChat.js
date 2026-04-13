@@ -33,6 +33,16 @@ const isInternalLink = (url) => {
   }
 }
 
+const isArticleLink = (url) => {
+  if (!url) return false
+  try {
+    const urlObj = new URL(url, 'https://juliecare.co')
+    return /^\/blog\/[^/]+/.test(urlObj.pathname)
+  } catch (e) {
+    return false
+  }
+}
+
 // Convert markdown-style dash list items to bullet points (•)
 const toBulletPoints = (text) => {
   if (!text || typeof text !== 'string') return text
@@ -188,11 +198,12 @@ const processMessageLinks = (text, onOpenFrame) => {
 
     const url = link.type === 'markdown' ? link.url : link.url
     const isInternal = isInternalLink(url)
+    const shouldOpenInFrame = isInternal && isArticleLink(url) && onOpenFrame
 
     if (link.type === 'markdown') {
       const linkTextBold = processBold(link.linkText, elementKey)
 
-      if (isInternal && onOpenFrame) {
+      if (shouldOpenInFrame) {
         elements.push(
           <button
             key={`btn-${elementKey++}`}
@@ -211,8 +222,6 @@ const processMessageLinks = (text, onOpenFrame) => {
           <a
             key={`a-${elementKey++}`}
             href={url}
-            target="_blank"
-            rel="noopener noreferrer"
             className="underline hover:no-underline text-current"
           >
             {linkTextBold}
@@ -220,7 +229,7 @@ const processMessageLinks = (text, onOpenFrame) => {
         )
       }
     } else {
-      if (isInternal && onOpenFrame) {
+      if (shouldOpenInFrame) {
         elements.push(
           <button
             key={`btn-url-${elementKey++}`}
@@ -239,8 +248,6 @@ const processMessageLinks = (text, onOpenFrame) => {
           <a
             key={`url-${elementKey++}`}
             href={url}
-            target="_blank"
-            rel="noopener noreferrer"
             className="underline hover:no-underline text-current"
           >
             {url}
