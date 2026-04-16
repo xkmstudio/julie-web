@@ -414,14 +414,23 @@ const PageContent = ({
         {/* Modules */}
         {modules && modules.length > 0 && (
           <div className="w-full mx-auto flex flex-col items-center md:pt-60 gap-60">
-            {modules.map((module, key) => (
-              <Module
-                key={key}
-                index={key}
-                module={module}
-                onFrameLinkClick={onFrameLinkClick}
-              />
-            ))}
+            {modules.map((module, key) => {
+              const addFirstShopFeaturedPadding =
+                key === 0 && module?._type === 'productShop'
+
+              return (
+                <div
+                  key={key}
+                  className={cx({ 'pt-[6rem]': addFirstShopFeaturedPadding })}
+                >
+                  <Module
+                    index={key}
+                    module={module}
+                    onFrameLinkClick={onFrameLinkClick}
+                  />
+                </div>
+              )
+            })}
           </div>
         )}
 
@@ -572,18 +581,27 @@ const PageContent = ({
           activeVariant={activeVariant}
           isInFrame={actuallyInFrame}
         />
-        {page.modules?.map((module, key) => (
-          <Module
-            key={key}
-            index={key}
-            module={module}
-            product={product || page.product}
-            activeVariant={activeVariant}
-            onVariantChange={updateVariant}
-            onFrameLinkClick={onFrameLinkClick}
-            isInFrame={actuallyInFrame}
-          />
-        ))}
+        {page.modules?.map((module, key) => {
+          const addFirstShopFeaturedPadding =
+            key === 0 && module?._type === 'productShop'
+
+          return (
+            <div
+              key={key}
+              className={cx({ 'pt-[6rem]': addFirstShopFeaturedPadding })}
+            >
+              <Module
+                index={key}
+                module={module}
+                product={product || page.product}
+                activeVariant={activeVariant}
+                onVariantChange={updateVariant}
+                onFrameLinkClick={onFrameLinkClick}
+                isInFrame={actuallyInFrame}
+              />
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -676,14 +694,23 @@ const PageContent = ({
   // Render regular page content (just modules)
   return (
     <div className="w-full">
-      {page.modules?.map((module, key) => (
-        <Module
-          key={key}
-          index={key}
-          module={module}
-          onFrameLinkClick={onFrameLinkClick}
-        />
-      ))}
+      {page.modules?.map((module, key) => {
+        const addFirstShopFeaturedPadding =
+          key === 0 && module?._type === 'productShop'
+
+        return (
+          <div
+            key={key}
+            className={cx({ 'pt-[6rem]': addFirstShopFeaturedPadding })}
+          >
+            <Module
+              index={key}
+              module={module}
+              onFrameLinkClick={onFrameLinkClick}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

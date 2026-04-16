@@ -58,7 +58,7 @@ export const Module = ({ module, index, product, activeVariant, onVariantChange,
       case 'productFeature':
         return <ProductFeature data={module} onFrameLinkClick={onFrameLinkClick} />
       case 'productShop':
-        return <ProductShop data={module} product={product} activeVariant={activeVariant} onVariantChange={onVariantChange} />
+        return <ProductShop data={module} product={product} activeVariant={activeVariant} onVariantChange={onVariantChange} index={index} />
       case 'textBlock':
         return <TextBlock data={module} />
       case 'mediaFeature':

@@ -17,6 +17,7 @@ const ProductShop = ({
   product: pageProduct,
   activeVariant: pageActiveVariant,
   onVariantChange,
+  index,
 }) => {
   const {
     product: dataProduct,
@@ -94,6 +95,7 @@ const ProductShop = ({
         ' text-white min-h-[100vw] md:min-h-[60rem] flex items-center justify-center pt-[calc(var(--headerHeight)+2.5rem)] md:pt-[calc(var(--headerHeight)+2rem)] pb-30':
           backgroundMedia?.content,
         'background-media': backgroundMedia?.content,
+        'py-[6rem]': index === 0,
       })}
     >
       {backgroundMedia?.content && (
@@ -109,7 +111,7 @@ const ProductShop = ({
         </div>
       )}
       <div className="grid-standard relative z-2">
-        {mobileTag && (
+        {mobileTag && index != 0 && (
           <div className="text-pink items-center justify-center md:hidden col-span-12 flex mb-15">
             <div className="tag-glass">
               <div className="w-[1.5rem] flex items-center justify-center flex-shrink-0 rotate-180">
