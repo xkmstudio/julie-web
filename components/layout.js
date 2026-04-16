@@ -76,11 +76,34 @@ const Layout = ({ site = {}, page = {}, schema, children }) => {
   return (
     <>
       <HeadSEO site={site} page={page} schema={schema} />
+      <Script
+        id="pandectes-rules"
+        src="https://st.pandect.es/julie-products-inc/pandectes-rules.js"
+        strategy="afterInteractive"
+      />
+      <Script
+        id="pandectes-core"
+        src="https://s.pandect.es/scripts/pandectes-core.js"
+        strategy="afterInteractive"
+      />
+      <Script
+        id="klaviyo-onsite"
+        src="https://static.klaviyo.com/onsite/js/TqnjxU/klaviyo.js"
+        strategy="lazyOnload"
+      />
+      <Script
+        id="accessibe-widget"
+        strategy="lazyOnload"
+        dangerouslySetInnerHTML={{
+          __html:
+            "(function(){ var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function(){ acsbJS.init(); }; h.appendChild(s); })();",
+        }}
+      />
       {gtmId && (
         <>
           <Script
             id="gtm-script"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

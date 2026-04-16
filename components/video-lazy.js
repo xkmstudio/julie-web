@@ -17,6 +17,7 @@ const VideoControls = ({
           <button
             className="flex w-[2rem] h-[2rem] px-0 items-center justify-center"
             onClick={() => handleAudio()}
+            aria-label={hasSound ? 'Mute video' : 'Unmute video'}
           >
             {hasSound && (
               <span className="flex items-center justify-center w-[66.667%]">
@@ -32,6 +33,7 @@ const VideoControls = ({
           <button
             className="w-[2rem] h-[2rem] px-0 flex items-center justify-center"
             onClick={() => handlePlay()}
+            aria-label={isPlaying ? 'Pause video' : 'Play video'}
           >
             {!isPlaying && (
               <span className="flex items-center justify-center h-full">

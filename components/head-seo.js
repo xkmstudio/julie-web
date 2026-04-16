@@ -87,6 +87,11 @@ const HeadSEO = ({ site = {}, page = {}, schema }) => {
       )}
 
       <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="" />
+      <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="" />
+      <link rel="preconnect" href="https://static.klaviyo.com" crossOrigin="" />
+      <link rel="preconnect" href="https://st.pandect.es" crossOrigin="" />
+      <link rel="preconnect" href="https://s.pandect.es" crossOrigin="" />
+      <link rel="preconnect" href="https://acsbapp.com" crossOrigin="" />
 
       <title>{metaTitle}</title>
 

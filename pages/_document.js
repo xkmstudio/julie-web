@@ -11,33 +11,7 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
-          />
-          {/* Pandectes cookie consent - rules and core, loaded globally before app */}
-          <script
-            id="pandectes-rules"
-            src="https://st.pandect.es/julie-products-inc/pandectes-rules.js"
-          />
-          <script
-            id="pandectes-core"
-            src="https://s.pandect.es/scripts/pandectes-core.js"
-          />
-          {/* Klaviyo onsite script for forms & popup */}
-          <script
-            async
-            src="https://static.klaviyo.com/onsite/js/TqnjxU/klaviyo.js"
-          />
-          {/* Accessibe accessibility widget */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html:
-                "(function(){ var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function(){ acsbJS.init(); }; h.appendChild(s); })();",
-            }}
-          />
-        </Head>
+        <Head />
         <body className="bg-white">           
           <Main />
           <NextScript />

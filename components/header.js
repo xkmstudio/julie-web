@@ -71,13 +71,15 @@ const Header = ({ data, work, pages }) => {
     const checkScrollAndHeroBleed = (pathnameOverride) => {
       const pathname = pathnameOverride ?? router.pathname
       const isProductPage = pathname.startsWith('/products/')
+      const isArticlePage =
+        pathname.startsWith('/blog/') && pathname !== '/blog'
       const firstModule = document.querySelector('[data-module-index="0"]')
       const firstModuleIsHero =
         firstModule?.getAttribute('data-module-type') === 'hero' ||
         firstModule?.querySelector('.hero-bleed') !== null
       const scrollY = window.scrollY || window.pageYOffset
 
-      if (!isProductPage && firstModuleIsHero && scrollY < 100) {
+      if (!isProductPage && !isArticlePage && firstModuleIsHero && scrollY < 100) {
         setIsTransparent(true)
       } else {
         setIsTransparent(false)
@@ -96,7 +98,7 @@ const Header = ({ data, work, pages }) => {
     // Immediately set solid when navigating TO product page (before DOM updates)
     const handleRouteChangeStart = (url) => {
       const pathname = url?.split('?')[0] ?? ''
-      if (pathname.startsWith('/products/')) {
+      if (pathname.startsWith('/products/') || (pathname.startsWith('/blog/') && pathname !== '/blog')) {
         setIsTransparent(false)
       }
     }
@@ -253,10 +255,12 @@ const Header = ({ data, work, pages }) => {
                     setMenuOpen(!menuOpen)
                   }}
                   className="flex md:hidden items-center justify-center w-[3.5rem] h-[3.5rem] rounded-full bg-pink"
+                  aria-label={menuOpen ? 'Close main menu' : 'Open main menu'}
+                  aria-expanded={menuOpen}
+                  aria-controls="mobile-navigation"
                 >
                   <div
                     ref={burgerRef}
-                    aria-label={menuOpen ? 'close menu' : 'open menu'}
                     className={cx('w-[1.8rem] nav-toggle px-0 mb-1')}
                   >
                     <svg
@@ -335,6 +339,7 @@ const Header = ({ data, work, pages }) => {
                 variants={menuAnim}
                 transition={{ duration: 0.5, ease: [0.19, 1.0, 0.22, 1.0] }}
                 className="w-full bg-pink text-white pt-100 h-full flex flex-col justify-center"
+                id="mobile-navigation"
               >
                 <div className="flex flex-col gap-10 pb-30">
                   {nav?.map((link, key) => {

@@ -30,10 +30,10 @@ export async function getServerSideProps({ res, preview, previewData }) {
     process.env.CONTEXT === 'production'
   
   if (isProduction) {
-    // Production: cache for 60 seconds, allow stale-while-revalidate
+    // Production: cache HTML briefly at the edge for faster repeat requests
     res.setHeader(
       'Cache-Control',
-      'public, s-maxage=60, stale-while-revalidate=300'
+      'public, s-maxage=300, stale-while-revalidate=3600'
     )
   } else {
     // Staging/Preview: no cache to ensure fresh content

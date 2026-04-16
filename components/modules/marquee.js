@@ -55,8 +55,17 @@ const Marquee = ({ data = {} }) => {
             <div className="marquee--item">
               {items.map((item, key) => {
                 const ItemType = link ? NextLink : 'div'
+                const commonProps = link
+                  ? {
+                      href: getPageUrl(link),
+                      tabIndex: -1,
+                      'aria-hidden': 'true',
+                      role: 'presentation',
+                    }
+                  : {}
+
                 return (
-                  <ItemType key={key} href={link ? getPageUrl(link) : null} className="marquee--text">
+                  <ItemType key={key} className="marquee--text" {...commonProps}>
                     <div>{item.text}</div>
                     <div>{item.text}</div>
                     <div>{item.text}</div>

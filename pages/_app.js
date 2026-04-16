@@ -282,6 +282,50 @@ const Site = ({ Component, pageProps, router }) => {
     }
   }, [])
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+
+    const TRACKING_PIXEL_SELECTOR = 'img[src*="arttrk.com/pixel"]'
+
+    const markTrackingPixelsDecorative = (root = document) => {
+      const pixels =
+        root instanceof Element && root.matches?.(TRACKING_PIXEL_SELECTOR)
+          ? [root]
+          : Array.from(root.querySelectorAll?.(TRACKING_PIXEL_SELECTOR) || [])
+
+      pixels.forEach((pixel) => {
+        pixel.setAttribute('alt', '')
+        pixel.setAttribute('aria-hidden', 'true')
+        pixel.setAttribute('role', 'presentation')
+        pixel.setAttribute('decoding', 'async')
+
+        // Keep invisible tracking pixels out of tab/focus heuristics.
+        if (!pixel.hasAttribute('tabindex')) {
+          pixel.setAttribute('tabindex', '-1')
+        }
+      })
+    }
+
+    markTrackingPixelsDecorative()
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node instanceof Element) {
+            markTrackingPixelsDecorative(node)
+          }
+        })
+      })
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   const pageID = useMemo(() => data?.page?.id, [data])
 
   return (

@@ -81,6 +81,8 @@ const MarqueeIcon = ({ item, index, className }) => {
     <NextLink
       href={item.link}
       className="flex items-center justify-center hover:opacity-50 transition-opacity duration-300"
+      aria-label={item.alt || item.title || icon?.asset?.altText || 'Store link'}
+      title={item.alt || item.title || icon?.asset?.altText || undefined}
       rel="noopener noreferrer"
       target="_blank"
       key={index}
