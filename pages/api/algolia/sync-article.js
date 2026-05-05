@@ -349,7 +349,16 @@ export default async function handler(req, res) {
       const article = await fetchArticleFromSanity(_id)
       
       if (!article) {
-        return res.status(404).json({ error: 'Article not found' })
+        // If the source article no longer exists in Sanity, remove stale record.
+        await algoliaClient.deleteObject({
+          indexName: ALGOLIA_INDEX_NAME,
+          objectID: _id,
+        })
+        return res.status(200).json({
+          success: true,
+          message: 'Article missing in Sanity; removed from Algolia index',
+          articleId: _id,
+        })
       }
 
       // Transform and save to Algolia

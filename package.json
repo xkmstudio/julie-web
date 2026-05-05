@@ -9,7 +9,9 @@
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
     "map": "echo 'Building sitemap' && node ./public/build/generate-sitemap.js",
-    "images:audit": "node ./scripts/audit-oversized-images.js"
+    "images:audit": "node ./scripts/audit-oversized-images.js",
+    "algolia:reconcile-articles": "node ./scripts/reconcile-algolia-articles.js",
+    "algolia:reconcile-articles:dry-run": "node ./scripts/reconcile-algolia-articles.js --dry-run"
   },
   "sideEffects": false,
   "license": "MIT",
