@@ -59,7 +59,9 @@ const ProductCard = ({
 
   // Hide ProductActions if product has more than 1 variant
   const hasMultipleVariants = product.variants && product.variants.length > 1
-  const isSoldOut = !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
+  const isSoldOut = product.variants && product.variants.length > 0
+    ? product.variants.every((v) => !v?.inStock || v?.forceOutOfStock)
+    : !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
 
   return type == 'feature' ? (
     <div

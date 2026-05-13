@@ -29,7 +29,9 @@ const ProductCardAlternate = ({ product, index, className }) => {
     product.forceOutOfStock,
   ])
 
-  const isSoldOut = !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
+  const isSoldOut = product.variants && product.variants.length > 0
+    ? product.variants.every((v) => !v?.inStock || v?.forceOutOfStock)
+    : !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
 
   return (
     <div
