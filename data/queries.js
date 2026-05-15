@@ -645,6 +645,7 @@ export const site = `
       }
     },
     "gtmID": *[_type == "generalSettings"][0].gtmID,
+    "klaviyoPublicKey": *[_type == "generalSettings"][0].klaviyoAccountID,
     "pages": *[_type == "page" && wasDeleted != true && isDraft != true] | order(_updatedAt desc) {
       _id,
       _updatedAt,

@@ -1,112 +1,37 @@
-import React, { useRef, useEffect, useState } from 'react'
-import Error from 'next/error'
-import { getStaticPage, queries } from '@data'
-import NextLink from 'next/link'
+import { getSanityClient } from '@lib/sanity'
 
-import Layout from '@components/layout'
-import Hero from '@components/modules/hero'
-import { Module } from '@components/modules'
-
-import FocusTrap from 'focus-trap-react'
-import { AnimatePresence, m } from 'framer-motion'
-import CollectionContent from '@components/shop-collectionContent'
-
-const Shop = ({ data }) => {
-  const { site, page } = data
-  if (!page) {
-    return (
-      <Error
-        title={`"Home Page" is not set in Sanity, or the page data is missing`}
-        statusCode="Data Error"
-      />
-    )
-  }
-  return (
-    <Layout site={site} page={page}>
-      <CollectionContent page={page.content} />
-      <div className="fixed top-0 left-0 h-full w-full z-[99991] bg-[rgba(0,0,0,.75)] backdrop-blur-frame flex items-center justify-center p-15 md:p-30">
-        <m.div
-          initial="hide"
-          animate="show"
-          exit="hide"
-          variants={{
-            show: {
-              y: '0rem',
-              opacity: 1,
-            },
-            hide: {
-              y: '2rem',
-              opacity: 0,
-            },
-          }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-2 w-full max-w-[65rem] bg-glass backdrop-blur-frame px-15 py-30 md:p-50 rounded-[.5rem]"
-        >
-          
-        </m.div>
-      </div>
-    </Layout>
-  )
+/**
+ * `/collections` is not a content page. The Primary Shop (`shopHome`) document in
+ * Sanity points at the canonical collection — we 301 there so crawlers and users
+ * hit a real URL with product content.
+ *
+ * Optional env: `SHOP_COLLECTION_INDEX_FALLBACK` (path, default `/collections/merch`)
+ * when `shopHome` is missing or has no linked collection.
+ */
+export default function CollectionsIndex() {
+  return null
 }
 
-export async function getServerSideProps({ res, preview, previewData }) {
-  // Set cache headers based on environment
-  // For staging/preview: no cache to ensure fresh content
-  // For production: cache for performance
-  const isProduction = 
-    process.env.NODE_ENV === 'production' && 
-    process.env.CONTEXT === 'production'
-  
-  if (isProduction) {
-    // Production: cache HTML briefly at the edge for faster repeat requests
-    res.setHeader(
-      'Cache-Control',
-      'public, s-maxage=300, stale-while-revalidate=3600'
-    )
-  } else {
-    // Staging/Preview: no cache to ensure fresh content
-    res.setHeader(
-      'Cache-Control',
-      'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
-    )
-  }
+export async function getServerSideProps({ preview, previewData }) {
+  const client = getSanityClient({
+    active: preview,
+    token: previewData?.token,
+  })
 
-  const pageData = await getStaticPage(
-    `
-    *[_type == "shopHome"][0]{
-        title,
-        seo,
-        "content": collection->{
-            sections[]{
-                "products": products[]->{
-                    title,
-                    subtitle,
-                    'slug': slug.current,
-                    'thumbnailFeature': thumbnailFeature{${queries.assetMeta}},
-                    'thumbnailSecondary': thumbnailSecondary{${queries.assetMeta}},
-                    useDescriptionThumbnail,
-                    description[]{${queries.ptContent}},
-                    descriptionThumbnail[]{${queries.ptContent}}
-                },
-            },
-        }
-    }
-  `,
-    {
-      active: preview,
-      token: previewData?.token,
-    }
+  const shopHome = await client.fetch(
+    `*[_type == "shopHome"][0]{ "collectionSlug": collection->slug.current }`
   )
+
+  const fallback =
+    process.env.SHOP_COLLECTION_INDEX_FALLBACK || '/collections/merch'
+
+  const slug = shopHome?.collectionSlug?.trim()
+  const destination = slug ? `/collections/${slug}` : fallback
 
   return {
-    props: {
-      data: pageData,
+    redirect: {
+      destination,
+      permanent: true,
     },
   }
-}
-
-export default Shop
-
-{
-  /* product redirect */
 }

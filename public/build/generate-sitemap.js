@@ -128,7 +128,6 @@ const generateSitemap = async () => {
     const staticPages = [
       { url: `${SITE_ROOT}/`, priority: '1.0' }, // Homepage
       { url: `${SITE_ROOT}/blog`, priority: '0.8' }, // Blog index
-      { url: `${SITE_ROOT}/collections`, priority: '0.8' }, // Shop index
     ]
 
     // Dynamic pages - handle nested slugs for pages

@@ -59,6 +59,8 @@ module.exports = withBundleAnalyzer({
 
     // Needed for Klaviyo forms
     KLAVIYO_API_KEY: process.env.KLAVIYO_API_KEY,
+    // Klaviyo onsite / identify (public site ID in script URL — same as CMS klaviyoAccountID if set)
+    NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY: process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY,
 
     // Needed for Mailchimp forms
     MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,

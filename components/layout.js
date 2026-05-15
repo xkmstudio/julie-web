@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Script from 'next/script'
-import { useRouter } from 'next/router'
 
 import { isBrowser, useWindowSize } from '@lib/helpers'
 
@@ -31,7 +30,18 @@ const variants = {
   },
 }
 
-const Layout = ({ site = {}, page = {}, schema, children }) => {
+const isValidEmail = (value) =>
+  typeof value === 'string' &&
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+
+// Optional: pass a known shopper email to merge this browser with a Klaviyo profile (e.g. after Customer Account API login).
+const Layout = ({
+  site = {},
+  page = {},
+  schema,
+  children,
+  klaviyoIdentifyEmail,
+}) => {
   // set window height var
   const { height: windowHeight, width } = useWindowSize()
 
@@ -71,6 +81,41 @@ const Layout = ({ site = {}, page = {}, schema, children }) => {
     }
   }, [width])
 
+  const klaviyoPublicKey =
+    process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY?.trim() ||
+    site.klaviyoPublicKey?.trim() ||
+    'TqnjxU'
+
+  useEffect(() => {
+    if (!isBrowser || !isValidEmail(klaviyoIdentifyEmail)) return
+
+    const email = klaviyoIdentifyEmail.trim()
+    let cancelled = false
+    let attempts = 0
+    const maxAttempts = 80
+
+    const tryIdentify = () => {
+      if (cancelled) return
+      attempts += 1
+      if (typeof window.klaviyo?.identify === 'function') {
+        try {
+          window.klaviyo.identify({ email })
+        } catch (e) {
+          console.warn('[Klaviyo] identify failed', e)
+        }
+        return
+      }
+      if (attempts < maxAttempts) {
+        setTimeout(tryIdentify, 100)
+      }
+    }
+
+    tryIdentify()
+    return () => {
+      cancelled = true
+    }
+  }, [klaviyoIdentifyEmail])
+
   const gtmId = site.gtmID || 'GTM-NB3XS74'
 
   return (
@@ -85,11 +130,6 @@ const Layout = ({ site = {}, page = {}, schema, children }) => {
         id="pandectes-core"
         src="https://s.pandect.es/scripts/pandectes-core.js"
         strategy="afterInteractive"
-      />
-      <Script
-        id="klaviyo-onsite"
-        src="https://static.klaviyo.com/onsite/js/TqnjxU/klaviyo.js"
-        strategy="lazyOnload"
       />
       <Script
         id="accessibe-widget"
@@ -132,6 +172,11 @@ const Layout = ({ site = {}, page = {}, schema, children }) => {
       >
         <main id="content" className={`padding-${page.padding || 'none'}`}>{children}</main>
       </m.div>
+      <Script
+        id="klaviyo-onsite"
+        src={`https://static.klaviyo.com/onsite/js/${klaviyoPublicKey}/klaviyo.js`}
+        strategy="lazyOnload"
+      />
     </>
   )
 }

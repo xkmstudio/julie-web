@@ -42,6 +42,13 @@ export default {
       name: 'gtmID',
       type: 'string',
       hidden: true,
+    },
+    {
+      title: 'Klaviyo public site ID',
+      name: 'klaviyoAccountID',
+      type: 'string',
+      description:
+        'Public ID for Klaviyo onsite JavaScript (Klaviyo → Settings → Account API keys → Public API key / Company ID segment in the onsite snippet URL). Used sitewide and for product waitlists.',
     }
   ],
   preview: {

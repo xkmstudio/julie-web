@@ -24,7 +24,8 @@ export default {
       type: 'reference',
       to: [{type: 'collection'}],
       validation: Rule => Rule.required(),
-      description: 'Set the collection that shows on the primary /collections page.'
+      description:
+        'The shop entry in Sanity. The public site /collections URL permanently redirects to this collection so the store lives at a single canonical URL (e.g. /collections/your-slug).'
     },
     {
       title: 'SEO / Share Settings',

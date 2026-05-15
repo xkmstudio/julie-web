@@ -125,7 +125,6 @@ async function buildSitemapXml() {
   const urls = [
     { url: `${siteRoot}/`, priority: '1.0', lastmod: null },
     { url: `${siteRoot}/blog`, priority: '0.8', lastmod: null },
-    { url: `${siteRoot}/collections`, priority: '0.8', lastmod: null },
     ...pagesExcludingHome.map((page) => ({
       url: `${siteRoot}/pages/${sanitizeSlug(page.slug)}`,
       priority: '0.7',
