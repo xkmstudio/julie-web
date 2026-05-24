@@ -1,88 +1,124 @@
-import React, { useState, useEffect } from 'react'
-
+import React, { useState, useEffect, useRef } from 'react'
+import useEmblaCarousel from 'embla-carousel-react'
+import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures'
+import { useInView } from 'react-intersection-observer'
 import ProductCard from '@components/product/product-card'
 import ProductCardAlternate from '@components/product/product-card-alternate'
-import ProductCarousel from '@components/product-carousel'
-import { useWindowSize, useIsInFrame } from '@lib/helpers'
-
-const MOBILE_BREAKPOINT = 850
-const DESKTOP_CAROUSEL_THRESHOLD = 3
-
+import Link from '@components/link'
 const ProductFeature = ({ data, onFrameLinkClick }) => {
-  const { products, title } = data
-  const { width } = useWindowSize()
+  const { products, title, cta } = data
   const [isClient, setIsClient] = useState(false)
-  const isInFrame = useIsInFrame()
-  const isMobile = width > 0 && width < MOBILE_BREAKPOINT
-  const isDesktop = width >= MOBILE_BREAKPOINT
   const productCount = products?.length || 0
+
+  const [target, setTarget] = useState(undefined)
+  const scrollRef = useRef(null)
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      align: 'start',
+      containScroll: 'trimSnaps',
+      dragFree: false,
+      skipSnaps: false,
+      loop: true,
+    },
+    [
+      WheelGesturesPlugin({
+        forceWheelAxis: 'x',
+        target,
+      }),
+    ]
+  )
+  const [triggerRef, triggerInView] = useInView({
+    threshold: 0,
+    triggerOnce: false,
+  })
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    setTarget(scrollRef.current || undefined)
+  }, [])
+
+  useEffect(() => {
+    if (triggerInView && emblaApi) {
+      emblaApi.reInit()
+    }
+  }, [triggerInView, emblaApi])
 
   if (!products) return null
 
   const isAlternative = products[0]?.productType === 'alternate'
   const CardComponent = isAlternative ? ProductCardAlternate : ProductCard
 
+  // Carousel when more than 2 products (3+); 2 or fewer use original flex layout
+  const showCarousel = isClient && productCount > 2
 
-  // Show carousel on mobile, always in frame, or on desktop if more than 3 products
-  const showCarousel = isClient && (products?.length > 2) && (isMobile || isInFrame || (isDesktop && productCount > DESKTOP_CAROUSEL_THRESHOLD))
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  // Desktop: use carousel if more than 3 products, otherwise use flex
-  // Mobile: always use carousel
-  // In frame: always use carousel
-  if (showCarousel) {
-    // Use mobile slide size when in frame or on mobile
-    const slideClassName = (isMobile || isInFrame)
-      ? 'w-[83.333%] min-w-[83.333%] ml-10'
-      : 'min-w-[30%] ml-10'
-
+  if (!showCarousel) {
     return (
       <section className="px-10 md:px-15 overflow-hidden section-padding">
         {title && (
-          <div className="mb-10 text-center">
+          <div
+            className={
+              cta
+                ? 'mb-30 flex justify-between items-end pr-15 md:pr-20'
+                : 'mb-30 text-center'
+            }
+          >
             <h2 className="title-xl">{title}</h2>
+            {cta && (
+              <Link link={cta} className="btn" onFrameLinkClick={onFrameLinkClick} />
+            )}
           </div>
         )}
         <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
-        <ProductCarousel
-          items={products}
-          renderSlide={(product, index) => (
+        <div className="w-full h-full flex gap-15 md:gap-25 relative z-2">
+          {products?.map((product, key) => (
             <CardComponent
+              key={key}
+              index={key}
+              className="flex-1"
               product={product}
-              index={index}
-              className="block w-full"
               onFrameLinkClick={onFrameLinkClick}
             />
-          )}
-          slideClassName={slideClassName}
-          enabled={showCarousel}
-        />
+          ))}
+        </div>
       </section>
     )
   }
 
-  // Desktop with 3 or fewer products: use flex layout
   return (
-    <section className="px-10 md:px-15 overflow-hidden section-padding">
+    <section
+      className="w-full pl-15 md:pl-25 py-20 relative z-[4] md:z-auto"
+      ref={triggerRef}
+    >
       {title && (
-        <div className="mb-30 text-center">
+        <div className="w-full flex justify-between items-end mb-20 pr-15 md:pr-20">
           <h2 className="title-xl">{title}</h2>
+          {cta && (
+            <Link link={cta} className="btn" onFrameLinkClick={onFrameLinkClick} />
+          )}
         </div>
       )}
-      <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
-      <div className="w-full h-full flex gap-15 md:gap-25 relative z-2">
-        {products?.map((product, key) => (
-          <CardComponent
-            key={key}
-            index={key}
-            className="flex-1"
-            product={product}
-            onFrameLinkClick={onFrameLinkClick}
-          />
-        ))}
+      <div ref={scrollRef}>
+        <div ref={emblaRef}>
+          <div className="flex">
+            {products.map((product, key) => (
+              <div
+                key={key}
+                className="flex-[0_0_83.333%] md:flex-[0_0_40%] min-w-0 ml-15 md:ml-25"
+              >
+                <CardComponent
+                  product={product}
+                  index={key}
+                  className="block w-full"
+                  imageAspect="article"
+                  onFrameLinkClick={onFrameLinkClick}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )

@@ -1,8 +1,8 @@
 
 // This file is auto-generated on 'sanity dev'
-// Modifications to this file are automatically discarded
-import studioConfig from "../../sanity.config.jsx"
+// Modifications to this file is automatically discarded
 import {renderStudio} from "sanity"
+import studioConfig from "../../sanity.config.jsx"
 
 renderStudio(
   document.getElementById("sanity"),

@@ -1,5 +1,3 @@
-// import '../../branding/skin.css?raw'
-
 import {
     Header1,
     Header2,

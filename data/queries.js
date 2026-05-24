@@ -303,6 +303,7 @@ export const modules = `
     _key,
     anchorSlug,
     title,
+    cta{${link}},
     products[]->{
       productType,
       title,
@@ -368,6 +369,7 @@ export const modules = `
     _type,
     _key,
     anchorSlug,
+    layout,
     title,
     link[0]{${link}},
     media{${mediaContent}}

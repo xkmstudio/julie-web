@@ -1,4 +1,3 @@
-// import '../../branding/skin.css?raw'
 import { HighlighterCircle } from 'phosphor-react'
 
 import {

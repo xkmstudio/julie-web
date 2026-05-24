@@ -9,6 +9,20 @@ export default {
     fields: [
         anchorSlugField,
         {
+            title: 'Layout',
+            name: 'layout',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Standard', value: 'standard' },
+                    { title: 'Overlay', value: 'overlay' },
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+            },
+            initialValue: 'overlay',
+        },
+        {
             title: 'Media',
             name: 'media',
             type: 'media'

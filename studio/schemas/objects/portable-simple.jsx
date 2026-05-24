@@ -1,5 +1,3 @@
-import '../../branding/skin.css?raw'
-
 import { Button } from '../../components/block-renders'
 
 export default {

@@ -15,17 +15,22 @@ export default {
       description: 'Section title (optional)'
     },
     {
+      title: 'CTA',
+      name: 'cta',
+      type: 'link',
+    },
+    {
       title: 'Products',
       name: 'products',
       type: 'array',
-      description: 'Select up to 4 products to feature',
+      description: 'Select products to feature',
       of: [
         {
           type: 'reference',
           to: [{ type: 'product' }],
         }
       ],
-      validation: Rule => Rule.max(4).unique().error('Maximum 4 products allowed, and each product can only be added once')
+      validation: Rule => Rule.max(20).unique().error('Maximum 20 products allowed, and each product can only be added once')
     }
   ],
   preview: {

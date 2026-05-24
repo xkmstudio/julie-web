@@ -13,6 +13,7 @@ const ProductCard = ({
   className,
   type = 'feature',
   onFrameLinkClick,
+  imageAspect = 'default',
 }) => {
   const isInFrame = useIsInFrame()
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
@@ -63,6 +64,58 @@ const ProductCard = ({
     ? product.variants.every((v) => !v?.inStock || v?.forceOutOfStock)
     : !(activeVariant?.inStock && !activeVariant?.forceOutOfStock)
 
+  const useArticleImageAspect = imageAspect === 'article'
+  const featureTitle = product?.title && (
+    <div className="w-full text-center title-2xl max-w-[50rem] relative z-2 p-15 md:p-25 pb-0">
+      {product?.title}
+    </div>
+  )
+
+  const renderFeatureImageContent = () => {
+    if (useArticleImageAspect) {
+      return (
+        <div className="w-full flex flex-col">
+          {featureTitle}
+          <div className="w-full pb-[100%] md:pb-[66.6667%] relative rounded-[1rem] overflow-hidden">
+            <Media
+              media={product.productThumbnail?.content}
+              width={1600}
+              srcSizes={[800, 1000, 1200, 1600]}
+              sizes="(max-width: 768px) 83.333vw, 40vw"
+              layout="fill"
+              className="w-full h-full object-cover absolute top-0 left-0"
+            />
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
+        {featureTitle}
+        <div
+          className={cx(`flex-1 w-full min-h-0 relative py-20 md:py-40`, {
+            'absolute top-0 left-0': product.productType == 'alternate',
+          })}
+        >
+          <div className="w-full h-full relative">
+            <Media
+              media={product.productThumbnail?.content}
+              width={1600}
+              srcSizes={[800, 1000, 1200, 1600]}
+              sizes="100%"
+              layout={product.productType == 'alternate' ? 'fill' : 'contain'}
+              className={cx('h-full w-full', {
+                ' object-cover': product.productType == 'alternate',
+                ' object-contain': product.productType == 'primary',
+              })}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return type == 'feature' ? (
     <div
       className={cx(
@@ -81,66 +134,18 @@ const ProductCard = ({
           }}
           className="w-full"
         >
-          <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
-            {product?.title && (
-              <div className="w-full text-center title-2xl max-w-[50rem] relative z-2 p-15 md:p-25 pb-0">
-                {product?.title}
-              </div>
-            )}
-            <div className={cx(`flex-1 w-full min-h-0 relative py-20 md:py-40`, {
-              'absolute top-0 left-0': product.productType == 'alternate',
-            })}>
-              <div className="w-full h-full relative">
-                <Media
-                  media={product.productThumbnail?.content}
-                  width={1600}
-                  srcSizes={[800, 1000, 1200, 1600]}
-                  sizes="100%"
-                  layout={
-                    product.productType == 'alternate' ? 'fill' : 'contain'
-                  }
-                  className={cx('h-full w-full', {
-                    ' object-cover': product.productType == 'alternate',
-                    ' object-contain': product.productType == 'primary',
-                  })}
-                />
-              </div>
-            </div>
-          </div>
+          {renderFeatureImageContent()}
         </a>
       ) : (
         <NextLink href={productHref} className="w-full">
-          <div className="w-full h-[100vw] md:h-[50vw] md:max-h-[75rem] relative flex flex-col items-center justify-between">
-            {product?.title && (
-              <div className="relative z-2 w-full text-center title-2xl max-w-[50rem] p-15 md:p-25 pb-0">
-                {product?.title}
-              </div>
-            )}
-            <div className={cx(`flex-1 w-full min-h-0`, {
-              'absolute top-0 left-0 w-full h-full': product.productType == 'alternate',
-              'relative py-20 md:py-40': product.productType == 'primary',
-            })}>
-              <div className="w-full h-full relative">
-                <Media
-                  media={product.productThumbnail?.content}
-                  width={1600}
-                  srcSizes={[800, 1000, 1200, 1600]}
-                  sizes="100%"
-                  layout={product.productType == 'alternate' ? 'fill' : 'contain'}
-                  className={cx('h-full w-full', {
-                    ' object-cover': product.productType == 'alternate',
-                    ' object-contain': product.productType == 'primary',
-                  })}
-                />
-              </div>
-            </div>
-          </div>
+          {renderFeatureImageContent()}
         </NextLink>
       )}
 
       <div
         className={cx(`flex flex-col md:flex-row gap-10 p-15 md:p-25`, {
-          'absolute bottom-0 left-0 w-full': product.productType == 'alternate',
+          'absolute bottom-0 left-0 w-full':
+            product.productType == 'alternate' && !useArticleImageAspect,
         })}
         onClick={(e) => e.stopPropagation()}
       >

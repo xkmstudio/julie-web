@@ -284,7 +284,7 @@ const FeaturedArticlesCarousel = ({ articles, title, cta }) => {
                     href={`/blog/${article.slug}`}
                     className="block w-full"
                   >
-                    <div className="article-card w-full pb-[133.3333%] md:pb-[66.6667%] relative rounded-[1rem]">
+                    <div className="article-card w-full pb-[100%] md:pb-[66.6667%] relative rounded-[1rem]">
                       {article.gradient ? (
                         <div className="w-full h-full absolute top-0 left-0">
                           <Gradient gradient={article.gradient} />
