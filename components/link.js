@@ -48,7 +48,17 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
   
   // Check if we should handle link in frame
   const shouldHandleInFrame = isInFrame && onFrameLinkClick
-  
+
+  const linkContent = children ?? (
+    <>
+      <span>{link.title}</span>
+      {hasArrow && (
+        <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
+          <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
+        </span>
+      )}
+    </>
+  )
 
   // External Link (navLink)
   if (linkType === 'navLink') {
@@ -67,12 +77,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
         }
         {...rest}
       >
-        <span>{link.title || children}</span>
-        {hasArrow && (
-          <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
-            <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
-          </span>
-        )}
+        {linkContent}
       </a>
     )
   }
@@ -121,12 +126,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
         })}
         {...restProps}
       >
-        <span>{link.title || children}</span>
-        {hasArrow && (
-          <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
-            <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
-          </span>
-        )}
+        {linkContent}
       </button>
     )
   }
@@ -175,12 +175,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
         })}
         {...restProps}
       >
-        <span>{link.title || children}</span>
-        {hasArrow && (
-          <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
-            <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
-          </span>
-        )}
+        {linkContent}
       </button>
     )
   }
@@ -206,12 +201,7 @@ const Link = ({ link, children, hasArrow = false, onFrameLinkClick, ...rest }) =
       {...rest}
       scroll={!hasAnchor} // Disable default scroll when we have an anchor
     >
-      <span>{link.title || children}</span>
-      {hasArrow && (
-        <span className="w-[1.2rem] h-[1.2rem] flex items-center justify-center ml-5">
-          <Icon name="Arrow Out" viewBox="0 0 18 18" className="w-16 h-16" />
-        </span>
-      )}
+      {linkContent}
     </NextLink>
   )
 }

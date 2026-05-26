@@ -40,6 +40,14 @@ export default {
             description: '(Optional)',
             of: [{ type: 'link' }],
             validation: Rule => Rule.max(1)
+        },
+        {
+            title: 'Image as Link',
+            name: 'imageAsLink',
+            type: 'boolean',
+            description: 'When enabled, the image links directly instead of showing a separate button.',
+            initialValue: false,
+            hidden: ({ parent }) => !parent?.link?.length,
         }
     ],
     preview: {

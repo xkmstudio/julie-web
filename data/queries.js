@@ -371,6 +371,7 @@ export const modules = `
     anchorSlug,
     layout,
     title,
+    imageAsLink,
     link[0]{${link}},
     media{${mediaContent}}
   },
