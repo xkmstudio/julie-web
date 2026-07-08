@@ -162,6 +162,75 @@ import {
         ]
       },
       {
+        title: 'Table',
+        name: 'contentTable',
+        type: 'object',
+        fields: [
+          {
+            title: 'Title',
+            name: 'title',
+            type: 'string',
+            description: 'Optional heading shown above the table'
+          },
+          {
+            title: 'Rows',
+            name: 'rows',
+            type: 'array',
+            of: [
+              {
+                title: 'Row',
+                name: 'row',
+                type: 'object',
+                fields: [
+                  {
+                    title: 'Left Column',
+                    name: 'left',
+                    type: 'simplePortableText'
+                  },
+                  {
+                    title: 'Right Column',
+                    name: 'right',
+                    type: 'simplePortableText'
+                  }
+                ],
+                preview: {
+                  select: {
+                    left: 'left.0.children.0.text',
+                    right: 'right.0.children.0.text'
+                  },
+                  prepare({ left, right }) {
+                    return {
+                      title: left || 'Empty',
+                      subtitle: right || ''
+                    }
+                  }
+                }
+              }
+            ],
+            validation: Rule => Rule.min(1)
+          },
+          {
+            title: 'Footnote',
+            name: 'footnote',
+            type: 'simplePortableText',
+            description: 'Optional small note shown below the table'
+          }
+        ],
+        preview: {
+          select: {
+            title: 'title',
+            rows: 'rows'
+          },
+          prepare({ title, rows }) {
+            const count = Array.isArray(rows) ? rows.length : 0
+            return {
+              title: title || 'Table',
+              subtitle: `${count} row${count === 1 ? '' : 's'}`
+            }
+          }
+        }
+      },
+      {
         title: 'YouTube Video',
         name: 'youtubeVideo',
         type: 'object',

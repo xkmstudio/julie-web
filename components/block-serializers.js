@@ -85,6 +85,36 @@ export const portableTextInline = {
   marks: Marks,
 };
 
+const contentTableCellSerializers = {
+  block: {
+    normal: ({ children }) => <p className="!indent-0 mb-10 last:mb-0">{children}</p>,
+  },
+  list: {
+    bullet: ({ children }) => <ul className="list-disc pl-20 mb-10 last:mb-0">{children}</ul>,
+    number: ({ children }) => <ol className="list-decimal pl-20 mb-10 last:mb-0">{children}</ol>,
+  },
+  listItem: ({ children }) => <li>{children}</li>,
+  marks: Marks,
+};
+
+const contentTableFootnoteSerializers = {
+  block: {
+    normal: ({ children }) => (
+      <p className="!indent-0 !text-12 md:!text-14 mb-5 last:mb-0">{children}</p>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="!text-12 md:!text-14 list-disc pl-20 mb-5 last:mb-0">{children}</ul>
+    ),
+    number: ({ children }) => (
+      <ol className="!text-12 md:!text-14 list-decimal pl-20 mb-5 last:mb-0">{children}</ol>
+    ),
+  },
+  listItem: ({ children }) => <li>{children}</li>,
+  marks: Marks,
+};
+
 export const portableRichText = {
   block: {
     h1: ({ children }) => <h1 className="title-2xl">{children}</h1>,
@@ -188,6 +218,62 @@ export const portableRichText = {
             </footer>
           )}
         </blockquote>
+      );
+    },
+    // Content table component
+    contentTable: ({ value }) => {
+      if (!value?.rows || value.rows.length === 0) return null;
+
+      return (
+        <div className="content-table my-40">
+          {value.title && (
+            <div
+              role="heading"
+              aria-level={3}
+              className="content-table-title font-lxb text-pink text-24 md:text-32 mb-20 leading-tight text-left"
+            >
+              {value.title}
+            </div>
+          )}
+          <div className="content-table-wrap border border-pink rounded-[1.5rem] overflow-hidden">
+            <table className="w-full border-collapse">
+              <tbody>
+                {value.rows.map((row, index) => {
+                  const isLast = index === value.rows.length - 1;
+                  const rowBorder = isLast ? '' : 'border-b border-pink';
+                  return (
+                    <tr key={row._key || index} className="align-top">
+                      <td className={`w-1/2 p-10 md:p-15 bg-white text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
+                        {row.left && (
+                          <PortableText
+                            value={row.left}
+                            components={contentTableCellSerializers}
+                          />
+                        )}
+                      </td>
+                      <td className={`w-1/2 p-10 md:p-15 bg-pink/10 text-16 md:text-18 ${rowBorder}`}>
+                        {row.right && (
+                          <PortableText
+                            value={row.right}
+                            components={contentTableCellSerializers}
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {value.footnote && value.footnote.length > 0 && (
+            <div className="content-table-footnote text-slate mt-15">
+              <PortableText
+                value={value.footnote}
+                components={contentTableFootnoteSerializers}
+              />
+            </div>
+          )}
+        </div>
       );
     },
     // Carousel component

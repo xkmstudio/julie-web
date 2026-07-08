@@ -122,9 +122,8 @@ export const videoTutorialContent = `
   }
 `
 
-// Construct our "portable text content" GROQ
-export const ptContent = `
-  ...,
+// Shared link markDef expansion so table cells resolve internal page refs
+const ptLinkMarkDef = `
   markDefs[]{
     ...,
     _type == "link" => {
@@ -137,12 +136,27 @@ export const ptContent = `
         ${page}
       }
     }
-  },
+  }
+`
+
+// Construct our "portable text content" GROQ
+export const ptContent = `
+  ...,
+  ${ptLinkMarkDef},
   _type == "photo" => {
     ${imageMeta}
   },
   _type == "image" => {
     ${imageMeta}
+  },
+  _type == "contentTable" => {
+    title,
+    rows[]{
+      _key,
+      left[]{ ..., ${ptLinkMarkDef} },
+      right[]{ ..., ${ptLinkMarkDef} }
+    },
+    footnote[]{ ..., ${ptLinkMarkDef} }
   }
 `
 
