@@ -173,6 +173,21 @@ import {
             description: 'Optional heading shown above the table'
           },
           {
+            title: 'Columns',
+            name: 'columns',
+            type: 'string',
+            description: 'Number of columns per row',
+            options: {
+              list: [
+                { title: '2 Columns', value: '2' },
+                { title: '3 Columns', value: '3' }
+              ],
+              layout: 'radio',
+              direction: 'horizontal'
+            },
+            initialValue: '2'
+          },
+          {
             title: 'Rows',
             name: 'rows',
             type: 'array',
@@ -188,6 +203,12 @@ import {
                     type: 'simplePortableText'
                   },
                   {
+                    title: 'Middle Column',
+                    name: 'middle',
+                    type: 'simplePortableText',
+                    description: 'Only rendered when the table above is set to 3 Columns'
+                  },
+                  {
                     title: 'Right Column',
                     name: 'right',
                     type: 'simplePortableText'
@@ -196,12 +217,14 @@ import {
                 preview: {
                   select: {
                     left: 'left.0.children.0.text',
+                    middle: 'middle.0.children.0.text',
                     right: 'right.0.children.0.text'
                   },
-                  prepare({ left, right }) {
+                  prepare({ left, middle, right }) {
+                    const subtitleParts = [middle, right].filter(Boolean)
                     return {
                       title: left || 'Empty',
-                      subtitle: right || ''
+                      subtitle: subtitleParts.join(' • ')
                     }
                   }
                 }

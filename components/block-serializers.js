@@ -224,6 +224,9 @@ export const portableRichText = {
     contentTable: ({ value }) => {
       if (!value?.rows || value.rows.length === 0) return null;
 
+      const isThreeCol = value.columns === '3';
+      const colWidth = isThreeCol ? 'w-1/3' : 'w-1/2';
+
       return (
         <div className="content-table my-40">
           {value.title && (
@@ -243,7 +246,7 @@ export const portableRichText = {
                   const rowBorder = isLast ? '' : 'border-b border-pink';
                   return (
                     <tr key={row._key || index} className="align-top">
-                      <td className={`w-1/2 p-10 md:p-15 bg-white text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
+                      <td className={`${colWidth} p-10 md:p-15 bg-white text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
                         {row.left && (
                           <PortableText
                             value={row.left}
@@ -251,7 +254,17 @@ export const portableRichText = {
                           />
                         )}
                       </td>
-                      <td className={`w-1/2 p-10 md:p-15 bg-pink/10 text-16 md:text-18 ${rowBorder}`}>
+                      {isThreeCol && (
+                        <td className={`${colWidth} p-10 md:p-15 bg-pink/5 text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
+                          {row.middle && (
+                            <PortableText
+                              value={row.middle}
+                              components={contentTableCellSerializers}
+                            />
+                          )}
+                        </td>
+                      )}
+                      <td className={`${colWidth} p-10 md:p-15 bg-pink/10 text-16 md:text-18 ${rowBorder}`}>
                         {row.right && (
                           <PortableText
                             value={row.right}
