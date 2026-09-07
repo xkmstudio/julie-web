@@ -3,6 +3,7 @@ import React from "react";
 import { PortableText } from "@portabletext/react";
 import CustomLink from "@components/link";
 import Photo from "@components/photo";
+import ContentTable from "@components/content-table";
 
 const createMarks = (onFrameLinkClick = null) => ({
   strong: ({ children }) => <strong className="font-700">{children}</strong>,
@@ -221,74 +222,13 @@ export const portableRichText = {
       );
     },
     // Content table component
-    contentTable: ({ value }) => {
-      if (!value?.rows || value.rows.length === 0) return null;
-
-      const isThreeCol = value.columns === '3';
-      const colWidth = isThreeCol ? 'w-1/3' : 'w-1/2';
-
-      return (
-        <div className="content-table my-40">
-          {value.title && (
-            <div
-              role="heading"
-              aria-level={3}
-              className="content-table-title font-lxb text-pink text-24 md:text-32 mb-20 leading-tight text-left"
-            >
-              {value.title}
-            </div>
-          )}
-          <div className="content-table-wrap border border-pink rounded-[1.5rem] overflow-hidden">
-            <table className="w-full border-collapse">
-              <tbody>
-                {value.rows.map((row, index) => {
-                  const isLast = index === value.rows.length - 1;
-                  const rowBorder = isLast ? '' : 'border-b border-pink';
-                  return (
-                    <tr key={row._key || index} className="align-top">
-                      <td className={`${colWidth} p-10 md:p-15 bg-white text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
-                        {row.left && (
-                          <PortableText
-                            value={row.left}
-                            components={contentTableCellSerializers}
-                          />
-                        )}
-                      </td>
-                      {isThreeCol && (
-                        <td className={`${colWidth} p-10 md:p-15 bg-pink/5 text-pink font-lxb text-16 md:text-18 border-r border-pink ${rowBorder}`}>
-                          {row.middle && (
-                            <PortableText
-                              value={row.middle}
-                              components={contentTableCellSerializers}
-                            />
-                          )}
-                        </td>
-                      )}
-                      <td className={`${colWidth} p-10 md:p-15 bg-pink/10 text-16 md:text-18 ${rowBorder}`}>
-                        {row.right && (
-                          <PortableText
-                            value={row.right}
-                            components={contentTableCellSerializers}
-                          />
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {value.footnote && value.footnote.length > 0 && (
-            <div className="content-table-footnote text-slate mt-15">
-              <PortableText
-                value={value.footnote}
-                components={contentTableFootnoteSerializers}
-              />
-            </div>
-          )}
-        </div>
-      );
-    },
+    contentTable: ({ value }) => (
+      <ContentTable
+        value={value}
+        cellComponents={contentTableCellSerializers}
+        footnoteComponents={contentTableFootnoteSerializers}
+      />
+    ),
     // Carousel component
     carousel: ({ value }) => {
       if (!value.slides || value.slides.length === 0) return null;

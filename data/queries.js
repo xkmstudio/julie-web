@@ -152,11 +152,23 @@ export const ptContent = `
   _type == "contentTable" => {
     title,
     columns,
+    hasHeader,
+    boldColumns,
+    headerLeft,
+    headerMiddle,
+    headerRight,
+    headerCol4,
+    headerCol5,
+    headerCol6,
     rows[]{
       _key,
+      bold,
       left[]{ ..., ${ptLinkMarkDef} },
       middle[]{ ..., ${ptLinkMarkDef} },
-      right[]{ ..., ${ptLinkMarkDef} }
+      right[]{ ..., ${ptLinkMarkDef} },
+      col4[]{ ..., ${ptLinkMarkDef} },
+      col5[]{ ..., ${ptLinkMarkDef} },
+      col6[]{ ..., ${ptLinkMarkDef} }
     },
     footnote[]{ ..., ${ptLinkMarkDef} }
   }

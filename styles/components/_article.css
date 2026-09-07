@@ -34,6 +34,19 @@
             font-size: 2.4rem!important;
         }
     }
+
+    .content-table{
+        p{
+            text-indent: 0;
+        }
+
+        &.is-wide{
+            .content-table-wrap{
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    }
 }
 
 .article-lists{

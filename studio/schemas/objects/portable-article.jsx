@@ -176,11 +176,14 @@ import {
             title: 'Columns',
             name: 'columns',
             type: 'string',
-            description: 'Number of columns per row',
+            description: 'Number of columns per row. FAQ tables usually stay at 2.',
             options: {
               list: [
-                { title: '2 Columns', value: '2' },
-                { title: '3 Columns', value: '3' }
+                { title: '2', value: '2' },
+                { title: '3', value: '3' },
+                { title: '4', value: '4' },
+                { title: '5', value: '5' },
+                { title: '6', value: '6' }
               ],
               layout: 'radio',
               direction: 'horizontal'
@@ -188,9 +191,80 @@ import {
             initialValue: '2'
           },
           {
+            title: 'Column headers',
+            name: 'hasHeader',
+            type: 'boolean',
+            description: 'Turn on to add a header for each column. Leave off for FAQ tables. If a comparison table currently uses the first row as labels, move that text into the header fields and delete the row.',
+            initialValue: false
+          },
+          {
+            title: 'Header — Column 1',
+            name: 'headerLeft',
+            type: 'string',
+            hidden: ({ parent }) => !parent?.hasHeader,
+            validation: Rule => Rule.custom((value, context) => {
+              if (context.parent?.hasHeader && !value) return 'Add a header for column 1'
+              return true
+            })
+          },
+          {
+            title: 'Header — Column 2',
+            name: 'headerMiddle',
+            type: 'string',
+            description: 'Shown when the table has 3 or more columns',
+            hidden: ({ parent }) => !parent?.hasHeader || Number(parent?.columns || 2) < 3
+          },
+          {
+            title: 'Header — Column 2 or 3',
+            name: 'headerRight',
+            type: 'string',
+            description: 'Column 2 on 2-column tables. Column 3 when the table has 3 or more columns.',
+            hidden: ({ parent }) => !parent?.hasHeader,
+            validation: Rule => Rule.custom((value, context) => {
+              if (context.parent?.hasHeader && !value) return 'Add this column header'
+              return true
+            })
+          },
+          {
+            title: 'Header — Column 4',
+            name: 'headerCol4',
+            type: 'string',
+            hidden: ({ parent }) => !parent?.hasHeader || Number(parent?.columns || 2) < 4
+          },
+          {
+            title: 'Header — Column 5',
+            name: 'headerCol5',
+            type: 'string',
+            hidden: ({ parent }) => !parent?.hasHeader || Number(parent?.columns || 2) < 5
+          },
+          {
+            title: 'Header — Column 6',
+            name: 'headerCol6',
+            type: 'string',
+            hidden: ({ parent }) => !parent?.hasHeader || Number(parent?.columns || 2) < 6
+          },
+          {
+            title: 'Bold columns',
+            name: 'boldColumns',
+            type: 'array',
+            description: 'Optional. Bold an entire column. Two-column FAQ tables already emphasize column 1 unless you set this. Bold individual words inside a cell with the Bold button.',
+            of: [{ type: 'string' }],
+            options: {
+              list: [
+                { title: 'Column 1', value: '1' },
+                { title: 'Column 2', value: '2' },
+                { title: 'Column 3', value: '3' },
+                { title: 'Column 4', value: '4' },
+                { title: 'Column 5', value: '5' },
+                { title: 'Column 6', value: '6' }
+              ]
+            }
+          },
+          {
             title: 'Rows',
             name: 'rows',
             type: 'array',
+            description: '2-column tables use Column 1 and Column 3. Tables with 3 or more columns use Column 1, Column 2, Column 3, then the extra columns in order.',
             of: [
               {
                 title: 'Row',
@@ -198,19 +272,42 @@ import {
                 type: 'object',
                 fields: [
                   {
-                    title: 'Left Column',
+                    title: 'Bold row',
+                    name: 'bold',
+                    type: 'boolean',
+                    description: 'Bold every cell in this row',
+                    initialValue: false
+                  },
+                  {
+                    title: 'Column 1',
                     name: 'left',
                     type: 'simplePortableText'
                   },
                   {
-                    title: 'Middle Column',
+                    title: 'Column 2',
                     name: 'middle',
                     type: 'simplePortableText',
-                    description: 'Only rendered when the table above is set to 3 Columns'
+                    description: 'Only used when the table has 3 or more columns'
                   },
                   {
-                    title: 'Right Column',
+                    title: 'Column 3',
                     name: 'right',
+                    type: 'simplePortableText',
+                    description: 'Column 2 on 2-column tables. Column 3 when the table has 3 or more columns.'
+                  },
+                  {
+                    title: 'Column 4',
+                    name: 'col4',
+                    type: 'simplePortableText'
+                  },
+                  {
+                    title: 'Column 5',
+                    name: 'col5',
+                    type: 'simplePortableText'
+                  },
+                  {
+                    title: 'Column 6',
+                    name: 'col6',
                     type: 'simplePortableText'
                   }
                 ],
@@ -218,12 +315,14 @@ import {
                   select: {
                     left: 'left.0.children.0.text',
                     middle: 'middle.0.children.0.text',
-                    right: 'right.0.children.0.text'
+                    right: 'right.0.children.0.text',
+                    col4: 'col4.0.children.0.text',
+                    bold: 'bold'
                   },
-                  prepare({ left, middle, right }) {
-                    const subtitleParts = [middle, right].filter(Boolean)
+                  prepare({ left, middle, right, col4, bold }) {
+                    const subtitleParts = [middle, right, col4].filter(Boolean)
                     return {
-                      title: left || 'Empty',
+                      title: `${bold ? 'Bold · ' : ''}${left || 'Empty'}`,
                       subtitle: subtitleParts.join(' • ')
                     }
                   }
@@ -242,13 +341,20 @@ import {
         preview: {
           select: {
             title: 'title',
-            rows: 'rows'
+            rows: 'rows',
+            columns: 'columns',
+            hasHeader: 'hasHeader'
           },
-          prepare({ title, rows }) {
+          prepare({ title, rows, columns, hasHeader }) {
             const count = Array.isArray(rows) ? rows.length : 0
+            const subtitleParts = [
+              `${columns || 2} columns`,
+              `${count} row${count === 1 ? '' : 's'}`,
+              hasHeader ? 'Header row' : 'No header'
+            ]
             return {
               title: title || 'Table',
-              subtitle: `${count} row${count === 1 ? '' : 's'}`
+              subtitle: subtitleParts.join(' · ')
             }
           }
         }
