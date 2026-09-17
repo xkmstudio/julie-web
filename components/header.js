@@ -20,6 +20,12 @@ import { useSiteContext, useToggleCart, useCartCount } from '@lib/context'
 import { useWindowSize } from '@lib/helpers'
 import EmaFixedInput from '@components/emaFixedInput'
 
+// Routes that always use a solid header, regardless of what the page renders
+const isSolidHeaderRoute = (pathname = '') =>
+  pathname.startsWith('/products/') ||
+  pathname.startsWith('/profiles/') ||
+  (pathname.startsWith('/blog/') && pathname !== '/blog')
+
 const Header = ({ data, work, pages }) => {
   if (!data) return
 
@@ -65,29 +71,62 @@ const Header = ({ data, work, pages }) => {
   }, [router])
 
   // Check for hero-bleed element and update header transparency based on scroll
-  // Product pages always use solid header
+  // Product, article and profile pages always use solid header
   // Must account for page transition + AnimatePresence - new DOM appears after Layout exit (~300ms)
   useEffect(() => {
     const checkScrollAndHeroBleed = (pathnameOverride) => {
       const pathname = pathnameOverride ?? router.pathname
-      const isProductPage = pathname.startsWith('/products/')
-      const isArticlePage =
-        pathname.startsWith('/blog/') && pathname !== '/blog'
-      const firstModule = document.querySelector('[data-module-index="0"]')
-      const firstModuleIsHero =
-        firstModule?.getAttribute('data-module-type') === 'hero' ||
-        firstModule?.querySelector('.hero-bleed') !== null
       const scrollY = window.scrollY || window.pageYOffset
+      const firstModule = document.querySelector('[data-module-index="0"]')
+      let hasBleedHero = false
 
-      if (!isProductPage && !isArticlePage && firstModuleIsHero && scrollY < 100) {
+      if (firstModule) {
+        hasBleedHero =
+          firstModule.getAttribute('data-module-type') === 'hero' ||
+          firstModule.querySelector('.hero-bleed') !== null
+      } else {
+        // Pages that render no modules (profiles, collections, blog index) have
+        // no first module to inspect - fall back to a bleed hero sitting at the
+        // top of the content. Anything lower leaves the header over page background.
+        const bleed = document.querySelector('#content .hero-bleed')
+        hasBleedHero =
+          bleed !== null && bleed.getBoundingClientRect().top + scrollY < 200
+      }
+
+      if (!isSolidHeaderRoute(pathname) && hasBleedHero && scrollY < 100) {
         setIsTransparent(true)
       } else {
         setIsTransparent(false)
       }
     }
 
+    // Modules are dynamic imports, so the first module is usually not in the DOM
+    // yet on mount. Watch for content being added and re-check until it settles,
+    // rather than guessing at a delay that is long enough.
+    let observer = null
+    let observerTimer = null
+    let frame = null
+
+    const watchForContent = (pathname) => {
+      observer?.disconnect()
+      clearTimeout(observerTimer)
+
+      observer = new MutationObserver(() => {
+        cancelAnimationFrame(frame)
+        frame = requestAnimationFrame(() => checkScrollAndHeroBleed(pathname))
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+
+      // Stop watching once the page has had time to render
+      observerTimer = setTimeout(() => {
+        observer?.disconnect()
+        observer = null
+      }, 10000)
+    }
+
     // Check on mount
     checkScrollAndHeroBleed()
+    watchForContent()
 
     // Add scroll listener
     const scrollHandler = () => checkScrollAndHeroBleed()
@@ -98,7 +137,7 @@ const Header = ({ data, work, pages }) => {
     // Immediately set solid when navigating TO product page (before DOM updates)
     const handleRouteChangeStart = (url) => {
       const pathname = url?.split('?')[0] ?? ''
-      if (pathname.startsWith('/products/') || (pathname.startsWith('/blog/') && pathname !== '/blog')) {
+      if (isSolidHeaderRoute(pathname)) {
         setIsTransparent(false)
       }
     }
@@ -115,12 +154,16 @@ const Header = ({ data, work, pages }) => {
       delays.forEach((delay) => {
         setTimeout(() => checkScrollAndHeroBleed(pathname), delay)
       })
+      watchForContent(pathname)
     }
 
     Router.events.on('routeChangeStart', handleRouteChangeStart)
     Router.events.on('routeChangeComplete', handleRouteChangeComplete)
 
     return () => {
+      observer?.disconnect()
+      clearTimeout(observerTimer)
+      cancelAnimationFrame(frame)
       window.removeEventListener('scroll', scrollHandler)
       Router.events.off('routeChangeStart', handleRouteChangeStart)
       Router.events.off('routeChangeComplete', handleRouteChangeComplete)
