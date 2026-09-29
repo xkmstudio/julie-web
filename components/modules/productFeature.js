@@ -108,7 +108,8 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
         <div ref={emblaRef}>
           <div className="flex">
             {products.map((product, key) => {
-              const CardComponent = getCardComponent(product)
+              // Carousel slides all share one card style so ratios and styling match
+              const CardComponent = ProductCardAlternate
               return (
               <div
                 key={key}

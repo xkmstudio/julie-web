@@ -66,8 +66,14 @@ const ProductCardAlternate = ({ product, index, className, imageAspect = 'defaul
                   : '100%'
               }
               layout={'fill'}
-              className={cx('h-full w-full object-cover', {
+              className={cx('h-full w-full', {
                 'absolute top-0 left-0': imageAspect === 'article',
+                'object-contain p-20':
+                  imageAspect === 'article' &&
+                  product.productType !== 'alternate',
+                'object-cover':
+                  imageAspect !== 'article' ||
+                  product.productType === 'alternate',
               })}
             />
           </div>
