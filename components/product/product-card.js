@@ -83,7 +83,10 @@ const ProductCard = ({
               srcSizes={[800, 1000, 1200, 1600]}
               sizes="(max-width: 768px) 83.333vw, 40vw"
               layout="fill"
-              className="w-full h-full object-cover absolute top-0 left-0"
+              className={cx('w-full h-full absolute top-0 left-0', {
+                'object-cover': product.productType == 'alternate',
+                'object-contain p-20': product.productType != 'alternate',
+              })}
             />
           </div>
         </div>

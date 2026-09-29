@@ -48,8 +48,9 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
 
   if (!products) return null
 
-  const isAlternative = products[0]?.productType === 'alternate'
-  const CardComponent = isAlternative ? ProductCardAlternate : ProductCard
+  // Pick the card style per product so mixed primary/alternate lists render correctly in any order
+  const getCardComponent = (product) =>
+    product?.productType === 'alternate' ? ProductCardAlternate : ProductCard
 
   // Carousel when more than 2 products (3+); 2 or fewer use original flex layout
   const showCarousel = isClient && productCount > 2
@@ -73,7 +74,9 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
         )}
         <div className="absolute left-0 top-0 w-10 h-full bg-white z-1"></div>
         <div className="w-full h-full flex gap-15 md:gap-25 relative z-2">
-          {products?.map((product, key) => (
+          {products?.map((product, key) => {
+            const CardComponent = getCardComponent(product)
+            return (
             <CardComponent
               key={key}
               index={key}
@@ -81,7 +84,8 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
               product={product}
               onFrameLinkClick={onFrameLinkClick}
             />
-          ))}
+            )
+          })}
         </div>
       </section>
     )
@@ -103,7 +107,9 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
       <div ref={scrollRef}>
         <div ref={emblaRef}>
           <div className="flex">
-            {products.map((product, key) => (
+            {products.map((product, key) => {
+              const CardComponent = getCardComponent(product)
+              return (
               <div
                 key={key}
                 className="flex-[0_0_83.333%] md:flex-[0_0_40%] min-w-0 ml-15 md:ml-25"
@@ -116,7 +122,8 @@ const ProductFeature = ({ data, onFrameLinkClick }) => {
                   onFrameLinkClick={onFrameLinkClick}
                 />
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
